@@ -1,17 +1,23 @@
-const { Sequelize } = require('sequelize');
-const { error } = require('console');
+const express = require('express');
+const app = express();
+const cors = require('cors');
+require('dotenv').config();
+const port = process.env.PORT;
+const db = require('./models');
 
-const sequelize = new Sequelize('QLBanTranh', 'root','',{
-    host: 'localhost',
-    port: 3306,
-    dialect: 'mysql'
+
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+db.sequelize.sync().then(() => {
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
 });
 
-try {
-    sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
-  }
 
-console.log("Another task.")
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
+
