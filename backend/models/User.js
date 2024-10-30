@@ -1,10 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define("User",{
-        Id:{
-            type: DataTypes.STRING,
+        id: {
+            type: DataTypes.INTEGER,
             primaryKey: true,
-            allowNull: false,
-        },
+            autoIncrement: true, // Tự động tăng giá trị
+          },
         firstname: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -36,33 +36,30 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         phone: {
-            type: DataTypes.NUMERIC,
+            type: DataTypes.STRING, // Thay đổi từ NUMERIC sang STRING để kiểm soát độ dài
             allowNull: false,
             validate: {
                 len: [10, 11],
             },
             unique: true,
         },
-        role:{
-            type: DataTypes.STRING,
-            allowNull: false,
-            defaultValue: "user",
-            validate: {
-                isIn: [['admin', 'user','employee',]],
-            },
-        },
-        provider_id:{
-            type: DataTypes.STRING,
-            allowNull: true,
-            unique: true,
-
-        }
     },
         {
             timestamps: true,
             tableName: "user",
         }
-    )
+    );
+    User.associate = (models) => {
+        User.belongsTo(models.Role, {
+            foreignKey: 'roleId',
+            as: 'role',
+        });
 
+        User.belongsTo(models.Provider, {
+            foreignKey: 'providerId',
+            as: 'provider',
+        });
+        
+    };
     return User;
 }
