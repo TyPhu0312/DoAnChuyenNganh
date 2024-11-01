@@ -34,10 +34,10 @@ export default function AdminHeader() {
                     <nav className="grid gap-6 text-lg font-medium">
                         <Link
                             href="#"
-                            className="flex items-center gap-2 text-lg font-semibold"
+                            className="flex items-center gap-2 text-lg font-semibold "
                         >
-                            <Package2 className="h-6 w-6" />
-                            <span className="sr-only">ArtAuct</span>
+                            <Package2 className="h-6 w-6 " />
+                            <span className="sr-only ">ArtAuct</span>
                         </Link>
                         <Link
                             href="#"
