@@ -6,6 +6,7 @@ import { ModeToggle } from '../ui/mode-toggle'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import AdminSearch from './admin-search'
 import Link from 'next/link'
+
 // import {
 //     Breadcrumb,
 //     BreadcrumbItem,
@@ -31,13 +32,13 @@ export default function AdminHeader() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left">
-                    <nav className="grid gap-6 text-lg font-medium">
+                    <nav className="grid gap-6 text-lg font-medium ">
                         <Link
                             href="#"
-                            className="flex items-center gap-2 text-lg font-semibold"
+                            className="flex items-center gap-2 text-lg font-semibold w-[300px]"
                         >
-                            <Package2 className="h-6 w-6" />
-                            <span className="sr-only">ArtAuct</span>
+                            <Package2 className="h-10 w-10" />
+                            <span className="sr-only">Artauct</span>
                         </Link>
                         <Link
                             href="#"

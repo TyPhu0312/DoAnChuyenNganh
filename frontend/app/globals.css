@@ -76,3 +76,7 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.title-logo {
+  font-size: 50px;
+}
