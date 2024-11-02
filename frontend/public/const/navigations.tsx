@@ -4,37 +4,37 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     {
         key: 'dashboard',
         label: 'Dashboard',
-        path: '/admin/dashboard',
+        path: '/dashboard',
         icon: <Home />
     },
     {
         key: 'Products',
         label: 'Products',
-        path: '/admin/products',
+        path: '/products',
         icon: <Package />
     },
     {
         key: 'Orders',
         label: 'Orders',
-        path: '/admin/orders',
+        path: '/orders',
         icon: <ShoppingCart />
     },
     {
         key: 'Customers',
         label: 'Customers',
-        path: '/admin/customers',
+        path: '/customers',
         icon: <Users />
     },
     {
         key: 'Transactions',
         label: 'Transactions',
-        path: '/admin/transactions',
+        path: '/transactions',
         icon: <LineChart />
     },
     {
         key: 'Messengers',
         label: 'Messengers',
-        path: '/admin/messengers',
+        path: '/messengers',
         icon: <Bell />
     }
 ]

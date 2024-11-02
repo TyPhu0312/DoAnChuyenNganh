@@ -89,7 +89,6 @@ export default function Products() {
     }
 
     const handleConfirmDelete = () => {
-
         toast({
             title: "Product Deleted",
             description: `Product has been deleted.`,

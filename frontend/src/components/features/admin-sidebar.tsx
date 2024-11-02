@@ -1,9 +1,9 @@
 "use client"
-import { Bell, } from 'lucide-react'
+import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users } from 'lucide-react'
 import React from 'react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
-import { DASHBOARD_SIDEBAR_LINKS } from '../../public/const/navigations'
+import { DASHBOARD_SIDEBAR_LINKS } from '../../../public/const/navigations'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 
@@ -16,7 +16,7 @@ export default function AdminSidebar() {
             <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
                 <Link href="/" className="flex items-center gap-2 font-semibold">
                     <Image src="/images/logo.png" alt="ArtAuct Logo" width={40} height={40} />
-                    <span className="">Artauct</span>
+                    <span className="">ArtAuct</span>
                 </Link>
                 <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
                     <Bell className="h-4 w-4" />
