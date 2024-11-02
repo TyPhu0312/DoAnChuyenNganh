@@ -6,15 +6,14 @@ import { ModeToggle } from '../ui/mode-toggle'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import AdminSearch from './admin-search'
 import Link from 'next/link'
-
-// import {
-//     Breadcrumb,
-//     BreadcrumbItem,
-//     BreadcrumbLink,
-//     BreadcrumbList,
-//     BreadcrumbPage,
-//     BreadcrumbSeparator,
-// } from "@/components/ui/breadcrumb"
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 
 export default function AdminHeader() {
@@ -32,13 +31,13 @@ export default function AdminHeader() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left">
-                    <nav className="grid gap-6 text-lg font-medium ">
+                    <nav className="grid gap-6 text-lg font-medium">
                         <Link
                             href="#"
                             className="flex items-center gap-2 text-lg font-semibold"
                         >
                             <Package2 className="h-6 w-6" />
-                            <span className="sr-only">ArtAuct</span>
+                            <span className="sr-only ">Artauct</span>
                         </Link>
                         <Link
                             href="#"
@@ -71,8 +70,8 @@ export default function AdminHeader() {
                 </SheetContent>
             </Sheet>
 
-            <div className="w-full flex-1 items-center">
-                <AdminSearch/>
+            <div className="w-full flex-1">
+                <AdminSearch />
             </div>
             {/* <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

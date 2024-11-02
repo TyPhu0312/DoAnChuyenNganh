@@ -16,7 +16,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import Admin from "@/app/admin/page"
+import Admin from "../page"
+
 export default function Dashboard() {
     return (
         <Admin>
