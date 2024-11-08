@@ -6,17 +6,17 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true, // Tự động tăng
           },
           price: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DECIMAL(15,0),
             allowNull: false, // Không được null
           },
           num: {
             type: DataTypes.INTEGER,
             allowNull: false, // Không được null
           },
-          total_money: {
-            type: DataTypes.INTEGER,
-            allowNull: false, // Không được null
-          },
+          // total_money: {
+          //   type: DataTypes.INTEGER,
+          //   allowNull: false, // Không được null
+          // },
     }, {
         timestamps: true,
         tableName: "OrderDetail",
@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'orderId',
             as: 'order',
         });
+        OrderDetail.belongsTo(models.Product, {
+          foreignKey: 'productlId',
+          as: 'product',
+      });
 
        
        

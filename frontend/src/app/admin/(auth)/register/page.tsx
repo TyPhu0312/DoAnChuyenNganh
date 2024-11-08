@@ -16,8 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Spinner from '@/components/features/spinner';
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
     const [email, setEmail] = useState<string>('');
+    const [username] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false); // Trạng thái loading
@@ -29,7 +30,7 @@ const LoginPage: React.FC = () => {
         try {
             await login(email, password);
             setTimeout(() => {
-                router.push('/admin/dashboard'); // Redirect sau khi đăng nhập thành công
+                router.push('/admin/login'); // Redirect sau khi đăng nhập thành công
             }, 2000);
         } catch (err) {
             setError((err as Error).message);
@@ -43,7 +44,7 @@ const LoginPage: React.FC = () => {
           {loading && <Spinner />}
             <Card className="w-full max-w-sm">
                 <CardHeader>
-                    <CardTitle className="text-2xl">Login</CardTitle>
+                    <CardTitle className="text-2xl">Register</CardTitle>
                     <CardDescription>
                         Enter your email below to login to your account.
                         {error && <p className="text-red-500">{error}</p>}
@@ -59,6 +60,17 @@ const LoginPage: React.FC = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="m@example.com"
+                                required
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="password">UserName</Label>
+                            <Input
+                                type="username"
+                                id="username"
+                                value={username}
+                                // onChange={(e) => setPassword(e.target.value)}
+                                placeholder="username"
                                 required
                             />
                         </div>
@@ -86,4 +98,4 @@ const LoginPage: React.FC = () => {
 
 };
 
-export default LoginPage;
+export default RegisterPage;

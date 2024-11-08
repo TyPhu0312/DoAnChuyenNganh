@@ -29,10 +29,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT, // Cho phép ghi chú dài
             allowNull: true, // Có thể null
           },
-          list_product: {
-            type: DataTypes.JSON, // Sử dụng JSON để lưu mảng
-            allowNull: true,
-        },
+          // list_product: {
+          //   type: DataTypes.JSON, // Sử dụng JSON để lưu mảng
+          //   allowNull: true,
+        // },
           status: {
             type: DataTypes.INTEGER, // Kiểu số nguyên cho trạng thái đơn hàng
             allowNull: false, // Không được null
@@ -51,6 +51,8 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'userId',
             as: 'user',
         });
+     
+      
     };
     
         
