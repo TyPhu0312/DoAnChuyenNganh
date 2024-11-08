@@ -1,12 +1,17 @@
 "use client"
 import AdminHeader from "@/components/features/admin-header"
 import AdminSidebar from "@/components/features/admin-sidebar"
+import { redirect } from "next/navigation";
 
+const isAuth = true;
 export default function Admin({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    if(!isAuth){
+        redirect('/admin/login');
+    }
     return (
         <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-muted/40 md:block">

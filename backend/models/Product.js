@@ -1,7 +1,7 @@
 
 module.exports = (sequelize, DataTypes) => {
     const Product = sequelize.define("Product",{
-        Id:{
+        id:{
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true, // Tự động tăng giá trị

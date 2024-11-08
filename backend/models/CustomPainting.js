@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         picture_frame: {
-            type: DataTypes.BOOLANE,
+            type: DataTypes.BOOLEAN,
             allowNull: false,
         },
         note: {

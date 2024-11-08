@@ -1,6 +1,6 @@
 module.exports = (sequelize,DataTypes) => {
-    const Galery = sequelize.define("Galery",{
-        Id:{
+    const Gallery = sequelize.define("Gallery",{
+        id:{
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true, // Tự động tăng giá trị
@@ -15,14 +15,14 @@ module.exports = (sequelize,DataTypes) => {
     },
     {
         timestamps: true,
-        tableName: "galery",
+        tableName: "gallery",
     });
-    Galery.associate = (models) => {
-        Galery.belongsTo(models.Product, {
+    Gallery.associate = (models) => {
+        Gallery.belongsTo(models.Product, {
             foreignKey: 'productId',
             as: 'product_gal',
         });
     };
     
-    return Galery;
+    return Gallery;
 };
