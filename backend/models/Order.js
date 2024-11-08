@@ -1,10 +1,12 @@
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, DataTypes) => {
     const Order = sequelize.define("Order",{
         id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true, // Tự động tăng
+          type: DataTypes.UUID,
+          defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
+          primaryKey: true,
+           
           },
           fullname: {
             type: DataTypes.STRING,
@@ -51,10 +53,14 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'userId',
             as: 'user',
         });
-     
+        Order.hasMany(models.OrderDetail, {
+          foreignKey: 'orderId',
+          as: 'orderDetail',
+      });
       
     };
     
-        
+    
+   
     return Order;
 }
