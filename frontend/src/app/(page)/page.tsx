@@ -7,6 +7,12 @@ export default function Home({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+
+    // if(!isAuth){
+    //     redirect('/login');
+    // }
+
+  
     return (
         <div className='w-full h-[500px]'>
             <Navbar/>

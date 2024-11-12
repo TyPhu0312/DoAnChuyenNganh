@@ -1,9 +1,11 @@
+const { v4: uuidv4 } = require('uuid');
+
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define("User",{
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
             primaryKey: true,
-            autoIncrement: true, // Tự động tăng giá trị
           },
         firstname: {
             type: DataTypes.STRING,
@@ -25,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 isEmail: true,
             },
-            unique: true,
+            unique: false,
             isLowercase: true,
         },
         password: {
@@ -41,12 +43,15 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 len: [10, 11],
             },
-            unique: true,
+            unique: false,
         },
+    },
+    {
+        indexes: [] //tắt index - tạo chỉ mục trên database để không bị quá 64key index...
     },
         {
             timestamps: true,
-            tableName: "user",
+            tableName: "users",
         }
     );
     User.associate = (models) => {
@@ -61,5 +66,7 @@ module.exports = (sequelize, DataTypes) => {
         });
         
     };
+
+    
     return User;
 }

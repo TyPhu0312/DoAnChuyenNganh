@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+const colors = require('colors') //màu cho consolelog phias duoi
 var connection = mysql.createConnection({
 	host:'127.0.0.1',
 	user:'root',
@@ -6,10 +7,10 @@ var connection = mysql.createConnection({
 	database:'qlbantranh'
 });
 connection.connect(function(error){
-	if(!!error) {
+	if(error) {
 		console.log(error);
 	} else {
-		console.log('Connected..!');
+		console.log('MySQL Database connected!'.bgGreen.white);
 	}
 });
 
