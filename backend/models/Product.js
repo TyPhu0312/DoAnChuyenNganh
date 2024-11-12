@@ -1,10 +1,12 @@
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, DataTypes) => {
     const Product = sequelize.define("Product",{
-        Id:{
-            type: DataTypes.INTEGER,
+        id:{
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
             primaryKey: true,
-            autoIncrement: true, // Tự động tăng giá trị
+           
         },
         title: {
             type: DataTypes.STRING,
@@ -21,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         price: {
-            type: DataTypes.INTEGER,
+           type: DataTypes.DECIMAL(15,0),
             allowNull: false,
         },
         thumbnail: {
@@ -50,8 +52,13 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'categoryId',
             as: 'category_pro',
         });
-     
+        Product.hasMany(models.OrderDetail, {
+            foreignKey: 'productId',
+            as: 'orderDetail',
+        });
        
     };
+    
+    
     return Product;
 }

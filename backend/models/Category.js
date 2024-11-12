@@ -1,10 +1,11 @@
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, DataTypes) => {
     const Category = sequelize.define("Category",{
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
             primaryKey: true,
-            autoIncrement: true, // Tự động tăng giá trị
           },
         name: {
             type: DataTypes.STRING,
@@ -19,7 +20,5 @@ module.exports = (sequelize, DataTypes) => {
             tableName: "category",
         }
     )
-    
-        
     return Category;
 }
