@@ -141,17 +141,24 @@ export default function Products() {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
-                                    <DialogTitle>Add Product</DialogTitle>
+                                    <DialogTitle>Add New Artwork</DialogTitle>
                                     <DialogDescription>
-                                        Add new product to your store catalog.
+                                        Add new artwork to store catalog.
                                     </DialogDescription>
                                 </DialogHeader>
+                                <form action="post">
                                 <div className="grid gap-4 py-4">
                                     <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="name" className="text-right col-span-2">
-                                            Product Name
+                                        <Label htmlFor="title" className="text-right col-span-2">
+                                            Artwork Title
                                         </Label>
-                                        <Input id="name" type="text" className="col-span-4" />
+                                        <Input id="title" type="text" className="col-span-4" />
+                                    </div>
+                                    <div className="grid grid-cols-6 items-center gap-4">
+                                        <Label htmlFor="size" className="text-right col-span-2">
+                                            Author
+                                        </Label>
+                                        <Input id="author" type="text" className="col-span-4" />
                                     </div>
                                     <div className="grid grid-cols-6 items-center gap-4">
                                         <Label htmlFor="price" className="text-right col-span-2">
@@ -161,19 +168,20 @@ export default function Products() {
                                     </div>
                                     <div className="grid grid-cols-6 items-center gap-4">
                                         <Label htmlFor="quantity" className="text-right col-span-2">
-                                            Quantity
+                                            Thumbnail
                                         </Label>
                                         <Input id="quantity" type="text" className="col-span-4" />
                                     </div>
                                     <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="img" className="text-right col-span-2">
-                                            Image
+                                        <Label htmlFor="description" className="text-right col-span-2">
+                                            Description
                                         </Label>
-                                        <Input id="img" type="text" className="col-span-4" />
+                                        <Input id="description" type="text" className="col-span-4" />
                                     </div>
                                 </div>
+                                </form>
                                 <DialogFooter>
-                                    <Button onClick={() => {
+                                    <Button type="submit" onClick={() => {
                                         console.log("save");
                                         toast({
                                             title: "Scheduled: Catch up ",
@@ -231,7 +239,7 @@ export default function Products() {
                                                 />
                                             </TableCell>
                                             <TableCell className="font-medium">
-                                                {product.name}
+                                                {product.title}
                                             </TableCell>
                                             <TableCell>{product.price}</TableCell>
                                             <TableCell className="hidden md:table-cell">

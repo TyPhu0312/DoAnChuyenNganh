@@ -1,8 +1,6 @@
 import React from 'react'
 import Navbar from '@/components/features/navbar'
-import { redirect } from 'next/navigation';
 
-// const isAuth = true;
 export default function Home({
     children,
 }: Readonly<{
@@ -15,11 +13,5 @@ export default function Home({
 
   
     return (
-        <main className="bg-[url('/images/museum-lighting.png')]  bg-cover bg-center bg-fixed h-screen w-full">
-            <Navbar/>
-            <div >
-                
-            </div>
-        </main>
     )
 }

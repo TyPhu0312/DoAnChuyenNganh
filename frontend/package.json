@@ -27,6 +27,7 @@
     "cors": "^2.8.5",
     "keycloak-connect": "^25.0.2",
     "lucide-react": "^0.417.0",
+    "messages": "^0.1.0",
     "mongodb": "^6.8.0",
     "next": "^15.0.2",
     "next-auth": "^5.0.0-beta.20",

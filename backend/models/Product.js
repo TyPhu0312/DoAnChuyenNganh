@@ -15,10 +15,16 @@ module.exports = (sequelize, DataTypes) => {
                 len: [1, 300],
             }
         },
+        author: {
+            type: DataTypes.STRING,
+            allowNull:false,
+            validate: {
+                len:[1,300],
+            }
+        },
         price: {
-            type: DataTypes.DECIMAL(15,0),
-            allowNull: false, // Không được null
-            
+           type: DataTypes.DECIMAL(15,0),
+            allowNull: false,
         },
         thumbnail: {
             type: DataTypes.STRING,
