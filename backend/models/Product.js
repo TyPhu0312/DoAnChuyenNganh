@@ -1,7 +1,11 @@
 const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, DataTypes) => {
     const Product = sequelize.define("Product",{
+        id:{
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
         id:{
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
@@ -54,8 +58,14 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'productId',
             as: 'orderDetail',
         });
+        Product.hasMany(models.OrderDetail, {
+            foreignKey: 'productId',
+            as: 'orderDetail',
+        });
        
     };
+    
+    
     
     
     return Product;

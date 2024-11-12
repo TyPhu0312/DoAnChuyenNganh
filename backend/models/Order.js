@@ -1,8 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, DataTypes) => {
     const Order = sequelize.define("Order",{
         id: {
+          type: DataTypes.UUID,
+          defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
+          primaryKey: true,
+           
           type: DataTypes.UUID,
           defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
           primaryKey: true,
@@ -31,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT, // Cho phép ghi chú dài
             allowNull: true, // Có thể null
           },
+          // list_product: {
+          //   type: DataTypes.JSON, // Sử dụng JSON để lưu mảng
+          //   allowNull: true,
+        // },
           // list_product: {
           //   type: DataTypes.JSON, // Sử dụng JSON để lưu mảng
           //   allowNull: true,
