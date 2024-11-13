@@ -4,17 +4,33 @@ const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const db = require('./models');
-
-
+const connection = require('./database/db')
+const routerProduct= require('./routes/product.routes');
+//màu báo DB đang chạy
+const morgan = require('morgan');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-db.sequelize.sync({force:true}).then(() => {
+
+//middleware of morgan lib
+app.use(morgan("dev"));
+app.use("/api/admin/products", routerProduct);
+
+// if(process.env.NODE_ENV==='development') {
+//     db.sequelize.sync({force:true}).then(() => {
+//         app.listen(port, () => {
+//             console.log(`Server is running on port ${port}`.bgMagenta.white);
+//         });
+//     });
+// }
+// else {
+//     await sequelize.sync({ alter: true });
+// }
+
+db.sequelize.sync({alter:true}).then(() => {
+
     app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
+        console.log(`Server is running on port ${port}`.bgMagenta.white);
     });
-});
-app.get('/', (req, res) => {
-    res.send('Hello World');
 });
 

@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 isEmail: true,
             },
-            unique: true,
+            unique: false,
             isLowercase: true,
         },
         password: {
@@ -43,12 +43,15 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 len: [10, 11],
             },
-            unique: true,
+            unique: false,
         },
+    },
+    {
+        indexes: [] //tắt index - tạo chỉ mục trên database để không bị quá 64key index...
     },
         {
             timestamps: true,
-            tableName: "user",
+            tableName: "users",
         }
     );
     User.associate = (models) => {
