@@ -10,6 +10,12 @@ const config = {
 	],
   prefix: "",
   theme: {
+    fontFamily: {
+      serif: ['Roboto Serif', 'serif'],
+    },
+    borderRadius: {
+      '40px': '40px',
+    },
     container: {
       center: true,
       padding: "2rem",

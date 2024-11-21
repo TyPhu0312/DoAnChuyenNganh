@@ -1,14 +1,10 @@
-const { v4: uuidv4 } = require('uuid');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 module.exports = (sequelize, DataTypes) => {
-    const Product = sequelize.define("Product",{
-        id:{
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
-        id:{
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
+    const Product = sequelize.define("Product", {
+        id: {
+            type: DataTypes.STRING, 
+            defaultValue: () => crypto.randomUUID(), 
             primaryKey: true,
         },
         title: {
@@ -44,13 +40,12 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
     },
-},
 
-        {
-            timestamps: true,
-            tableName: "product",
-        }
-    );
+    {
+        timestamps: true,
+        tableName: "product",
+    });
+
     Product.associate = (models) => {
         Product.belongsTo(models.Category, {
             foreignKey: 'categoryId',
@@ -62,14 +57,9 @@ module.exports = (sequelize, DataTypes) => {
         });
         Product.hasMany(models.OrderDetail, {
             foreignKey: 'productId',
-            as: 'orderDetail',
+            as: 'productOrderDetails',
         });
-       
     };
+
     return Product;
 };
-    
-    
-    
- 
-

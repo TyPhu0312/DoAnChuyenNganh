@@ -1,7 +1,6 @@
-
 const dbConnect = require('../database/db')
-
-//hàm chuyển những query về thành promsise function
+const crypto = require('crypto');
+//hàm chuyển những cau query về thành promsise function
 const queryAsync = (sql, params = []) => { 
     return new Promise((resolve, reject) => {
         dbConnect.query(sql, params, (err, results) => {
@@ -19,36 +18,36 @@ const getProducts = async(req,res)=> {
         if(!data) {
             return res.status(404).send({
                 success:false,
-                message:"No record found"
+                message:"Không tìm thấy product nào"
             })
         }
         res.status(200).send({
             success:true,
-            message:'All Product here',
+            message:'Tất cả sản phẩm',
             data: data,
         });
     } catch (error) {
         res.status(500).send({
             success: false,
-            message:'Error in get api',
+            message:'Không lấy được API sản phẩm',
             error: error,
         })
     }
 };
 const getProductById = async(req,res)=> {
     try {
-        const {id} = req.params; //lấy id từ tham số truyền vào ngoài routes ở product/id
+        const {id} = req.params; 
         if(!id){
             return res.status(404).send({
                 success:false,
-                message: 'Invalid Product ID!'
+                message: 'Không tìm thấy ID!'
             })
         }
         const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.product WHERE id =?`,[id]);
         if(!dataWithId) {
             return res.status(404).send({
                 success: false,
-                message:'No record found',
+                message:'Không thấy data từ database',
             });
         }    
         res.status(200).send({
@@ -63,22 +62,17 @@ const getProductById = async(req,res)=> {
 const createProduct = async (req, res) => {
     try {
         const { title, author, price, thumbnail, description, categoryId } = req.body;
-
-        // Kiểm tra dữ liệu đầu vào
         if (!title || !categoryId || !author || !price) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
             });
         }
-
-        // Thực hiện câu truy vấn INSERT
+        const id = crypto.randomUUID(); 
         const data = await queryAsync(
-            `INSERT INTO product (title, author, price, thumbnail, description, categoryId) VALUES (?, ?, ?, ?, ?, ?)`,
-            [title, author, price, thumbnail, description, categoryId]
+            `INSERT INTO product (id, title, author, price, thumbnail, description, categoryId) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [id, title, author, price, thumbnail, description, categoryId]
         );
-
-        // Kiểm tra kết quả
         if (!data) {
             console.log("Không đủ dữ liệu để INSERT hoặc nhập sai dữ liệu");
             return res.status(500).send({
@@ -86,12 +80,10 @@ const createProduct = async (req, res) => {
                 message: 'Lỗi trong câu truy vấn INSERT',
             });
         }
-
         res.status(201).send({
             success: true,
             message: 'Sản phẩm đã được tạo thành công!',
         });
-
     } catch (error) {
         console.error(error);
         res.status(500).send({
@@ -101,23 +93,76 @@ const createProduct = async (req, res) => {
         });
     }
 };
+const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params; 
+        //console.log("ProductId:", id);
+        if (!id) {
+            return res.status(400).send({
+                success: false,
+                message: 'Không tìm thấy sản phẩm này',
+            });
+        }
+        const { title, author, price, thumbnail, categoryId, description } = req.body;
+        if (!title || !author || !price || !thumbnail || !description || !categoryId) {
+            return res.status(400).send({
+                success: false,
+                message: 'Nhập thiếu trường dữ liệu',
+            });
+        }
+        const data = await queryAsync(
+            `UPDATE product 
+             SET title = ?, author = ?, price = ?, thumbnail = ?, description = ?, categoryId = ?
+             WHERE id = ?`, // Điều kiện WHERE
+            [title, author, price, thumbnail, description, categoryId, id]
+        );
+        if (data.affectedRows === 0) {
+            return res.status(404).send({
+                success: false,
+                message: 'Không có gì xảy ra ở database cả!!!',
+            });
+        }
+        res.status(200).send({
+            success: true,
+            message: 'Cập nhật sản phẩm thành công!',
+        });
 
-
-const updateProduct = async(req,res)=> {
-    const { id } = req.params;
-    const { title, author, price, category, description } = req.body;
-    dbConnect.query(`UPDATE product SET title='${title}', author='${author}', price='${price}', categoryId='${category}', description='${description}' WHERE id='${id}'`, function (err) {
-        if (err) throw err;
-        res.status(200).json({ message: "Product updated successfully" });
-    });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Không lấy được API update product!',
+            error,
+        });
+    }
 };
-
-
 const deleteProduct = async(req,res)=> {
-    const { id } = req.params;
-    dbConnect.query(`DELETE FROM product WHERE id='${id}'`, function (err) {
-        if (err) throw err;
-        res.status(200).json({ message: "Product deleted successfully" });
-    });
+    try {
+        const { id } = req.params; 
+        //console.log("ProductId:", id);
+        if (!id) {
+            return res.status(404).send({
+                success: false,
+                message: 'Không tìm thấy sản phẩm này',
+            });
+        }
+        await queryAsync(
+            `DELETE FROM product 
+             WHERE id = ?`, // Điều kiện WHERE
+            [id]
+        );
+        res.status(200).send({
+            success: true,
+            message: 'Xoá sản phẩm thành công!',
+        })
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Không lấy được API delete product!',
+            error,
+        });
+    }
 };
 module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };

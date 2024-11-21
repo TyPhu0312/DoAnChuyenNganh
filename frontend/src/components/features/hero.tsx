@@ -30,14 +30,14 @@ export default function Hero() {
     return (
         <>
             <div
-                className={`w-full h-screen bg-center bg-cover transition-opacity duration-500 bg-[url("/images/museum-lighting.png")]`}
+                className={`w-full h-[500px] bg-center bg-cover rounded-bl-40px rounded-br-40px transition-opacity duration-500 bg-[url("/images/museum-lighting.png")]`}
             >
                 <Navbar/>
                 <div className="  pl-20 ">
                     <div className=' opacity-70 max-w-2xl text-xl mt-56 text-[#EFEFEF]'>
-                        <span >Welcome to Artauct, your sould destination</span>
+                        <span className='font-serif'>Welcome to Artauct, your sould destination</span>
 
-                        <span><p className='mt-8'>Explore our curated collection of beautiful art, from timeless classics to modern masterpieces.
+                        <span><p className='mt-8 font-serif'>Explore our curated collection of beautiful art, from timeless classics to modern masterpieces.
                             Whether for home or office, find the perfect piece to reflect your style and elevate any space.</p></span>
                     </div>
 

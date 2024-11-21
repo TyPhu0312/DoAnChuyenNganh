@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, DataTypes) => {
     const OrderDetail = sequelize.define("OrderDetail", {
@@ -11,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(15,0),
             allowNull: false, // Không được null
           },
-          num: {
+          num: {  
             type: DataTypes.INTEGER,
             allowNull: false, // Không được null
           },
@@ -28,8 +27,5 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: true,
         tableName: "OrderDetail",
     });
-
-    
-  
     return OrderDetail;
 };
