@@ -8,7 +8,7 @@ import React from 'react'
 export default function scrollart() {
     return (
         <div className="p-4">
-            <ScrollArea className="w-96 whitespace-nowrap rounded-md border">
+            <ScrollArea className="w-1/2 whitespace-nowrap rounded-md ">
             <div className="flex w-max space-x-4 p-4">
                 <figure className="shrink-0">
                     <div className="overflow-hidden rounded-md">
@@ -23,16 +23,10 @@ export default function scrollart() {
                         />
                         </Link>
                     </div>
-                    <figcaption className="pt-2 text-xs text-muted-foreground">
-                        Photo by{" "}
-                        <span className="font-semibold text-foreground">
-                            anh
-                        </span>
-                    </figcaption>
                 </figure>
                 <figure className="shrink-0">
                     <div className="overflow-hidden rounded-md">
-                    <Link href={'/'} className="flex items-center">
+                        <Link href={'/'} className="flex items-center">
                         <Image
                             src='/images/hero5.png'
                             alt='anh'
@@ -41,18 +35,12 @@ export default function scrollart() {
                             height={160}
                             quality={100}
                         />
-                    </Link>
+                        </Link>
                     </div>
-                    <figcaption className="pt-2 text-xs text-muted-foreground">
-                        Photo by{" "}
-                        <span className="font-semibold text-foreground">
-                            anh
-                        </span>
-                    </figcaption>
                 </figure>
                 <figure className="shrink-0">
                     <div className="overflow-hidden rounded-md">
-                    <Link href={'/'} className="flex items-center">
+                        <Link href={'/'} className="flex items-center">
                         <Image
                             src='/images/hero6.png'
                             alt='anh'
@@ -61,15 +49,24 @@ export default function scrollart() {
                             height={160}
                             quality={100}
                         />
-                    </Link>
+                        </Link>
                     </div>
-                    <figcaption className="pt-2 text-xs text-muted-foreground">
-                        Photo by{" "}
-                        <span className="font-semibold text-foreground">
-                            anh
-                        </span>
-                    </figcaption>
                 </figure>
+                <figure className="shrink-0">
+                    <div className="overflow-hidden rounded-md">
+                        <Link href={'/'} className="flex items-center">
+                        <Image
+                            src='/images/hero34.png'
+                            alt='anh'
+                            className="aspect-[3/4] h-fit w-fit object-cover"
+                            width={100}
+                            height={160}
+                            quality={100}
+                        />
+                        </Link>
+                    </div>
+                </figure>
+                
             </div>
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>
