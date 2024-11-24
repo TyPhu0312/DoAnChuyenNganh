@@ -20,9 +20,9 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         icon: <ShoppingCart />
     },
     {
-        key: 'Customers',
-        label: 'Customers',
-        path: '/admin/customers',
+        key: 'User',
+        label: 'User',
+        path: '/admin/user',
         icon: <Users />
     },
     {

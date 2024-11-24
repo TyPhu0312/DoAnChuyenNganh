@@ -61,7 +61,7 @@ export default function AdminHeader() {
                             href="#"
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            Customers
+                            User
                         </Link>
                         <Link href="#" className="hover:text-foreground">
                             Settings
