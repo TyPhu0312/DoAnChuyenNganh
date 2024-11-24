@@ -70,9 +70,10 @@ const createUser = async (req, res) => {
                 message: "Thiếu trường thông tin bắt buộc",
             });
         }
+        const id  = crypto.randomUUID();
         const data = await queryAsync(
-            `INSERT INTO user (firstname, lastname, email, password, phone, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?,?)`,
-            [firstname, lastname, email, password, phone, providerId, roleId]
+            `INSERT INTO user (id, firstname, lastname, email, password, phone, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
+            [id, firstname, lastname, email, password, phone, providerId, roleId]
         );
         if (!data) {
             console.log("Không đủ dữ liệu để INSERT hoặc nhập sai dữ liệu");
