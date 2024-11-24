@@ -15,7 +15,8 @@
     "save": "^2.9.0",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "validator": "^13.12.0"
   },
   "name": "backend",
   "version": "1.0.0",

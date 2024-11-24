@@ -61,8 +61,8 @@ const getOrderById = async(req,res)=> {
 };
 const createOrder = async (req, res) => {
     try {
-        const { fullname, email, phone, address, note, status, userId } = req.body;
-        if (!email || !fullname || !phone || !address || !note || !status || !userId) {
+        const { fullname, email, phone_number, address, note, status, userId } = req.body;
+        if (!email || !fullname || !phone_number || !address || !userId || !note) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
@@ -70,8 +70,8 @@ const createOrder = async (req, res) => {
         }
         const id = crypto.randomUUID(); 
         const data = await queryAsync(
-            `INSERT INTO order (id, fullname, email, phone_number, address, note, status, userId) VALUES (?,?,?,?,?,?,?,?)`,
-            [id, fullname, email, phone, address, note, status, userId]
+            `INSERT INTO \`order\` (id, fullname, email, phone_number, address, note, status, userId) VALUES (?,?,?,?,?,?,?,?)`,
+            [id, fullname, email, phone_number, address, note, status, userId]
         );
         if (!data) {
             console.log("Không đủ dữ liệu để INSERT hoặc nhập sai dữ liệu");
@@ -93,6 +93,7 @@ const createOrder = async (req, res) => {
         });
     }
 };
+
 const updateOrder = async (req, res) => {
     try {
         const { id } = req.params; 
@@ -145,8 +146,7 @@ const deleteOrder = async(req,res)=> {
             });
         }
         await queryAsync(
-            `DELETE FROM order 
-             WHERE id = ?`,
+            `DELETE FROM \`order\` WHERE id = ?`,
             [id]
         );
         res.status(200).send({
