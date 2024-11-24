@@ -30,7 +30,7 @@ export default function Dashboard() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Customer</TableHead>
+                                <TableHead>User</TableHead>
                                 <TableHead className="hidden sm:table-cell">Type</TableHead>
                                 <TableHead className="hidden sm:table-cell">Status</TableHead>
                                 <TableHead className="hidden md:table-cell">Date</TableHead>
