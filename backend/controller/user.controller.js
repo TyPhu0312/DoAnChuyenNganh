@@ -16,7 +16,7 @@ const queryAsync = (sql, params = []) => {
 const getUser = async(req,res)=> {
     console.log("API /api/admin/user được gọi!");
     try {
-        const data = await queryAsync('SELECT * FROM qlbantranh.user'); //
+        const data = await queryAsync('SELECT * FROM qlbantranh.users'); //
         if(!data) {
             return res.status(404).send({
                 success:false,
@@ -45,7 +45,7 @@ const getUserById = async(req,res)=> {
                 message: 'Không thấy user này!'
             })
         }
-        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.user WHERE id =?`,[id]);
+        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.users WHERE id =?`,[id]);
         if(!dataWithId) {
             return res.status(404).send({
                 success: false,
@@ -72,7 +72,7 @@ const createUser = async (req, res) => {
         }
         const id  = crypto.randomUUID();
         const data = await queryAsync(
-            `INSERT INTO user (id, firstname, lastname, email, password, phone, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
+            `INSERT INTO users (id, firstname, lastname, email, password, phone, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
             [id, firstname, lastname, email, password, phone, providerId, roleId]
         );
         if (!data) {
@@ -114,7 +114,7 @@ const updateUser = async (req, res) => {
         }
         console.log("firstname:", firstname);
         const data = await queryAsync(
-            `UPDATE user 
+            `UPDATE users 
              SET firstname = ?, lastname = ?, email = ?, password = ?, phone = ?, providerId = ?, roleId = ?
              WHERE id = ?`,
             [firstname, lastname, email, password, phone, providerId, roleId, id]

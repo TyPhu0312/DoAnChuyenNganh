@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, DataTypes) => {
     const CustomPainting = sequelize.define("CustomPainting",{
@@ -47,22 +46,21 @@ module.exports = (sequelize, DataTypes) => {
                 len: [1, 500],
             },
         },
-       
+        // userId: {  // Đảm bảo trường userId là UUID và có giá trị trong bảng User
+        //     type: DataTypes.UUID,
+        //     allowNull: false,
+        // }
     },
         {
             timestamps: true,
             tableName: "CustomPainting",
         }
     );
-    
     CustomPainting.associate = (models) => {
         CustomPainting.belongsTo(models.User, {
             foreignKey: 'userId',
             as: 'user',
         });
     };
-    
-
-   
     return CustomPainting;
 }
