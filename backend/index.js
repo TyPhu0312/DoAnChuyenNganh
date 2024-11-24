@@ -17,6 +17,7 @@ const routerOrderDetail = require('./routes/orderdetail.routes')
 const routerProvider = require('./routes/provider.routes')
 //màu báo DB đang chạy
 const morgan = require('morgan');
+const { FORCE } = require('sequelize/lib/index-hints');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));

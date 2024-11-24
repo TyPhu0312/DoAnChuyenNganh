@@ -61,7 +61,7 @@ const getCustomPaintingById = async(req,res)=> {
 };
 const createCustomPainting = async (req, res) => {
     try {
-        const { image, linkImage, name, size_width, size_height, picture_frame, note, userId} = req.body;
+        const {image, linkImage, name, size_width, size_height, picture_frame, note, userId} = req.body;
         if (!name) {
             return res.status(400).send({
                 success: false,
@@ -69,8 +69,9 @@ const createCustomPainting = async (req, res) => {
             });
         }
         const id = crypto.randomUUID(); 
+        console.log(userId);
         const data = await queryAsync(
-            `INSERT INTO custompainting (id, image, link_image, name, size_width, size_height, picture_frame, note, userId) VALUES (?, ?,?,?,?,?,?,?,?)`,
+            `INSERT INTO custompainting (id, image,link_image,name,size_width,size_height,picture_frame,note,userId) VALUES (?,?,?,?,?,?,?,?,?)`,
             [id, image, linkImage, name, size_width, size_height, picture_frame, note, userId]
         );
         if (!data) {
@@ -102,7 +103,7 @@ const updateCustomPainting = async (req, res) => {
                 message: 'Không tìm thấy sản phẩm này',
             });
         }
-        const {name } = req.body;
+        const {name, linkImage, image, size_width, size_height, picture_frame, note } = req.body;
         if (!name) {
             return res.status(400).send({
                 success: false,
@@ -111,9 +112,9 @@ const updateCustomPainting = async (req, res) => {
         }
         const data = await queryAsync(
             `UPDATE custompainting 
-             SET image = ?, link_image = ?, name = ?, size_width = ?, size_height = ?,  picture_frame = ?, note = ?, userId = ?
+             SET image = ?, link_image = ?, name = ?, size_width = ?, size_height = ?,  picture_frame = ?, note = ?
              WHERE id = ?`, 
-             [image, linkImage, name, size_width, size_height, picture_frame, note, userId, id]
+             [image, linkImage, name, size_width, size_height, picture_frame, note, id]
         );
         if (data.affectedRows === 0) {
             return res.status(404).send({
