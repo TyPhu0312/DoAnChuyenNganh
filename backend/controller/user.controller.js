@@ -1,8 +1,8 @@
-
+const validator = require('validator')
 const dbConnect = require('../database/db')
 const crypto = require('crypto');
 //hàm chuyển những cau query về thành promsise function
-const queryAsync = (sql, params = []) => { 
+const queryAsync = (sql, params = []) => {
     return new Promise((resolve, reject) => {
         dbConnect.query(sql, params, (err, results) => {
             if (err) {
@@ -13,64 +13,74 @@ const queryAsync = (sql, params = []) => {
         });
     });
 };
-const getUser = async(req,res)=> {
+const getUser = async (req, res) => {
     console.log("API /api/admin/user được gọi!");
     try {
         const data = await queryAsync('SELECT * FROM qlbantranh.users'); //
-        if(!data) {
+        if (!data) {
             return res.status(404).send({
-                success:false,
-                message:"Không tìm thấy user nào"
+                success: false,
+                message: "Không tìm thấy user nào"
             })
         }
         res.status(200).send({
-            success:true,
-            message:'Tất cả user nè',
+            success: true,
+            message: 'Tất cả user nè',
             data: data,
         });
     } catch (error) {
         res.status(500).send({
             success: false,
-            message:'Lỗi lấy API user',
+            message: 'Lỗi lấy API user',
             error: error,
         })
     }
 };
-const getUserById = async(req,res)=> {
+const getUserById = async (req, res) => {
     try {
-        const {id} = req.params; 
-        if(!id){
+        const { id } = req.params;
+        if (!id) {
             return res.status(404).send({
-                success:false,
+                success: false,
                 message: 'Không thấy user này!'
             })
         }
-        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.users WHERE id =?`,[id]);
-        if(!dataWithId) {
+        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.users WHERE id =?`, [id]);
+        if (!dataWithId) {
             return res.status(404).send({
                 success: false,
-                message:'Không có user mang id này',
+                message: 'Không có user mang id này',
             });
-        }    
+        }
         res.status(200).send({
             success: true,
             ProductDetail: dataWithId
         })
-        
+
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({ message: error.message })
     }
 };
 const createUser = async (req, res) => {
     try {
-        const {firstname, lastname, email, password, phone, providerId, roleId} = req.body;
+        const { firstname, lastname, email, password, phone, providerId, roleId } = req.body;
         if (!firstname || !lastname || !email || !password || !phone || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
             });
         }
-        const id  = crypto.randomUUID();
+        const id = crypto.randomUUID();
+        if (!validator.isEmail(email)) {
+            return res.status(400).send({
+                success: false,
+                message: "Email không hợp lệ",
+            });
+        }
+        const phoneRegex = /^[0-9]+$/;
+        if (!phoneRegex.test(phone)) {
+            return res.status(400).json({ error: 'Phone number must contain only digits' });
+        }
         const data = await queryAsync(
             `INSERT INTO users (id, firstname, lastname, email, password, phone, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
             [id, firstname, lastname, email, password, phone, providerId, roleId]
@@ -97,7 +107,7 @@ const createUser = async (req, res) => {
 };
 const updateUser = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
         console.log("ProductId:", id);
         if (!id) {
             return res.status(400).send({
@@ -105,14 +115,25 @@ const updateUser = async (req, res) => {
                 message: 'Không tìm thấy user này',
             });
         }
-        const {firstname, lastname, email, password, phone, providerId, roleId} = req.body;
+        const { firstname, lastname, email, password, phone, providerId, roleId } = req.body;
         if (!firstname || !lastname || !email || !password || !phone || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: 'Nhập thiếu trường dữ liệu',
             });
         }
-        console.log("firstname:", firstname);
+        if (!validator.isEmail(email)) {
+            return res.status(400).send({
+                success: false,
+                message: "Email không hợp lệ",
+            });
+        }
+        const phoneRegex = /^[0-9]+$/;
+        if (!phoneRegex.test(phone)) {
+            return res
+                .status(400)
+                .json({ error: "Phone number must contain only digits" });
+        }
         const data = await queryAsync(
             `UPDATE users 
              SET firstname = ?, lastname = ?, email = ?, password = ?, phone = ?, providerId = ?, roleId = ?
@@ -141,9 +162,9 @@ const updateUser = async (req, res) => {
     }
 };
 
-const deleteUser = async(req,res)=> {
+const deleteUser = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
         //console.log("ProductId:", id);
         if (!id) {
             return res.status(404).send({
