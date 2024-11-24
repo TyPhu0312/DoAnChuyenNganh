@@ -64,8 +64,6 @@ module.exports = (sequelize, DataTypes) => {
             as: 'provider',
         });
         
-    };
-
-    
+    };    
     return User;
 }
