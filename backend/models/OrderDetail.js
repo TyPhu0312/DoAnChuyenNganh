@@ -3,21 +3,21 @@ module.exports = (sequelize, DataTypes) => {
     const OrderDetail = sequelize.define("OrderDetail", {
         id: {
             type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
+            defaultValue: () => crypto.randomUUID(), 
             primaryKey: true,
           },
           price: {
             type: DataTypes.DECIMAL(15,0),
-            allowNull: false, // Không được null
+            allowNull: false, 
           },
           num: {  
             type: DataTypes.INTEGER,
-            allowNull: false, // Không được null
+            allowNull: false,
           },
           discount: {
-            type: DataTypes.DECIMAL(5, 2), // Allows values like 15.50, 20.00, etc.
-            allowNull: true, // Allows null if discount may not always be applicable
-            defaultValue: 0.00, // Default to 0 if no discount is applied
+            type: DataTypes.DECIMAL(5, 2), 
+            allowNull: true, 
+            defaultValue: 0.00, 
         },
           // total_money: {
           //   type: DataTypes.INTEGER,

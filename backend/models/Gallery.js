@@ -4,7 +4,7 @@ module.exports = (sequelize,DataTypes) => {
     const Gallery = sequelize.define("Gallery",{
         id:{
             type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
+            defaultValue: () => crypto.randomUUID(),  
             primaryKey: true,
         },
         thumbnail: {

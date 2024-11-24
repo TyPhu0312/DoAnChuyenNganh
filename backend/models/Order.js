@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     const Order = sequelize.define("Order",{
         id: {
           type: DataTypes.UUID,
-          defaultValue: DataTypes.UUIDV4, // This will automatically generate a UUID for the id
+          defaultValue: () => crypto.randomUUID(), 
           primaryKey: true,
           },
           fullname: {

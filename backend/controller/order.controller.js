@@ -12,29 +12,29 @@ const queryAsync = (sql, params = []) => {
         });
     });
 };
-const getProducts = async(req,res)=> {
+const getOrder = async(req,res)=> {
     try {
-        const data = await queryAsync('SELECT * FROM qlbantranh.product'); //
+        const data = await queryAsync('SELECT * FROM qlbantranh.order'); //
         if(!data) {
             return res.status(404).send({
                 success:false,
-                message:"Không tìm thấy product nào"
+                message:"Không tìm thấy order nào"
             })
         }
         res.status(200).send({
             success:true,
-            message:'Tất cả sản phẩm',
+            message:'Tất cả order',
             data: data,
         });
     } catch (error) {
         res.status(500).send({
             success: false,
-            message:'Không lấy được API sản phẩm',
+            message:'Không lấy được API order',
             error: error,
         })
     }
 };
-const getProductById = async(req,res)=> {
+const getOrderById = async(req,res)=> {
     try {
         const {id} = req.params; 
         if(!id){
@@ -43,7 +43,7 @@ const getProductById = async(req,res)=> {
                 message: 'Không tìm thấy ID!'
             })
         }
-        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.product WHERE id =?`,[id]);
+        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.order WHERE id =?`,[id]);
         if(!dataWithId) {
             return res.status(404).send({
                 success: false,
@@ -59,10 +59,10 @@ const getProductById = async(req,res)=> {
         res.status(500).json({message: error.message})
     }
 };
-const createProduct = async (req, res) => {
+const createOrder = async (req, res) => {
     try {
-        const { title, author, price, thumbnail, description, categoryId } = req.body;
-        if (!title || !categoryId || !author || !price) {
+        const { fullname, email, phone, address, note, status, userId } = req.body;
+        if (!email || !fullname || !phone || !address || !note || !status || !userId) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
@@ -70,8 +70,8 @@ const createProduct = async (req, res) => {
         }
         const id = crypto.randomUUID(); 
         const data = await queryAsync(
-            `INSERT INTO product (id, title, author, price, thumbnail, description, categoryId) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [id, title, author, price, thumbnail, description, categoryId]
+            `INSERT INTO order (id, fullname, email, phone_number, address, note, status, userId) VALUES (?,?,?,?,?,?,?,?)`,
+            [id, fullname, email, phone, address, note, status, userId]
         );
         if (!data) {
             console.log("Không đủ dữ liệu để INSERT hoặc nhập sai dữ liệu");
@@ -82,39 +82,38 @@ const createProduct = async (req, res) => {
         }
         res.status(201).send({
             success: true,
-            message: 'Sản phẩm đã được tạo thành công!',
+            message: 'order đã được tạo thành công!',
         });
     } catch (error) {
         console.error(error);
         res.status(500).send({
             success: false,
-            message: 'Lỗi trong yêu cầu API tạo sản phẩm',
+            message: 'Lỗi trong yêu cầu API tạo order',
             error,
         });
     }
 };
-const updateProduct = async (req, res) => {
+const updateOrder = async (req, res) => {
     try {
         const { id } = req.params; 
         if (!id) {
             return res.status(400).send({
                 success: false,
-                message: 'Không tìm thấy sản phẩm này',
+                message: 'Không tìm thấy order này',
             });
         }
-        const { title, author, price, thumbnail, categoryId, description } = req.body;
-        if (!title || !author || !price || !thumbnail || !description || !categoryId) {
+        const { fullname, email, phone, address, note, status } = req.body;
+        if (!email || !fullname || !phone || !address || !note || !status) {
             return res.status(400).send({
                 success: false,
-                message: 'Nhập thiếu trường dữ liệu',
+                message: "Thiếu trường thông tin bắt buộc",
             });
         }
-
         const data = await queryAsync(
-            `UPDATE product 
-             SET title = ?, author = ?, price = ?, thumbnail = ?, description = ?, categoryId = ?
-             WHERE id = ?`, // Điều kiện WHERE
-            [title, author, price, thumbnail, description, categoryId, id]
+            `UPDATE order 
+             SET fullname = ?, email = ?, phone_number = ?, address = ?, note = ?, status = ? 
+             WHERE id = ?`, 
+             [fullname, email, phone, address, note, status, id]
         );
         if (data.affectedRows === 0) {
             return res.status(404).send({
@@ -124,45 +123,44 @@ const updateProduct = async (req, res) => {
         }
         res.status(200).send({
             success: true,
-            message: 'Cập nhật sản phẩm thành công!',
+            message: 'Cập nhật order thành công!',
         });
 
     } catch (error) {
         console.error(error);
         res.status(500).send({
             success: false,
-            message: 'Không lấy được API update product!',
+            message: 'Không lấy được API update order!',
             error,
         });
     }
 };
-const deleteProduct = async(req,res)=> {
+const deleteOrder = async(req,res)=> {
     try {
         const { id } = req.params; 
-        //console.log("ProductId:", id);
         if (!id) {
             return res.status(404).send({
                 success: false,
-                message: 'Không tìm thấy sản phẩm này',
+                message: 'Không tìm thấy order này',
             });
         }
         await queryAsync(
-            `DELETE FROM product 
-             WHERE id = ?`, // Điều kiện WHERE
+            `DELETE FROM order 
+             WHERE id = ?`,
             [id]
         );
         res.status(200).send({
             success: true,
-            message: 'Xoá sản phẩm thành công!',
+            message: 'Xoá order thành công!',
         })
 
     } catch (error) {
         console.error(error);
         res.status(500).send({
             success: false,
-            message: 'Không lấy được API delete product!',
+            message: 'Không lấy được API delete order!',
             error,
         });
     }
 };
-module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
+module.exports = { getOrder, getOrderById, createOrder, updateOrder, deleteOrder };

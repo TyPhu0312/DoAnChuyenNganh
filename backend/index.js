@@ -3,11 +3,18 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
+
 const db = require('./models');
 const connection = require('./database/db')
 const routerProduct= require('./routes/product.routes');
 const routerUser = require('./routes/user.routes')
 const routerRole = require('./routes/role.routes')
+const routerCategory = require('./routes/category.routes')
+const routerCustomPainting = require('./routes/custompainting.routes')
+const routerGallery = require('./routes/gallery.routes')
+const routerOrder = require('./routes/order.routes')
+const routerOrderDetail = require('./routes/orderdetail.routes')
+const routerProvider = require('./routes/provider.routes')
 //màu báo DB đang chạy
 const morgan = require('morgan');
 app.use(cors());
@@ -18,7 +25,13 @@ app.use(express.urlencoded({extended: true}));
 app.use(morgan("dev"));
 app.use("/api/admin/products", routerProduct);
 app.use("/api/admin/user", routerUser);
-app.use('/api/admin/role', routerRole);
+app.use("/api/admin/role", routerRole);
+app.use("/api/admin/category", routerCategory);
+app.use("/api/admin/custompainting", routerCustomPainting );
+app.use("/api/admin/gallery", routerGallery );  
+app.use("/api/admin/order", routerOrder );
+app.use("/api/admin/orderdetail", routerOrderDetail);
+app.use("/api/admin/provider", routerProvider );
 // if(process.env.NODE_ENV==='development') {
 //     db.sequelize.sync({force:true}).then(() => {
 //         app.listen(port, () => {
