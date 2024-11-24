@@ -16,7 +16,7 @@ const queryAsync = (sql, params = []) => {
 const getRole = async(req,res)=> {
     
     try {
-        const data = await queryAsync('SELECT * FROM qlbantranh.role'); //
+        const data = await queryAsync('SELECT * FROM qlbantranh.roles'); //
         if(!data) {
             return res.status(404).send({
                 success:false,
@@ -45,7 +45,7 @@ const getRoleById = async(req,res)=> {
                 message: 'Không tim thấy Id!'
             })
         }
-        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.role WHERE id =?`,[id]);
+        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.roles WHERE id =?`,[id]);
         if(!dataWithId) {
             return res.status(404).send({
                 success: false,
@@ -72,7 +72,7 @@ const createRole = async (req, res) => {
         }
         const id = crypto.randomUUID(); 
         const data = await queryAsync(
-            `INSERT INTO role (id, name) VALUES (?, ?)`,
+            `INSERT INTO roles (id, name) VALUES (?, ?)`,
             [id, name]
         );
         if (!data) {
@@ -106,7 +106,7 @@ const deleteRole = async(req,res)=> {
             });
         }
         await queryAsync(
-            `DELETE FROM role 
+            `DELETE FROM roles 
              WHERE id = ?`, // Điều kiện WHERE
             [id]
         );

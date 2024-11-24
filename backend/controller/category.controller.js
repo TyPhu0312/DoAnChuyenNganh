@@ -96,32 +96,46 @@ const createCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
     try {
         const { id } = req.params; 
+        console.log("ID nhận được:", id);
         if (!id) {
             return res.status(400).send({
                 success: false,
                 message: 'Không tìm thấy category này',
             });
         }
-        const {name } = req.body;
+        
+        const { name } = req.body;
         if (!name) {
             return res.status(400).send({
                 success: false,
                 message: 'Nhập thiếu trường dữ liệu',
             });
         }
-        console.log("ID nhận được:", id);
+
+        // Kiểm tra xem category có tồn tại với ID này không
+        const categoryCheck = await queryAsync('SELECT * FROM category WHERE id = ?', [id]);
+        if (categoryCheck.length === 0) {
+            return res.status(404).send({
+                success: false,
+                message: 'Category không tồn tại',
+            });
+        }
+
         console.log("Name nhận được:", name);
+
+        // Thực hiện update category
         const data = await queryAsync(
-            `UPDATE category 
-             SET name = ? WHERE id = ?`, 
+            `UPDATE category SET name = ? WHERE id = ?`, 
             [name, id]
         );
+
         if (data.affectedRows === 0) {
             return res.status(404).send({
                 success: false,
-                message: 'Không có gì xảy ra ở database cả!!!',
+                message: 'Không có gì thay đổi ở database cả (có thể tên mới trùng với tên cũ)!',
             });
         }
+
         res.status(200).send({
             success: true,
             message: 'Cập nhật category thành công!',
@@ -136,6 +150,7 @@ const updateCategory = async (req, res) => {
         });
     }
 };
+
 const deleteCategory = async(req,res)=> {
     try {
         const { id } = req.params; 

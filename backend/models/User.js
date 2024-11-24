@@ -2,7 +2,7 @@ const crypto = require('crypto');
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define("User",{
         id: {
-            type: DataTypes.STRING, 
+            type: DataTypes.UUID, 
             defaultValue: () => crypto.randomUUID(), 
             primaryKey: true,
           },
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         phone: {
-            type: DataTypes.STRING, // Thay đổi từ NUMERIC sang STRING để kiểm soát độ dài
+            type: DataTypes.STRING, 
             allowNull: false,
             validate: {
                 len: [10, 11],
@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     },
         {
             timestamps: true,
-            tableName: "users",
+            tableName: "user",
         }
     );
     User.associate = (models) => {
