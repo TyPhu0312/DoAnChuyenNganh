@@ -117,7 +117,13 @@ export default function Navbar() {
             <li>
               {userId ? (
                 <li>
-                  <UserButton />
+                  <UserButton 
+                      appearance={{
+                        elements: {
+                          footer: { display: "none" }, // Ẩn phần footer
+                        },
+                      }}
+                  />
                 </li>
               ) : (
                 <>
