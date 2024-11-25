@@ -62,12 +62,29 @@ const getProductById = async(req,res)=> {
 const createProduct = async (req, res) => {
     try {
         const { title, author, price, thumbnail, description, categoryId } = req.body;
-        if (!title || !categoryId || !author || !price) {
-            return res.status(400).send({
-                success: false,
-                message: "Thiếu trường thông tin bắt buộc",
-            });
-        }
+        if(!title) {return res.status(400).send({
+            success: false,
+            message: "Thiếu trường title",
+        });}
+        if(!author) {return res.status(400).send({
+            success: false,
+            message: "Thiếutac gia",
+        });}
+        if(!price) {return res.status(400).send({
+            success: false,
+            message: "Thiếu gia",
+        });}
+        if(!thumbnail) {return res.status(400).send({
+            success: false,
+            message: "Thiếu thumb",
+        });}
+        // if (!title || !categoryId || !author || !price) {
+            
+        //     return res.status(400).send({
+        //         success: false,
+        //         message: "Thiếu trường thông tin bắt buộc",
+        //     });
+        // }
         const id = crypto.randomUUID(); 
         const data = await queryAsync(
             `INSERT INTO product (id, title, author, price, thumbnail, description, categoryId) VALUES (?, ?, ?, ?, ?, ?, ?)`,
