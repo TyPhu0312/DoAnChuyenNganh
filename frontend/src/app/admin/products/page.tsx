@@ -73,8 +73,16 @@ export default function Products() {
   });
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setNewProduct((prevProduct) => ({
+      setNewProduct((prevProduct) => ({
       ...prevProduct,
+      [id]: value, // Cập nhật giá trị tương ứng với ID của input
+    }));
+   
+  };
+  const handleUpdateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+      setNewProduct((prev) => ({
+      ...prev,
       [id]: value, // Cập nhật giá trị tương ứng với ID của input
     }));
   };
@@ -177,6 +185,41 @@ export default function Products() {
         setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
       });
   };
+  const handleEditProduct = (product: any) => {
+    setSelectedProduct(product); // Cập nhật sản phẩm đang chọn
+    setNewProduct({
+      title: product.title,
+      author: product.author,
+      price: product.price,
+      thumbnail: product.thumbnail,
+      description: product.description,
+      category: product.category,
+    }); // Cập nhật form với thông tin sản phẩm cần chỉnh sửa
+  };
+  const handleUpdateProduct = () => {
+    if (!selectedProduct) return;
+
+    axios
+      .put(`http://localhost:5000/api/admin/products/update/${selectedProduct}`, selectedProduct)
+      .then((response) => {
+        console.log("Sản phẩm đã được cập nhật thành công:", response.data);
+        toast({
+          title: "Product Updated",
+          description: `Product with ID ${selectedProduct} has been updated.`,
+        });
+        fetchProducts(); // Tải lại danh sách sản phẩm
+        setIsModalOpen(false); // Đóng modal sau khi cập nhật
+      })
+      .catch((error) => {
+        console.error("Lỗi khi cập nhật sản phẩm:", error);
+        toast({
+          title: "Update Failed",
+          description: "An error occurred while updating the product.",
+        });
+      });
+  };
+
+
 
   return (
     <Admin>
@@ -221,15 +264,15 @@ export default function Products() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Add New Artwork</DialogTitle>
+                  <DialogTitle>{selectedProduct ? "Edit Artwork" : "Add New Artwork"}</DialogTitle>
                   <DialogDescription>
-                    Add new artwork to store catalog.
+                    {selectedProduct ? "Edit product details" : "Add a new product to store catalog."}
                   </DialogDescription>
                 </DialogHeader>
                 <form
                   onSubmit={(e) => {
-                    e.preventDefault(); // Ngăn hành vi reload mặc định
-                    handleCreateProduct(); // Gửi yêu cầu tạo sản phẩm
+                    e.preventDefault();
+                    selectedProduct ? handleUpdateProduct() : handleCreateProduct();
                   }}
                 >
                   <div className="grid gap-4 py-4">
@@ -238,10 +281,10 @@ export default function Products() {
                         Artwork Title
                       </Label>
                       <Input
-                        onChange={handleInputChange}
+                        onChange={selectedProduct ? handleUpdateInputChange: handleInputChange}
                         id="title"
                         type="text"
-                        value={newProduct.title}
+                        value={selectedProduct ? selectedProduct.title : newProduct.title}
                         className="col-span-4"
                       />
                     </div>
@@ -253,7 +296,7 @@ export default function Products() {
                         onChange={handleInputChange}
                         id="author"
                         type="text"
-                        value={newProduct.author}
+                        value={selectedProduct ? selectedProduct.author : newProduct.author}
                         className="col-span-4"
                       />
                     </div>
@@ -265,78 +308,54 @@ export default function Products() {
                         onChange={handleInputChange}
                         id="price"
                         type="number"
-                        value={newProduct.price}
+                        value={selectedProduct ? selectedProduct.price : newProduct.price}
                         className="col-span-4"
                       />
                     </div>
                     <div className="grid grid-cols-6 items-center gap-4">
-                      <Label
-                        htmlFor="thumbnail"
-                        className="text-right col-span-2"
-                      >
+                      <Label htmlFor="thumbnail" className="text-right col-span-2">
                         Thumbnail
                       </Label>
                       <Input
                         onChange={handleInputChange}
                         id="thumbnail"
                         type="text"
-                        value={newProduct.thumbnail}
+                        value={selectedProduct ? selectedProduct.thumbnail : newProduct.thumbnail}
                         className="col-span-4"
                       />
                     </div>
                     <div className="grid grid-cols-6 items-center gap-4">
-                      <Label
-                        htmlFor="category"
-                        className="text-right col-span-2"
-                      >
+                      <Label htmlFor="category" className="text-right col-span-2">
                         Category
                       </Label>
                       <Input
                         onChange={handleInputChange}
                         id="category"
                         type="text"
-                        value={newProduct.category}
+                        value={selectedProduct ? selectedProduct.category : newProduct.category}
                         className="col-span-4"
                       />
                     </div>
                     <div className="grid grid-cols-6 items-center gap-4">
-                      <Label
-                        htmlFor="description"
-                        className="text-right col-span-2"
-                      >
+                      <Label htmlFor="description" className="text-right col-span-2">
                         Description
                       </Label>
                       <Input
                         onChange={handleInputChange}
                         id="description"
                         type="text"
-                        value={newProduct.description}
+                        value={selectedProduct ? selectedProduct.description : newProduct.description}
                         className="col-span-4"
                       />
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type="submit">Save changes</Button>
+                    <Button type="submit">{selectedProduct ? "Update Product" : "Save changes"}</Button>
                   </DialogFooter>
                 </form>
-
-                {/* <DialogFooter>
-                                    <Button type="submit" onClick={() => {
-
-                                        handleCreateProduct();  // Gọi hàm tạo sản phẩm
-                                        toast({
-                                            title: "Scheduled: Catch up ",
-                                            description: "Friday, February 10, 2023 at 5:57 PM",
-                                            action: (
-                                                <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
-                                            ),
-                                        });
-                                    }}>
-                                        Save changes
-                                    </Button>
-                                </DialogFooter> */}
               </DialogContent>
             </Dialog>
+
           </div>
         </div>
         <TabsContent value="all">
@@ -426,7 +445,7 @@ export default function Products() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleEditProduct(product)}>Edit</DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleDelete(product.id)}
                             >
