@@ -1,241 +1,326 @@
-"use client"
-import { useEffect, useState } from "react"
-import React from "react"
-import Image from "next/image"
+"use client";
+import { useEffect, useState } from "react";
+import React from "react";
+import Image from "next/image";
+const cors = require("cors");
+import { File, ListFilter, MoreHorizontal, PlusCircle } from "lucide-react";
 import {
-    File,
-    ListFilter,
-    MoreHorizontal,
-    PlusCircle,
-} from "lucide-react"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs"
-import axios from "axios"
-import Admin from "../page"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ToastAction } from "@/components/ui/toast"
-import { useToast } from "@/components/ui/use-toast"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import axios from "axios";
+import Admin from "../page";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Products() {
-    const [products, setProducts] = useState([]); // Khởi tạo là mảng rỗng
-    const [showAlert, setShowAlert] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const { toast } = useToast()
+  const [products, setProducts] = useState<any[]>([]); // Khởi tạo là mảng rỗng
+  const [showAlert, setShowAlert] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const { toast } = useToast();
+  const [isModalOpen, setIsModalOpen] = useState(true); // Mặc định modal mở
+  const [newProduct, setNewProduct] = useState({
+    title: "",
+    author: "",
+    price: "",
+    thumbnail: "",
+    description: "",
+    category: "",
+  });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setNewProduct((prevProduct) => ({
+      ...prevProduct,
+      [id]: value, // Cập nhật giá trị tương ứng với ID của input
+    }));
+  };
 
-    const [newProduct, setNewProduct] = useState({
-        title: '',
-        author: '',
-        price: '',
-        thumbnail: '',
-        description: '',
-        category: '',
-    });
-
-    const handleInputChange = () => {
-        setNewProduct({
-            ...newProduct,
-        });
-    };
-
-    useEffect(() => {
-        axios.get("http://localhost:5000/api/admin/products/")
-            .then(response => {
-                const data = response.data.data || response.data;
-                if (Array.isArray(data)) {
-                    setProducts(response.data.data); // Nếu là mảng, set vào state
-                } else {
-                    console.error("API response is not an array", response.data);
-                    setProducts([]); // Nếu không phải mảng, set là mảng rỗng
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
-            });
-    }, []);
-
-
-
-
-
-    const handleDeleteClick = (product: any) => {
-        setSelectedProduct(product);
-        setShowAlert(true);
-    }
-
-    const handleAlertClose = () => {
-        setShowAlert(false);
-        setSelectedProduct(null);
-    }
-
-    const handleConfirmDelete = () => {
-        toast({
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/admin/products/")
+      .then((response) => {
+        const data = response.data.data || response.data;
+        if (Array.isArray(data)) {
+          setProducts(response.data.data); // Nếu là mảng, set vào state
+        } else {
+          console.error("API response is not an array", response.data);
+          setProducts([]); // Nếu không phải mảng, set là mảng rỗng
+        }
+      })
+      .catch((err) => {
+        console.error(
+          "Chi tiết lỗi:",
+          err.response ? err.response.data : err.message
+        );
+        alert("Có lỗi xảy ra, vui lòng thử lại.");
+        setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
+      });
+  }, []);
+  const handleDelete = (productId: string) => {
+    setSelectedProduct(productId);
+    setShowAlert(true); // Mở modal xác nhận
+  };
+  const handleConfirmDelete = () => {
+    if (selectedProduct) {
+      // Thực hiện xóa sản phẩm khi người dùng xác nhận
+      axios
+        .delete(
+          `http://localhost:5000/api/admin/products/delete/${selectedProduct}`
+        )
+        .then((response) => {
+          console.log("Sản phẩm đã được xóa thành công:", response.data);
+          toast({
             title: "Product Deleted",
-            description: `Product has been deleted.`,
+            description: `Product with ID ${selectedProduct} has been deleted.`,
+          });
+          fetchProducts();
+        })
+        .catch((error) => {
+          console.error("Lỗi khi xóa sản phẩm:", error);
         });
-        setShowAlert(false);
     }
-    const handleCreateProduct = () => {
-        // Gửi yêu cầu POST với dữ liệu sản phẩm mới
-        axios.post("http://localhost:5000/api/admin/products/create", newProduct)
-            .then(() => {
-                // Load lại danh sách sản phẩm sau khi thêm thành công
+    setShowAlert(false); // Đóng modal sau khi xóa thành công
+  };
+  const handleAlertClose = () => {
+    setShowAlert(false);
+  };
+  const handleCreateProduct = () => {
+    if (!newProduct.title || !newProduct.author || !newProduct.price) {
+      alert("Vui lòng điền đầy đủ thông tin bắt buộc.");
+      return;
+    }
 
-                axios.get("http://localhost:5000/api/admin/products/")
-                    .then(products => setProducts(products.data))  // Cập nhật lại state
-                    .catch(err => console.log(err));
-            })
-            .catch(err => console.log(err));
-    };
+    axios
+      .post("http://localhost:5000/api/admin/products/create", newProduct)
+      .then((response) => {
+        console.log("Sản phẩm được tạo thành công:", response.data);
+        alert("Sản phẩm đã được tạo thành công!");
+        fetchProducts(); // Reload lại danh sách sản phẩm sau khi tạo thành công
+        setIsModalOpen(false); // Đóng modal sau khi thêm thành công
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tạo sản phẩm:", error);
+        if (error.response) {
+          console.log("Phản hồi từ server:", error.response.data); // Thông tin từ backend
+          console.log("Mã trạng thái:", error.response.status); // HTTP status code
+          console.log("Tiêu đề lỗi:", error.response.statusText); // HTTP status text
+        } else if (error.request) {
+          console.log(
+            "Yêu cầu đã được gửi nhưng không nhận được phản hồi:",
+            error.request
+          );
+        } else {
+          console.log("Lỗi trong khi thiết lập yêu cầu:", error.message);
+        }
+      });
+  };
 
-    return (
-        <Admin>
-            <Tabs defaultValue="all">
-                <div className="flex items-center">
-                    <TabsList>
-                        <TabsTrigger value="all">All</TabsTrigger>
-                        <TabsTrigger value="active">Active</TabsTrigger>
-                        <TabsTrigger value="draft">Draft</TabsTrigger>
-                        <TabsTrigger value="archived" className="hidden sm:flex">
-                            Archived
-                        </TabsTrigger>
-                    </TabsList>
-                    <div className="ml-auto flex items-center gap-2">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="h-7 gap-1">
-                                    <ListFilter className="h-3.5 w-3.5" />
-                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                        Filter
-                                    </span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
-                                    Active
-                                </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>Draft</DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Archived
-                                </DropdownMenuCheckboxItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button size="sm" className="h-7 gap-1">
-                                    <PlusCircle className="h-3.5 w-3.5" />
-                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                        Add Product
-                                    </span>
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                    <DialogTitle>Add New Artwork</DialogTitle>
-                                    <DialogDescription>
-                                        Add new artwork to store catalog.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <form onSubmit={(e) => {
-                                    e.preventDefault(); // Ngừng hành vi mặc định của form (tránh reload trang)
-                                    handleCreateProduct(); // Gọi hàm tạo sản phẩm
-                                }}>
-                                    <div className="grid gap-4 py-4">
-                                        <div className="grid grid-cols-6 items-center gap-4">
-                                            <Label htmlFor="title" className="text-right col-span-2">
-                                                Artwork Title
-                                            </Label>
-                                            <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" />
-                                        </div>
-                                        <div className="grid grid-cols-6 items-center gap-4">
-                                            <Label htmlFor="author" className="text-right col-span-2">
-                                                Author
-                                            </Label>
-                                            <Input onChange={handleInputChange} id="author" type="text" className="col-span-4" />
-                                        </div>
-                                        <div className="grid grid-cols-6 items-center gap-4">
-                                            <Label htmlFor="price" className="text-right col-span-2">
-                                                Price
-                                            </Label>
-                                            <Input onChange={handleInputChange} id="price" type="text" className="col-span-4" />
-                                        </div>
-                                        <div className="grid grid-cols-6 items-center gap-4">
-                                            <Label htmlFor="thumbnail" className="text-right col-span-2">
-                                                Thumbnail
-                                            </Label>
-                                            <Input onChange={handleInputChange} id="thumbnail" type="text" className="col-span-4" />
-                                        </div>
-                                        <div className="grid grid-cols-6 items-center gap-4">
-                                            <Label htmlFor="category" className="text-right col-span-2">
-                                                Category
-                                            </Label>
-                                            <Input onChange={handleInputChange} id="category" type="text" className="col-span-4" />
-                                        </div>
-                                        <div className="grid grid-cols-6 items-center gap-4">
-                                            <Label htmlFor="description" className="text-right col-span-2">
-                                                Description
-                                            </Label>
-                                            <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" />
-                                        </div>
-                                    </div>
-                                    <DialogFooter>
-                                        <Button type="submit">Save changes</Button>
-                                    </DialogFooter>
-                                </form>
+  const fetchProducts = () => {
+    axios
+      .get("http://localhost:5000/api/admin/products")
+      .then((response) => {
+        const data = response.data.data || response.data;
+        // Kiểm tra dữ liệu là mảng hợp lệ trước khi set vào state
+        if (Array.isArray(data)) {
+          setProducts(data); // Cập nhật lại danh sách sản phẩm
+        } else {
+          console.error("Dữ liệu không hợp lệ", response.data);
+          setProducts([]); // Nếu không phải mảng, set là mảng rỗng
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi khi lấy sản phẩm:", err);
+        setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
+      });
+  };
 
-                                {/* <DialogFooter>
+  return (
+    <Admin>
+      <Tabs defaultValue="all">
+        <div className="flex items-center">
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="active">Active</TabsTrigger>
+            <TabsTrigger value="draft">Draft</TabsTrigger>
+            <TabsTrigger value="archived" className="hidden sm:flex">
+              Archived
+            </TabsTrigger>
+          </TabsList>
+          <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-7 gap-1">
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Filter
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem checked>
+                  Active
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem>Draft</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem>Archived</DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="sm" className="h-7 gap-1">
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Add Product
+                  </span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Artwork</DialogTitle>
+                  <DialogDescription>
+                    Add new artwork to store catalog.
+                  </DialogDescription>
+                </DialogHeader>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault(); // Ngăn hành vi reload mặc định
+                    handleCreateProduct(); // Gửi yêu cầu tạo sản phẩm
+                  }}
+                >
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-6 items-center gap-4">
+                      <Label htmlFor="title" className="text-right col-span-2">
+                        Artwork Title
+                      </Label>
+                      <Input
+                        onChange={handleInputChange}
+                        id="title"
+                        type="text"
+                        value={newProduct.title}
+                        className="col-span-4"
+                      />
+                    </div>
+                    <div className="grid grid-cols-6 items-center gap-4">
+                      <Label htmlFor="author" className="text-right col-span-2">
+                        Author
+                      </Label>
+                      <Input
+                        onChange={handleInputChange}
+                        id="author"
+                        type="text"
+                        value={newProduct.author}
+                        className="col-span-4"
+                      />
+                    </div>
+                    <div className="grid grid-cols-6 items-center gap-4">
+                      <Label htmlFor="price" className="text-right col-span-2">
+                        Price
+                      </Label>
+                      <Input
+                        onChange={handleInputChange}
+                        id="price"
+                        type="number"
+                        value={newProduct.price}
+                        className="col-span-4"
+                      />
+                    </div>
+                    <div className="grid grid-cols-6 items-center gap-4">
+                      <Label
+                        htmlFor="thumbnail"
+                        className="text-right col-span-2"
+                      >
+                        Thumbnail
+                      </Label>
+                      <Input
+                        onChange={handleInputChange}
+                        id="thumbnail"
+                        type="text"
+                        value={newProduct.thumbnail}
+                        className="col-span-4"
+                      />
+                    </div>
+                    <div className="grid grid-cols-6 items-center gap-4">
+                      <Label
+                        htmlFor="category"
+                        className="text-right col-span-2"
+                      >
+                        Category
+                      </Label>
+                      <Input
+                        onChange={handleInputChange}
+                        id="category"
+                        type="text"
+                        value={newProduct.category}
+                        className="col-span-4"
+                      />
+                    </div>
+                    <div className="grid grid-cols-6 items-center gap-4">
+                      <Label
+                        htmlFor="description"
+                        className="text-right col-span-2"
+                      >
+                        Description
+                      </Label>
+                      <Input
+                        onChange={handleInputChange}
+                        id="description"
+                        type="text"
+                        value={newProduct.description}
+                        className="col-span-4"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">Save changes</Button>
+                  </DialogFooter>
+                </form>
+
+                {/* <DialogFooter>
                                     <Button type="submit" onClick={() => {
 
                                         handleCreateProduct();  // Gọi hàm tạo sản phẩm
@@ -250,134 +335,138 @@ export default function Products() {
                                         Save changes
                                     </Button>
                                 </DialogFooter> */}
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+        <TabsContent value="all">
+          <Card x-chunk="dashboard-06-chunk-0">
+            <CardHeader>
+              <CardTitle>Artworks</CardTitle>
+              <CardDescription>
+                Manage your products and view their sales performance.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="hidden w-[100px] sm:table-cell">
+                      <span className="sr-only">Image</span>
+                    </TableHead>
+                    <TableHead>Artwork Title</TableHead>
+                    <TableHead>Author</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Thumbnail</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Created at
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Updated at
+                    </TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {products.map((product: any) => (
+                    <TableRow key={product._id}>
+                      <TableCell className="hidden sm:table-cell">
+                        <Image
+                          alt="Product image"
+                          className="aspect-square rounded-md object-cover"
+                          height="32"
+                          src="/images/logo.png"
+                          width="32"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {product.title}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {product.author}
+                      </TableCell>
+                      <TableCell>{product.price}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {product.thumbnail}
+                        <Image
+                          alt="Product image"
+                          className="aspect-square rounded-md object-cover"
+                          height="32"
+                          src="/images/logo.png"
+                          width="32"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {product.category}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {product.description}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {product.createdAt}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {product.updatedAt}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-haspopup="true"
+                              size="icon"
+                              variant="ghost"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(product.id)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+            <CardFooter>
+              <div className="text-xs text-muted-foreground">
+                Showing <strong>1-10</strong> of <strong>32</strong> products
+              </div>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-                </div>
-                <TabsContent value="all">
-                    <Card x-chunk="dashboard-06-chunk-0">
-                        <CardHeader>
-                            <CardTitle>Artworks</CardTitle>
-                            <CardDescription>
-                                Manage your products and view their sales performance.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="hidden w-[100px] sm:table-cell">
-                                            <span className="sr-only">Image</span>
-                                        </TableHead>
-                                        <TableHead>Artwork Title</TableHead>
-                                        <TableHead>Author</TableHead>
-                                        <TableHead>Price</TableHead>
-                                        <TableHead>Thumbnail</TableHead>
-                                        <TableHead>Category</TableHead>
-                                        <TableHead>Description</TableHead>
-                                        <TableHead className="hidden md:table-cell">
-                                            Created at
-                                        </TableHead>
-                                        <TableHead className="hidden md:table-cell">
-                                            Updated at
-                                        </TableHead>
-                                        <TableHead>
-                                            <span className="sr-only">Actions</span>
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {products.map((product: any) => (
-                                        <TableRow key={product._id}>
-                                            <TableCell className="hidden sm:table-cell">
-                                                <Image
-                                                    alt="Product image"
-                                                    className="aspect-square rounded-md object-cover"
-                                                    height="32"
-                                                    src="/images/logo.png"
-                                                    width="32"
-                                                />
-                                            </TableCell>
-                                            <TableCell className="font-medium">
-                                                {product.title}
-                                            </TableCell>
-                                            <TableCell className="font-medium">
-                                                {product.author}
-                                            </TableCell>
-                                            <TableCell>{product.price}</TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {product.thumbnail}
-                                                <Image
-                                                    alt="Product image"
-                                                    className="aspect-square rounded-md object-cover"
-                                                    height="32"
-                                                    src="/images/logo.png"
-                                                    width="32"
-                                                />
-                                            </TableCell>
-                                            <TableCell className="font-medium">
-                                                {product.category}
-                                            </TableCell>
-                                            <TableCell className="font-medium">
-                                                {product.description}
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {product.createdAt}
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {product.updatedAt}
-                                            </TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button
-                                                            aria-haspopup="true"
-                                                            size="icon"
-                                                            variant="ghost"
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">Toggle menu</span>
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleDeleteClick({ product })}>Delete</DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                        <CardFooter>
-                            <div className="text-xs text-muted-foreground">
-                                Showing <strong>1-10</strong> of <strong>32</strong>{" "}
-                                products
-                            </div>
-                        </CardFooter>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-
-            <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Are you sure you want to delete this product?
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={handleAlertClose}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirmDelete}>
-                            Confirm
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </Admin>
-    )
+      <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this product?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleAlertClose}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </Admin>
+  );
 }
