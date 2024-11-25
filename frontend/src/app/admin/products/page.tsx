@@ -60,9 +60,11 @@ import { useToast } from "@/components/ui/use-toast";
 export default function Products() {
   const [products, setProducts] = useState<any[]>([]); // Khởi tạo là mảng rỗng
   const [showAlert, setShowAlert] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedUpdateProduct, setSelectedUpdateProduct] =
+    useState<Product | null>(null);
   const { toast } = useToast();
-  const [isModalOpen, setIsModalOpen] = useState(true); // Mặc định modal mở
+  const [isModalOpen, setIsModalOpen] = useState(false); // Mặc định modal mở
   const [newProduct, setNewProduct] = useState({
     title: "",
     author: "",
@@ -71,22 +73,23 @@ export default function Products() {
     description: "",
     category: "",
   });
+  interface Product {
+    id: string;
+    title: string;
+    author: string;
+    price: number;
+    thumbnail: string;
+    description: string;
+    categoryId: string;
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-      setNewProduct((prevProduct) => ({
+    setNewProduct((prevProduct) => ({
       ...prevProduct,
       [id]: value, // Cập nhật giá trị tương ứng với ID của input
     }));
-   
   };
-  const handleUpdateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-      setNewProduct((prev) => ({
-      ...prev,
-      [id]: value, // Cập nhật giá trị tương ứng với ID của input
-    }));
-  };
-
+  
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/admin/products/")
@@ -109,26 +112,50 @@ export default function Products() {
       });
   }, []);
   const handleDelete = (productId: string) => {
-    setSelectedProduct(productId);
+    setSelectedProduct({
+      id: productId,
+      title: "",
+      author: "",
+      price: 0,
+      thumbnail: "",
+      description: "",
+      categoryId: "",
+    });
     setShowAlert(true); // Mở modal xác nhận
   };
+  const handleCancelEditText = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    setNewProduct({
+      title: "",
+      author: "",
+      price: "",
+      thumbnail: "",
+      description: "",
+      category: "",
+    });
+  }
   const handleConfirmDelete = () => {
-    if (selectedProduct) {
+    if (selectedProduct && selectedProduct.id) {
       // Thực hiện xóa sản phẩm khi người dùng xác nhận
       axios
         .delete(
-          `http://localhost:5000/api/admin/products/delete/${selectedProduct}`
+          `http://localhost:5000/api/admin/products/delete/${selectedProduct.id}` // Dùng selectedProduct.id để gọi API
         )
         .then((response) => {
           console.log("Sản phẩm đã được xóa thành công:", response.data);
           toast({
             title: "Product Deleted",
-            description: `Product with ID ${selectedProduct} has been deleted.`,
+            description: `Product with ID ${selectedProduct.id} has been deleted.`,
           });
-          fetchProducts();
+          fetchProducts(); // Tải lại danh sách sản phẩm
         })
         .catch((error) => {
           console.error("Lỗi khi xóa sản phẩm:", error);
+          toast({
+            title: "Delete Failed",
+            description: "An error occurred while deleting the product.",
+          });
         });
     }
     setShowAlert(false); // Đóng modal sau khi xóa thành công
@@ -137,11 +164,22 @@ export default function Products() {
     setShowAlert(false);
   };
   const handleCreateProduct = () => {
+    // Đặt lại selectedProduct về null khi tạo mới
+    setSelectedProduct(null);
+    setNewProduct({
+      title: "",
+      author: "",
+      price: "",
+      thumbnail: "",
+      description: "",
+      category: "",
+    });
+    //console.log(selectedProduct);
+    // Kiểm tra các trường dữ liệu bắt buộc trước khi gửi
     if (!newProduct.title || !newProduct.author || !newProduct.price) {
       alert("Vui lòng điền đầy đủ thông tin bắt buộc.");
       return;
     }
-
     axios
       .post("http://localhost:5000/api/admin/products/create", newProduct)
       .then((response) => {
@@ -153,9 +191,9 @@ export default function Products() {
       .catch((error) => {
         console.error("Lỗi khi tạo sản phẩm:", error);
         if (error.response) {
-          console.log("Phản hồi từ server:", error.response.data); // Thông tin từ backend
-          console.log("Mã trạng thái:", error.response.status); // HTTP status code
-          console.log("Tiêu đề lỗi:", error.response.statusText); // HTTP status text
+          console.log("Phản hồi từ server:", error.response.data);
+          console.log("Mã trạng thái:", error.response.status);
+          console.log("Tiêu đề lỗi:", error.response.statusText);
         } else if (error.request) {
           console.log(
             "Yêu cầu đã được gửi nhưng không nhận được phản hồi:",
@@ -195,12 +233,15 @@ export default function Products() {
       description: product.description,
       category: product.category,
     }); // Cập nhật form với thông tin sản phẩm cần chỉnh sửa
+    setIsModalOpen(true); // Mở modal chỉnh sửa
   };
   const handleUpdateProduct = () => {
     if (!selectedProduct) return;
-
     axios
-      .put(`http://localhost:5000/api/admin/products/update/${selectedProduct}`, selectedProduct)
+      .put(
+        `http://localhost:5000/api/admin/products/update/${selectedProduct.id}`,
+        selectedProduct
+      )
       .then((response) => {
         console.log("Sản phẩm đã được cập nhật thành công:", response.data);
         toast({
@@ -218,8 +259,6 @@ export default function Products() {
         });
       });
   };
-
-
 
   return (
     <Admin>
@@ -255,7 +294,11 @@ export default function Products() {
             </DropdownMenu>
             <Dialog>
               <DialogTrigger asChild>
-                <Button size="sm" className="h-7 gap-1">
+                <Button
+                  size="sm"
+                  className="h-7 gap-1"
+                  onClick={() => setSelectedProduct(null)}
+                >
                   <PlusCircle className="h-3.5 w-3.5" />
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                     Add Product
@@ -264,15 +307,19 @@ export default function Products() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>{selectedProduct ? "Edit Artwork" : "Add New Artwork"}</DialogTitle>
+                  <DialogTitle>
+                    {selectedProduct ? "Edit Artwork" : "Add New Artwork"}
+                  </DialogTitle>
                   <DialogDescription>
-                    {selectedProduct ? "Edit product details" : "Add a new product to store catalog."}
+                    {selectedProduct
+                      ? "Edit product details"
+                      : "Add a new product to store catalog."}
                   </DialogDescription>
                 </DialogHeader>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    selectedProduct ? handleUpdateProduct() : handleCreateProduct();
+                    handleCreateProduct();
                   }}
                 >
                   <div className="grid gap-4 py-4">
@@ -281,10 +328,10 @@ export default function Products() {
                         Artwork Title
                       </Label>
                       <Input
-                        onChange={selectedProduct ? handleUpdateInputChange: handleInputChange}
+                        onChange={handleInputChange}
                         id="title"
                         type="text"
-                        value={selectedProduct ? selectedProduct.title : newProduct.title}
+                        value={newProduct.title}
                         className="col-span-4"
                       />
                     </div>
@@ -296,7 +343,7 @@ export default function Products() {
                         onChange={handleInputChange}
                         id="author"
                         type="text"
-                        value={selectedProduct ? selectedProduct.author : newProduct.author}
+                        value={newProduct.author}
                         className="col-span-4"
                       />
                     </div>
@@ -308,54 +355,62 @@ export default function Products() {
                         onChange={handleInputChange}
                         id="price"
                         type="number"
-                        value={selectedProduct ? selectedProduct.price : newProduct.price}
+                        value={newProduct.price}
                         className="col-span-4"
                       />
                     </div>
                     <div className="grid grid-cols-6 items-center gap-4">
-                      <Label htmlFor="thumbnail" className="text-right col-span-2">
+                      <Label
+                        htmlFor="thumbnail"
+                        className="text-right col-span-2"
+                      >
                         Thumbnail
                       </Label>
                       <Input
                         onChange={handleInputChange}
                         id="thumbnail"
                         type="text"
-                        value={selectedProduct ? selectedProduct.thumbnail : newProduct.thumbnail}
+                        value={newProduct.thumbnail}
                         className="col-span-4"
                       />
                     </div>
                     <div className="grid grid-cols-6 items-center gap-4">
-                      <Label htmlFor="category" className="text-right col-span-2">
+                      <Label
+                        htmlFor="category"
+                        className="text-right col-span-2"
+                      >
                         Category
                       </Label>
                       <Input
                         onChange={handleInputChange}
                         id="category"
                         type="text"
-                        value={selectedProduct ? selectedProduct.category : newProduct.category}
+                        value={newProduct.category}
                         className="col-span-4"
                       />
                     </div>
                     <div className="grid grid-cols-6 items-center gap-4">
-                      <Label htmlFor="description" className="text-right col-span-2">
+                      <Label
+                        htmlFor="description"
+                        className="text-right col-span-2"
+                      >
                         Description
                       </Label>
                       <Input
                         onChange={handleInputChange}
                         id="description"
                         type="text"
-                        value={selectedProduct ? selectedProduct.description : newProduct.description}
+                        value={newProduct.description}
                         className="col-span-4"
                       />
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type="submit">{selectedProduct ? "Update Product" : "Save changes"}</Button>
+                    <Button type="submit">{"Save changes"}</Button>
                   </DialogFooter>
                 </form>
               </DialogContent>
             </Dialog>
-
           </div>
         </div>
         <TabsContent value="all">
@@ -445,7 +500,11 @@ export default function Products() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => handleEditProduct(product)}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleEditProduct(product)}
+                            >
+                              Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleDelete(product.id)}
                             >
@@ -486,6 +545,140 @@ export default function Products() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      {/* Modal Edit Product */}
+      {isModalOpen && selectedProduct && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-md w-1/2">
+            <h3 className="text-lg font-bold mb-4">Edit Product</h3>
+            <form>
+              <div className="mb-4">
+                <label htmlFor="title" className="block">
+                  Title
+                </label>
+                <input
+                  id="title"
+                  type="text"
+                  value={selectedProduct?.title || ""} // Sử dụng giá trị mặc định nếu selectedUpdateProduct là null
+                  onChange={(e) =>
+                    setSelectedProduct({
+                      ...selectedProduct,
+                      title: e.target.value,
+                    })
+                  }
+                  className="border p-2 w-full"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="author" className="block">
+                  Author
+                </label>
+                <input
+                  id="author"
+                  type="text"
+                  value={selectedProduct.author}
+                  onChange={(e) =>
+                    setSelectedProduct({
+                      ...selectedProduct,
+                      author: e.target.value,
+                    })
+                  }
+                  className="border p-2 w-full"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="price" className="block">
+                  Price
+                </label>
+                <input
+                  id="price"
+                  type="number"
+                  value={selectedProduct.price}
+                  onChange={(e) =>
+                    setSelectedProduct({
+                      ...selectedProduct,
+                      price: parseFloat(e.target.value),
+                    })
+                  }
+                  className="border p-2 w-full"
+                />
+              </div>
+
+              {/* Thêm các trường để sửa các thuộc tính khác của product */}
+              <div className="mb-4">
+                <label htmlFor="thumbnail" className="block">
+                  Thumbnail URL
+                </label>
+                <input
+                  id="thumbnail"
+                  type="text"
+                  value={selectedProduct.thumbnail}
+                  onChange={(e) =>
+                    setSelectedProduct({
+                      ...selectedProduct,
+                      thumbnail: e.target.value,
+                    })
+                  }
+                  className="border p-2 w-full"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="description" className="block">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  value={selectedProduct.description}
+                  onChange={(e) =>
+                    setSelectedProduct({
+                      ...selectedProduct,
+                      description: e.target.value,
+                    })
+                  }
+                  className="border p-2 w-full"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="category" className="block">
+                  Category
+                </label>
+                <input
+                  id="category"
+                  type="text"
+                  value={selectedProduct.categoryId}
+                  onChange={(e) =>
+                    setSelectedProduct({
+                      ...selectedProduct,
+                      categoryId: e.target.value,
+                    })
+                  }
+                  className="border p-2 w-full"
+                />
+              </div>
+
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={handleCancelEditText} // Đóng modal
+                  className="bg-gray-500 text-white p-2 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleUpdateProduct} // Gọi hàm cập nhật khi nhấn Save
+                  className="bg-blue-500 text-white p-2 rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </Admin>
   );
 }
