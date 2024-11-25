@@ -16,34 +16,34 @@ export default function Home({
         id: string; // hoặc string, tùy theo định nghĩa trong database
         title: string;
         author: string;
-        thumbnail:string;
+        thumbnail: string;
         price: number;
         image: string;
     };
-    
+
     const [products, setProducts] = useState<Product[]>([]);
 
     useEffect(() => {
         axios
-          .get("http://localhost:5000/api/admin/products/")
-          .then((response) => {
-            const data = response.data.data || response.data;
-            if (Array.isArray(data)) {
-              setProducts(response.data.data); // Nếu là mảng, set vào state
-            } else {
-              console.error("API response is not an array", response.data);
-              setProducts([]); // Nếu không phải mảng, set là mảng rỗng
-            }
-          })
-          .catch((err) => {
-            console.error(
-              "Chi tiết lỗi:",
-              err.response ? err.response.data : err.message
-            );
-            alert("Có lỗi xảy ra, vui lòng thử lại.");
-            setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
-          });
-      }, []);
+            .get("http://localhost:5000/api/admin/products/")
+            .then((response) => {
+                const data = response.data.data || response.data;
+                if (Array.isArray(data)) {
+                    setProducts(response.data.data); // Nếu là mảng, set vào state
+                } else {
+                    console.error("API response is not an array", response.data);
+                    setProducts([]); // Nếu không phải mảng, set là mảng rỗng
+                }
+            })
+            .catch((err) => {
+                console.error(
+                    "Chi tiết lỗi:",
+                    err.response ? err.response.data : err.message
+                );
+                alert("Có lỗi xảy ra, vui lòng thử lại.");
+                setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
+            });
+    }, []);
 
     return (
         <>
@@ -59,19 +59,22 @@ export default function Home({
                     >
                         {products.map((product) => (
                             <div
-                                key={product.id} 
+                                key={product.id}
                                 className="mb-3 max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform duration-300 hover:-translate-y-2 hover:translate-x-2 hover:shadow-lg"
                             >
-                                <Link href="#">
-                                    <Image
-                                        src={`/images/${product.thumbnail}`} 
-                                        alt={product.title}
-                                        width={200}
-                                        height={200}
-                                        quality={100}
-                                        className="rounded-t-lg object-cover"
-                                    />
-                                </Link>
+                                <div className="h-[220px]"> {/* Đặt chiều cao cố định cho ảnh */}
+                                    <Link href="#">
+                                        <Image
+                                            src={`/images/${product.thumbnail}`}
+                                            alt={product.title}
+                                            width={200}
+                                            height={200}
+                                            quality={100}
+                                            className="rounded-t-lg w-full h-full object-cover" 
+                                        />
+                                    </Link>
+                                </div>
+
                                 <div className="p-5">
                                     <Link href="#">
                                         <h5 className="mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white">
@@ -88,6 +91,7 @@ export default function Home({
                             </div>
                         ))}
                     </div>
+
 
                     <div className="text-center  m-20 text-xl">
                         <Link href={"#"}>
