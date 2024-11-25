@@ -1,269 +1,107 @@
-
-import React from 'react'
-import Link from 'next/link';
-import Image from 'next/image';
-import Hero from '@/components/features/hero';
-import ScrollArt from '@/components/features/scrollart';
-import CircleLine from '@/components/features/circle-line';
+"use client";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import Hero from "@/components/features/hero";
+import ScrollArt from "@/components/features/scrollart";
+import CircleLine from "@/components/features/circle-line";
+import axios from "axios";
 
 export default function Home({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    type Product = {
+        id: string; // hoặc string, tùy theo định nghĩa trong database
+        title: string;
+        author: string;
+        thumbnail:string;
+        price: number;
+        image: string;
+    };
+    
+    const [products, setProducts] = useState<Product[]>([]);
 
-    // if(!isAuth){
-    //     redirect('/login');
-    // }
-
+    useEffect(() => {
+        axios
+          .get("http://localhost:5000/api/admin/products/")
+          .then((response) => {
+            const data = response.data.data || response.data;
+            if (Array.isArray(data)) {
+              setProducts(response.data.data); // Nếu là mảng, set vào state
+            } else {
+              console.error("API response is not an array", response.data);
+              setProducts([]); // Nếu không phải mảng, set là mảng rỗng
+            }
+          })
+          .catch((err) => {
+            console.error(
+              "Chi tiết lỗi:",
+              err.response ? err.response.data : err.message
+            );
+            alert("Có lỗi xảy ra, vui lòng thử lại.");
+            setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
+          });
+      }, []);
 
     return (
         <>
-
-            <main className="flex flex-1 flex-col  m-0 bg-[#F3EEE1] " >
+            <main className="flex flex-1 flex-col  m-0 bg-[#e0e0e0ee] ">
                 <Hero />
-
-                <div className='mt-32'>
-                    <p className='text-3xl text-center mb-20 font-bold'>Explore the latest collection</p>
-                    <div id='list-art' className='mx-10 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4' >
-                        <div className="mb-3 max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform duration-300 hover:-translate-y-2 hover:translate-x-2 hover:shadow-lg">
-                            {/* Link và hình ảnh */}
-                            <Link href="#">
-                                <Image
-                                    src="/images/hero.jpg"
-                                    alt="logo"
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className="rounded-t-lg object-cover"
-                                />
-                            </Link>
-
-                            {/* Nội dung */}
-                            <div className="p-5">
+                <div className="mt-32">
+                    <p className="text-3xl text-center mb-20 font-bold">
+                        Explore the latest collection
+                    </p>
+                    <div
+                        id="list-art"
+                        className="mx-10 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
+                    >
+                        {products.map((product) => (
+                            <div
+                                key={product.id} 
+                                className="mb-3 max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform duration-300 hover:-translate-y-2 hover:translate-x-2 hover:shadow-lg"
+                            >
                                 <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                        Author King
-                                    </h5>
+                                    <Image
+                                        src={`/images/${product.thumbnail}`} 
+                                        alt={product.title}
+                                        width={200}
+                                        height={200}
+                                        quality={100}
+                                        className="rounded-t-lg object-cover"
+                                    />
                                 </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                    Alexander Graham
-                                </p>
-                                <p className="mb-3 text-[#A1516F] dark:text-gray-400 font-bold">
-                                    $1900
-                                </p>
+                                <div className="p-5">
+                                    <Link href="#">
+                                        <h5 className="mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white">
+                                            {product.title}
+                                        </h5>
+                                    </Link>
+                                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                        {product.author}
+                                    </p>
+                                    <p className="mb-3 text-[#A1516F] dark:text-gray-400 font-bold">
+                                        ${product.price}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
-                        <div className="mb-3  max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <Link href="#">
-                                <Image src='/images/hero.jpg'
-                                    alt='logo'
-                                    width={200}
-                                    height={200}
-                                    quality={100}
-                                    className='rounded-lg object-cover ' />
-
-                            </Link>
-                            <div className="p-5">
-                                <Link href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Author King</h5>
-                                </Link>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Alexander Graham</p>
-                                <p className="mb-3  text-[#A1516F] dark:text-gray-400 font-bold">$1900</p>
-                            </div>
-                        </div>
+                        ))}
                     </div>
 
-                    <div className='text-center  m-20 text-xl'>
-                        <Link href={"#"} > <span className='underline'>See All </span> <span></span> </Link>
+                    <div className="text-center  m-20 text-xl">
+                        <Link href={"#"}>
+                            {" "}
+                            <span className="underline">See All </span>{" "}
+                            <span></span>{" "}
+                        </Link>
                         {/* // kiếm cái hình khác bỏ dô */}
-
                     </div>
-
                 </div>
-                <div className='bg-[#40342E]'>
-                    <p className='text-3xl text-center my-20 font-bold text-[#C8C8C8]'>Collections on trending</p>
+                <div className="bg-[#40342E]">
+                    <p className="text-3xl text-center my-20 font-bold text-[#C8C8C8]">
+                        Collections on trending
+                    </p>
                     <div>
                         <div className="relative w-full bg-brown-900 p-4">
                             {/* Tiêu đề */}
@@ -272,11 +110,10 @@ export default function Home({
                             </h1>
                             {/* Đường ngang với hình tròn */}
                             <CircleLine />
-
                         </div>
                         <ScrollArt />
                     </div>
-                    <div className='bg-[#6A4D41]'>
+                    <div className="bg-[#6A4D41]">
                         <div className="relative w-full bg-brown-900 p-4">
                             {/* Tiêu đề */}
                             <h1 className="text-white text-xl font-semibold">
@@ -284,16 +121,13 @@ export default function Home({
                             </h1>
                             {/* Đường ngang với hình tròn */}
                             <CircleLine />
-
                         </div>
                         <ScrollArt />
                     </div>
-
                 </div>
 
                 {children}
             </main>
         </>
-
-    )
+    );
 }
