@@ -59,6 +59,40 @@ const getProductById = async(req,res)=> {
         res.status(500).json({message: error.message})
     }
 };
+const getProductByIdCategory = async (req, res) => {
+    try {
+        const { categoryId } = req.params; 
+        if (!categoryId) {
+            return res.status(400).send({
+                success: false,
+                message: "Không tìm thấy categoryId!",
+            });
+        }
+        const dataByCategory = await queryAsync(
+            `SELECT * FROM qlbantranh.product WHERE categoryId = ?`, [categoryId]
+        );
+        if (!dataByCategory || dataByCategory.length === 0) {
+            return res.status(404).send({
+                success: false,
+                message: "Không tìm thấy sản phẩm trong danh mục này.",
+            });
+        }
+        res.status(200).send({
+            success: true,
+            message: `Sản phẩm trong danh mục ${categoryId}`,
+            data: dataByCategory,
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Không lấy được API sản phẩm theo danh mục',
+            error,
+        });
+    }
+};
+
 const createProduct = async (req, res) => {
     try {
         const { title, author, price, thumbnail, description, categoryId } = req.body;
@@ -182,4 +216,4 @@ const deleteProduct = async(req,res)=> {
         });
     }
 };
-module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
+module.exports = { getProducts, getProductById, getProductByIdCategory, createProduct, updateProduct, deleteProduct };

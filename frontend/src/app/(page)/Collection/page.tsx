@@ -7,7 +7,7 @@ import ScrollArt from "@/components/features/scrollart";
 import CircleLine from "@/components/features/circle-line";
 import axios from "axios";
 
-export default function Home({
+export default function Collection({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -48,7 +48,7 @@ export default function Home({
     return (
         <>
             <main className="flex flex-1 flex-col  m-0 bg-[#e0e0e0ee] ">
-                <Hero />
+                <Hero/>
                 <div className="mt-32">
                     <p className="text-2xl font-robotoCondensed text-left ml-[40px] mb-[30px] font-bold">
                         All new artwork
