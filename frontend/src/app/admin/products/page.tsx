@@ -125,7 +125,7 @@ export default function Products() {
   };
   const handleCancelEditText = () => {
     setIsModalOpen(false);
-    setSelectedProduct(null);
+    setSelectedProduct(null);                    ``
     setNewProduct({
       title: "",
       author: "",
