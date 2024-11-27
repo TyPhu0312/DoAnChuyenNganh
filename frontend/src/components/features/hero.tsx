@@ -31,7 +31,7 @@ export default function Hero() {
   return (
     <>
       <div
-        className={`w-full h-[500px] bg-center bg-cover rounded-bl-40px rounded-br-40px transition-opacity duration-500 bg-[url("/images/museum-lighting.png")]`}
+        className={`w-full h-[500px] bg-center bg-cover rounded-b-[100px] transition-opacity duration-500 bg-[url("/images/museum-lighting.png")]`}
       >
         <Navbar />
         <div className="  pl-20 ">
@@ -41,7 +41,7 @@ export default function Hero() {
             </span>
 
             <span>
-              <p className="mt-8 font-serif">
+              <p className="mt-8 font-serif typing-animation">
                 Explore our curated collection of beautiful art, from timeless
                 classics to modern masterpieces. Whether for home or office,
                 find the perfect piece to reflect your style and elevate any

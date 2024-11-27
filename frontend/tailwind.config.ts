@@ -1,3 +1,4 @@
+import { Roboto_Serif } from "next/font/google"
 import type { Config } from "tailwindcss"
 
 const config = {
@@ -12,6 +13,9 @@ const config = {
   theme: {
     fontFamily: {
       serif: ['Roboto Serif', 'serif'],
+      robotoCondensed: ['Roboto Condensed', 'sans-serif'],
+      robotoSerif: ['RobotoSerif', 'serif'],
+      robotoSlab:['robotoSlab','san-serif']
     },
     borderRadius: {
       '40px': '40px',
@@ -61,6 +65,7 @@ const config = {
         },
         
       },
+      
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -75,10 +80,18 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        typing: {
+          '0%': { width: '0' },
+          '100%': { width: '100%' },
+        },
+        'blink-caret': {
+          '50%': { borderColor: 'transparent' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        typing: 'typing 4s steps(30) 1s forwards, blink-caret 0.75s step-end infinite', // Hiệu ứng gõ chữ
       },
     },
   },
