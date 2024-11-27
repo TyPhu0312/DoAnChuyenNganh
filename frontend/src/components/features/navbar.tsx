@@ -123,7 +123,7 @@ export default function Navbar() {
               <li>
                 {userId ? (
                   <UserButton
-                    appearance={{
+                    appearance={{ 
                       elements: {
                         footer: { display: "none" }, // Hide footer
                       },
