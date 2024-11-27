@@ -44,9 +44,18 @@ app.use("/api/admin/provider", routerProvider );
 //     await sequelize.sync({ alter: true });
 // }
 
-db.sequelize.sync({alter:true}).then(() => {
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`.bgMagenta.white);
+if(process.env.NODE_ENV === 'development') {
+    db.sequelize.sync({ force: true }).then(() => {
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
     });
-});
+} else {
+    db.sequelize.sync({ alter: true }).then(() => {
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+    });
+}
+
 
