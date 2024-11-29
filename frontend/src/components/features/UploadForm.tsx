@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
@@ -18,10 +17,11 @@ export default function UploadForm() {
     note: "",
     userId: "",
   });
-  const [message, setMessage] = useState('');
+
   const router = useRouter(); // Khởi tạo router
 
-  const handleInputChange = (e) => {
+  // Sửa kiểu cho tham số 'e'
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewPainting((prev) => ({
       ...prev,
@@ -29,7 +29,8 @@ export default function UploadForm() {
     }));
   };
 
-  const handleCreatePainting = async (e) => {
+  // Sửa kiểu cho tham số 'e'
+  const handleCreatePainting = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Kiểm tra nếu tên bức tranh chưa được điền

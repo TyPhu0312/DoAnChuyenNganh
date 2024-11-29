@@ -47,9 +47,9 @@ export default function Home({
 
     return (
         <>
-            <main className="flex flex-1 flex-col  m-0 bg-[#e0e0e0ee] ">
+            <main className="flex flex-1 flex-col m-0 bg-[#e0e0e0ee] ">
                 <Hero />
-                <div className="mt-32">
+                <div className="mt-[40px]">
                     <p className="text-2xl font-robotoCondensed text-left ml-[40px] mb-[30px] font-bold">
                         All new artwork
                     </p>

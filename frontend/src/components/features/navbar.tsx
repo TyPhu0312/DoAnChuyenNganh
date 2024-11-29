@@ -25,25 +25,28 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`${isScrolled ? "bg-[#272623] shadow-lg" : "bg-transparent"
+      className={`${isScrolled ? "" : "bg-transparent  shadow-lg"
         } fixed top-0 left-0 w-full z-10 transition-all duration-300 ${isScrolled ? "h-16 rounded-b-[100px]" : "h-30"
         }`}
     >
-      <div className="flex flex-col  items-center justify-between max-w-screen-xl px-4 mx-auto mt-2">
-        {/* Logo and Artwork at the Top */}
-        <div className="flex items-center justify-center space-x-4 mb-4">
-          <Link href="/" className="flex items-center">
+      <div className={`flex flex-col h-full items-center justify-between max-w-screen-xl px-4 mx-auto mt-2 ${isScrolled ? "mt-1" : ""} rounded-tl-[30px] rounded-tr-[30px]`}>
+
+        {/* Logo, Artwork */}
+        <div className={`flex items-center pl-[25px] pr-[25px] justify-center space-x-4 ${isScrolled ? "bg-[#140d07f8] rounded-[20px] sticky top-0 left-1/2 transform -translate-x-1/2" : "bg-transparent mb-[20px]"}`}>
+
+        <Link href="/" className={`flex items-center `}>
+
             <Image
               src="/images/logo-main.png"
               alt="logo"
-              width={isScrolled ? 50 : 80}
-              height={isScrolled ? 50 : 80}
+              width={isScrolled ? 30 : 80}
+              height={isScrolled ? 30 : 80}
               quality={100}
               className={`object-cover rounded-full transition-all duration-300 ${isScrolled ? "scale-80" : "scale-100"
                 }`}
             />
             <span
-              className={`self-center text-4xl font-semibold whitespace-nowrap text-white font-robotoSerif ml-3 transition-all duration-300 ${isScrolled ? "opacity-100" : "opacity-100"
+              className={`self-center text-4xl font-semibold whitespace-nowrap text-white font-robotoSerif ml-3 transition-all duration-300 ${isScrolled ? " text-xl" : "opacity-100"
                 }`}
             >
               Artauct
