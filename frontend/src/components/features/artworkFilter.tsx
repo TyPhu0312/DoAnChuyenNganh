@@ -79,7 +79,6 @@ const ArtworkFilter: React.FC<ArtworkFilterProps> = ({ label, placeholder, onCat
 
     return (
         <div className="ml-[50px]">
-
             <div className="flex space-x-3 mb-3 ">
                 <label htmlFor="category" className="block mb-2 font-semibold">
                     {label}
