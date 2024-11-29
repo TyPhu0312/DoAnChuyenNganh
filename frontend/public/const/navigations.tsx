@@ -14,9 +14,9 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         icon: <Package />
     },
     {
-        key: 'Orders',
-        label: 'Orders',
-        path: '/admin/orders',
+        key: 'CustomPainting',
+        label: 'CustomPainting',
+        path: '/admin/custompainting',
         icon: <ShoppingCart />
     },
     {

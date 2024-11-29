@@ -49,7 +49,7 @@ export default function AdminHeader() {
                             href="#"
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            Orders
+                            CustomPainting
                         </Link>
                         <Link
                             href="#"
