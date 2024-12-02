@@ -30,12 +30,9 @@ export default function Navbar() {
         }`}
     >
       <div className={`flex flex-col h-full items-center justify-between max-w-screen-xl px-4 mx-auto mt-2 ${isScrolled ? "mt-1" : ""} rounded-tl-[30px] rounded-tr-[30px]`}>
-
         {/* Logo, Artwork */}
         <div className={`flex items-center pl-[25px] pr-[25px] justify-center space-x-4 ${isScrolled ? "bg-[#140d07f8] rounded-[20px] sticky top-0 left-1/2 transform -translate-x-1/2" : "bg-transparent mb-[20px]"}`}>
-
         <Link href="/" className={`flex items-center `}>
-
             <Image
               src="/images/logo-main.png"
               alt="logo"
