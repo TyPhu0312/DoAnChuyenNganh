@@ -12,7 +12,7 @@ const queryAsync = (sql, params = []) => {
         });
     });
 };
-const getProducts = async(req,res)=> {
+const getProducts = async (req, res) => {
     try {
         const data = await queryAsync(`
             SELECT 
@@ -23,7 +23,7 @@ const getProducts = async(req,res)=> {
                 p.thumbnail, 
                 p.description, 
                 p.categoryId, 
-                c.name as categoryName 
+                c.name as categoryName  -- Already selecting the category name here
             FROM 
                 qlbantranh.product p
             LEFT JOIN 
@@ -31,68 +31,111 @@ const getProducts = async(req,res)=> {
             ON 
                 p.categoryId = c.id
         `);
-        if(!data) {
+        if (!data || data.length === 0) {
             return res.status(404).send({
-                success:false,
-                message:"Không tìm thấy product nào"
-            })
+                success: false,
+                message: "Không tìm thấy sản phẩm nào"
+            });
         }
         res.status(200).send({
-            success:true,
-            message:'Tất cả sản phẩm',
+            success: true,
+            message: 'Tất cả sản phẩm',
             data: data,
         });
     } catch (error) {
         res.status(500).send({
             success: false,
-            message:'Không lấy được API sản phẩm',
+            message: 'Không lấy được API sản phẩm',
             error: error,
-        })
+        });
     }
 };
-const getProductById = async(req,res)=> {
+
+const getProductById = async (req, res) => {
     try {
-        const {id} = req.params; 
-        if(!id){
-            return res.status(404).send({
-                success:false,
-                message: 'Không tìm thấy ID!'
-            })
-        }
-        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.product WHERE id =?`,[id]);
-        if(!dataWithId) {
+        const { id } = req.params;
+        if (!id) {
             return res.status(404).send({
                 success: false,
-                message:'Không thấy data từ database',
+                message: 'Không tìm thấy ID!'
             });
-        }    
+        }
+
+        // Fetch product by ID with category name
+        const dataWithId = await queryAsync(`
+            SELECT 
+                p.id, 
+                p.title, 
+                p.author, 
+                p.price, 
+                p.thumbnail, 
+                p.description, 
+                p.categoryId, 
+                c.name as categoryName  -- Join category to get category name
+            FROM 
+                qlbantranh.product p
+            LEFT JOIN 
+                qlbantranh.category c
+            ON 
+                p.categoryId = c.id
+            WHERE 
+                p.id = ?
+        `, [id]);
+
+        if (!dataWithId || dataWithId.length === 0) {
+            return res.status(404).send({
+                success: false,
+                message: 'Không thấy data từ database',
+            });
+        }
+
         res.status(200).send({
             success: true,
-            ProductDetail: dataWithId
-        })
-        
+            ProductDetail: dataWithId[0],  // Sending the product details with category name
+        });
+
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({ message: error.message });
     }
 };
+
 const getProductByIdCategory = async (req, res) => {
     try {
-        const { categoryId } = req.params; 
+        const { categoryId } = req.params;
         if (!categoryId) {
             return res.status(400).send({
                 success: false,
                 message: "Không tìm thấy categoryId!",
             });
         }
-        const dataByCategory = await queryAsync(
-            `SELECT * FROM qlbantranh.product WHERE categoryId = ?`, [categoryId]
-        );
+
+        const dataByCategory = await queryAsync(`
+            SELECT 
+                p.id, 
+                p.title, 
+                p.author, 
+                p.price, 
+                p.thumbnail, 
+                p.description, 
+                p.categoryId, 
+                c.name as categoryName  -- Already joining category table to get category name
+            FROM 
+                qlbantranh.product p
+            LEFT JOIN 
+                qlbantranh.category c
+            ON 
+                p.categoryId = c.id
+            WHERE 
+                p.categoryId = ?
+        `, [categoryId]);
+
         if (!dataByCategory || dataByCategory.length === 0) {
             return res.status(404).send({
                 success: false,
                 message: "Không tìm thấy sản phẩm trong danh mục này.",
             });
         }
+
         res.status(200).send({
             success: true,
             message: `Sản phẩm trong danh mục ${categoryId}`,
@@ -108,6 +151,7 @@ const getProductByIdCategory = async (req, res) => {
         });
     }
 };
+
 
 const createProduct = async (req, res) => {
     try {
@@ -128,13 +172,7 @@ const createProduct = async (req, res) => {
             success: false,
             message: "Thiếu thumb",
         });}
-        // if (!title || !categoryId || !author || !price) {
-            
-        //     return res.status(400).send({
-        //         success: false,
-        //         message: "Thiếu trường thông tin bắt buộc",
-        //     });
-        // }
+
         const id = crypto.randomUUID(); 
         const data = await queryAsync(
             `INSERT INTO product (id, title, author, price, thumbnail, description, categoryId) VALUES (?, ?, ?, ?, ?, ?, ?)`,

@@ -12,53 +12,59 @@ const queryAsync = (sql, params = []) => {
         });
     });
 };
-const getCategory = async(req,res)=> {
+const getCategory = async (req, res) => {
     try {
-        const data = await queryAsync('SELECT * FROM qlbantranh.category'); //
-        if(!data) {
+        const data = await queryAsync('SELECT * FROM qlbantranh.category');
+        if (!data || data.length === 0) {
             return res.status(404).send({
-                success:false,
-                message:"Không tìm thấy category nào"
-            })
+                success: false,
+                message: "Không tìm thấy category nào",
+            });
         }
         res.status(200).send({
-            success:true,
-            message:'Tất cả category',
+            success: true,
+            message: 'Tất cả category',
             data: data,
         });
     } catch (error) {
         res.status(500).send({
             success: false,
-            message:'Không lấy được API category',
-            error: error,
-        })
+            message: 'Không lấy được API category',
+            error: error.message, // Đưa ra thông báo lỗi chính xác
+        });
     }
 };
-const getCategoryById = async(req,res)=> {
+
+const getCategoryById = async (req, res) => {
     try {
-        const {id} = req.params; 
-        if(!id){
-            return res.status(404).send({
-                success:false,
-                message: 'Không tìm thấy ID!'
-            })
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).send({
+                success: false,
+                message: 'ID không hợp lệ!',
+            });
         }
-        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.category WHERE id =?`,[id]);
-        if(!dataWithId) {
+        const dataWithId = await queryAsync('SELECT * FROM qlbantranh.category WHERE id = ?', [id]);
+        if (!dataWithId || dataWithId.length === 0) {
             return res.status(404).send({
                 success: false,
-                message:'Không thấy data từ database',
+                message: 'Không tìm thấy category với ID này',
             });
-        }    
+        }
         res.status(200).send({
             success: true,
-            ProductDetail: dataWithId
-        })
-        
+            message: 'Chi tiết category',
+            data: dataWithId[0], // Nếu chỉ trả về một bản ghi
+        });
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).send({
+            success: false,
+            message: 'Lỗi khi lấy category theo ID',
+            error: error.message, // Hiển thị chi tiết lỗi
+        });
     }
 };
+
 const createCategory = async (req, res) => {
     try {
         const { name } = req.body;

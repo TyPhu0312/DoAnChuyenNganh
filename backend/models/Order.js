@@ -11,28 +11,13 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: () => crypto.randomUUID(),
       primaryKey: true,
     },
-    fullname: {
-      type: DataTypes.STRING,
-      allowNull: false, 
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isEmail: true, 
-      },
-    },
-    phone_number: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    address: {
-      type: DataTypes.STRING,
-      allowNull: false, 
-    },
     note: {
       type: DataTypes.TEXT, 
       allowNull: true, 
+    },
+    total_amount: {
+      type: DataTypes.DECIMAL(10,2), 
+      allowNull: false, 
     },
     status: {
       type: DataTypes.ENUM(...Object.values(OrderStatus)), 

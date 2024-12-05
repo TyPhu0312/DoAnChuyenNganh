@@ -43,7 +43,7 @@ export default function AdminHeader() {
                             href="#"
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            Dashboard
+                            Categories
                         </Link>
                         <Link
                             href="#"
@@ -62,6 +62,12 @@ export default function AdminHeader() {
                             className="text-muted-foreground hover:text-foreground"
                         >
                             User
+                        </Link>
+                        <Link
+                            href="#"
+                            className="text-muted-foreground hover:text-foreground"
+                        >
+                            Orders
                         </Link>
                         <Link href="#" className="hover:text-foreground">
                             Settings

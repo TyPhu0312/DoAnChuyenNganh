@@ -2,10 +2,10 @@ import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users } from 'l
 
 export const DASHBOARD_SIDEBAR_LINKS = [
     {
-        key: 'dashboard',
-        label: 'Dashboard',
-        path: '/admin/dashboard',
-        icon: <Home/>
+        key: 'Categories',
+        label: 'Categories',
+        path: '/admin/categories',
+        icon: <Package/>
     },
     {
         key: 'Products',
@@ -17,7 +17,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         key: 'CustomPainting',
         label: 'CustomPainting',
         path: '/admin/custompainting',
-        icon: <ShoppingCart />
+        icon: <Package2 />
     },
     {
         key: 'User',
@@ -26,10 +26,10 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         icon: <Users />
     },
     {
-        key: 'Transactions',
-        label: 'Transactions',
-        path: '/admin/transactions',
-        icon: <LineChart />
+        key: 'Orders',
+        label: 'Orders',
+        path: '/admin/orders',
+        icon: <ShoppingCart />
     },
     {
         key: 'Messengers',
