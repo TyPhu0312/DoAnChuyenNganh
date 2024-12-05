@@ -129,9 +129,9 @@ export default function CustomPainting() {
         <TabsContent value="all">
           <Card x-chunk="dashboard-06-chunk-0">
             <CardHeader>
-              <CardTitle>Custompainting</CardTitle>
+              <CardTitle>Custom Painting Order</CardTitle>
               <CardDescription>
-                Manage your products and view their sales performance.
+                All artworks request of client
               </CardDescription>
             </CardHeader>
             <CardContent>

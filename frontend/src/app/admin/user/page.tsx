@@ -73,8 +73,8 @@ export default function User() {
         <Admin>
             <Card>
                 <CardHeader className="px-7">
-                    <CardTitle>User</CardTitle>
-                    <CardDescription>Recent orders from your store.</CardDescription>
+                    <CardTitle>User Management</CardTitle>
+                    <CardDescription>All User Here.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>

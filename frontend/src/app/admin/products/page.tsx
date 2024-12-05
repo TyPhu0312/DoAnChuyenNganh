@@ -61,8 +61,6 @@ export default function Products() {
   const [products, setProducts] = useState<any[]>([]); // Khởi tạo là mảng rỗng
   const [showAlert, setShowAlert] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedUpdateProduct, setSelectedUpdateProduct] =
-    useState<Product | null>(null);
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false); // Mặc định modal mở
   const [newProduct, setNewProduct] = useState({
@@ -81,6 +79,7 @@ export default function Products() {
     thumbnail: string;
     description: string;
     categoryId: string;
+    categoryName: string,
   }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -89,17 +88,17 @@ export default function Products() {
       [id]: value, // Cập nhật giá trị tương ứng với ID của input
     }));
   };
-  
+
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/admin/products/")
       .then((response) => {
         const data = response.data.data || response.data;
         if (Array.isArray(data)) {
-          setProducts(response.data.data); // Nếu là mảng, set vào state
+          setProducts(response.data.data);
         } else {
           console.error("API response is not an array", response.data);
-          setProducts([]); // Nếu không phải mảng, set là mảng rỗng
+          setProducts([]);
         }
       })
       .catch((err) => {
@@ -108,7 +107,7 @@ export default function Products() {
           err.response ? err.response.data : err.message
         );
         alert("Có lỗi xảy ra, vui lòng thử lại.");
-        setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
+        setProducts([]);
       });
   }, []);
   const handleDelete = (productId: string) => {
@@ -120,12 +119,13 @@ export default function Products() {
       thumbnail: "",
       description: "",
       categoryId: "",
+      categoryName: "",
     });
     setShowAlert(true); // Mở modal xác nhận
   };
   const handleCancelEditText = () => {
     setIsModalOpen(false);
-    setSelectedProduct(null);                    ``
+    setSelectedProduct(null); ``
     setNewProduct({
       title: "",
       author: "",
@@ -207,24 +207,23 @@ export default function Products() {
 
   const fetchProducts = () => {
     axios
-      .get("http://localhost:5000/api/admin/products")
+      .get("http://localhost:5000/api/admin/products/") // API mới
       .then((response) => {
         const data = response.data.data || response.data;
-        // Kiểm tra dữ liệu là mảng hợp lệ trước khi set vào state
         if (Array.isArray(data)) {
-          setProducts(data); // Cập nhật lại danh sách sản phẩm
+          setProducts(data);
         } else {
           console.error("Dữ liệu không hợp lệ", response.data);
-          setProducts([]); // Nếu không phải mảng, set là mảng rỗng
+          setProducts([]);
         }
       })
       .catch((err) => {
         console.error("Lỗi khi lấy sản phẩm:", err);
-        setProducts([]); // Nếu có lỗi, fallback về mảng rỗng
+        setProducts([]);
       });
   };
   const handleEditProduct = (product: any) => {
-    setSelectedProduct(product); // Cập nhật sản phẩm đang chọn
+    setSelectedProduct(product);
     setNewProduct({
       title: product.title,
       author: product.author,
@@ -418,7 +417,7 @@ export default function Products() {
             <CardHeader>
               <CardTitle>Artworks</CardTitle>
               <CardDescription>
-                Manage your products and view their sales performance.
+                All Artwork here
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -434,12 +433,12 @@ export default function Products() {
                     <TableHead>Thumbnail</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead className="hidden md:table-cell">
+                    {/* <TableHead className="hidden md:table-cell">
                       Created at
                     </TableHead>
                     <TableHead className="hidden md:table-cell">
                       Updated at
-                    </TableHead>
+                    </TableHead> */}
                     <TableHead>
                       <span className="sr-only">Actions</span>
                     </TableHead>
@@ -448,13 +447,13 @@ export default function Products() {
                 <TableBody>
                   {products.map((product: any) => (
                     <TableRow key={product._id}>
-                      <TableCell className="hidden sm:table-cell">
+                      <TableCell className="hidden md:table-cell">
                         <Image
                           alt="Product image"
                           className="aspect-square rounded-md object-cover"
-                          height="32"
-                          src="/images/logo.png"
-                          width="32"
+                          height="50"
+                          src={`/images/${product.thumbnail}`}
+                          width="100"
                         />
                       </TableCell>
                       <TableCell className="font-medium">
@@ -464,28 +463,19 @@ export default function Products() {
                         {product.author}
                       </TableCell>
                       <TableCell>{product.price}</TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {product.thumbnail}
-                        <Image
-                          alt="Product image"
-                          className="aspect-square rounded-md object-cover"
-                          height="32"
-                          src="/images/logo.png"
-                          width="32"
-                        />
-                      </TableCell>
+
                       <TableCell className="font-medium">
-                        {product.category}
+                        {product.categoryName || ""}
                       </TableCell>
                       <TableCell className="font-medium">
                         {product.description}
                       </TableCell>
-                      <TableCell className="hidden md:table-cell">
+                      {/* <TableCell className="hidden md:table-cell">
                         {product.createdAt}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         {product.updatedAt}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

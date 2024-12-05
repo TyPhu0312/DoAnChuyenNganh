@@ -14,7 +14,23 @@ const queryAsync = (sql, params = []) => {
 };
 const getProducts = async(req,res)=> {
     try {
-        const data = await queryAsync('SELECT * FROM qlbantranh.product'); //
+        const data = await queryAsync(`
+            SELECT 
+                p.id, 
+                p.title, 
+                p.author, 
+                p.price, 
+                p.thumbnail, 
+                p.description, 
+                p.categoryId, 
+                c.name as categoryName 
+            FROM 
+                qlbantranh.product p
+            LEFT JOIN 
+                qlbantranh.category c
+            ON 
+                p.categoryId = c.id
+        `);
         if(!data) {
             return res.status(404).send({
                 success:false,
@@ -216,4 +232,5 @@ const deleteProduct = async(req,res)=> {
         });
     }
 };
-module.exports = { getProducts, getProductById, getProductByIdCategory, createProduct, updateProduct, deleteProduct };
+
+module.exports = { getProducts, getProductById, getProductByIdCategory, createProduct, updateProduct, deleteProduct, };
