@@ -35,7 +35,7 @@ export default function Navbar() {
       <div className={`flex flex-col h-full items-center justify-between max-w-screen-xl px-4 mx-auto mt-2 ${isScrolled ? "mt-1" : ""} rounded-tl-[30px] rounded-tr-[30px]`}>
         {/* Logo, Artwork */}
         <div className={`flex items-center pl-[25px] pr-[25px] justify-center space-x-4 ${isScrolled ? "bg-[#140d07f8] rounded-[20px] sticky top-0 left-1/2 transform -translate-x-1/2" : "bg-transparent mb-[20px]"}`}>
-          <Link href="/" className={`flex items-center `}>
+          <Link href="/" className={`flex items-center transition-all duration-300`}>
             <Image
               src="/images/logo-main.png"
               alt="logo"
@@ -51,6 +51,18 @@ export default function Navbar() {
             >
               Artauct
             </span>
+            <div
+              className="relative ml-4 cursor-pointer"
+              onClick={toggleCart}
+            >
+              {/* Thêm biểu tượng từ Heroicons */}
+              <ShoppingCartIcon className={`w-6 h-6 text-white cursor-pointer transition-all duration-300 ${isScrolled ? "hidden lg:block sm:block" : "hidden"}`} />
+              {cartItems.length > 0 && (
+                <div className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 transition-all duration-300">
+                  {cartItems.length}
+                </div>
+              )}
+            </div>
           </Link>
         </div>
 
@@ -156,7 +168,7 @@ export default function Navbar() {
             onClick={toggleCart}
           >
             {/* Thêm biểu tượng từ Heroicons */}
-            <ShoppingCartIcon className="w-6 h-6 text-white cursor-pointer" />
+            <ShoppingCartIcon className={`w-6 h-6 text-white cursor-pointer ${isScrolled ? "hidden" : ""}`} />
             {cartItems.length > 0 && (
               <div className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
                 {cartItems.length}
