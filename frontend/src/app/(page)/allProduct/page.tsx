@@ -9,7 +9,8 @@ import axios from "axios";
 import Breadcrumb from "@/components/features/Breadcrumb";
 import SortBar from "@/components/features/artworkFilter"
 import SearchBox from "@/components/features/searchBox";
-export default function AllProduct({
+import { useRouter } from "next/router";
+export default function allProduct({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -25,6 +26,8 @@ export default function AllProduct({
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+
+
     useEffect(() => {
         axios
             .get("http://localhost:5000/api/admin/products/")
@@ -53,7 +56,7 @@ export default function AllProduct({
                 console.error('Error fetching categories:', error);
             });
     }, []);
-    
+
     const handleCategoryChange = (categoryId: string | undefined) => {
         setSelectedCategory(categoryId);
         if (categoryId) {
@@ -74,6 +77,7 @@ export default function AllProduct({
                 });
         }
     };
+
     return (
         <>
             <main className="flex flex-1 flex-col  m-0 bg-[#e0e0e0ee] ">
@@ -109,7 +113,7 @@ export default function AllProduct({
                                         className="mb-3 max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                                     >
                                         <div className="h-[220px]">
-                                            <Link href="#">
+                                            <Link href={`/ProductDetail/${product.id}`}>
                                                 <Image
                                                     src={`/images/${product.thumbnail}`}
                                                     alt={product.title}
@@ -122,7 +126,7 @@ export default function AllProduct({
                                         </div>
 
                                         <div className="p-5">
-                                            <Link href="#">
+                                            <Link href={`/ProductDetail/${product.id}`}>
                                                 <h5 className="mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white">
                                                     {product.title}
                                                 </h5>
