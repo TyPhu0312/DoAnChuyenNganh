@@ -21,7 +21,7 @@ interface ProductDetailProps {
 // Hàm để fetch dữ liệu sản phẩm từ server
 export async function fetchProduct(id: string) {
   try {
-    const response = await axios.get(http://localhost:5000/api/admin/products/${id});
+    const response = await axios.get(`http://localhost:5000/api/admin/products/${id}`);
     return response.data.ProductDetail as Product;
   } catch (error) {
     console.error('Error fetching product details:', error);
@@ -37,7 +37,7 @@ const ProductDetail = async ({ params }: ProductDetailProps) => {
   const breadcrumbLinks = [
     { label: 'Home', href: '/' },
     { label: 'All Product', href: '/allProduct' },
-    { label: product.title, href: /ProductDetail/${params.id} },
+    { label: product.title, href: '/ProductDetail/${params.id}' },
   ];
   return (
     <>
