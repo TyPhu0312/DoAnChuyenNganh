@@ -1,13 +1,14 @@
 // src/components/Breadcrumb.tsx
 import React from "react";
 import Link from "next/link";
+
 interface BreadcrumbProps {
-  links: { label: string; href: string }[]; // Mảng chứa các đối tượng link
+  links: { label: string; href: string }[];
 }
+
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ links }) => {
   return (
     <div className="text-left mx-10">
-
       <p className="text-lg text-gray-600">
         {links.map((link, index) => (
           <span key={index}>
@@ -23,4 +24,5 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ links }) => {
     </div>
   );
 };
+
 export default Breadcrumb;

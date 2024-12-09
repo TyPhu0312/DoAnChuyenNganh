@@ -25,8 +25,5 @@ module.exports = (sequelize,DataTypes) => {
             as: 'product_gal',
         });
     };
-    
-
-    
     return Gallery;
 };
