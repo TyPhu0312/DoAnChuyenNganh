@@ -10,6 +10,7 @@ import Breadcrumb from "@/components/features/Breadcrumb";
 import SortBar from "@/components/features/artworkFilter"
 import SearchBox from "@/components/features/searchBox";
 import { useRouter } from "next/router";
+import Footer from "@/components/features/footer";
 export default function allProduct({
     children,
 }: Readonly<{
@@ -201,34 +202,8 @@ export default function allProduct({
                         {/* // kiếm cái hình khác bỏ dô */}
                     </div>
                 </div>
-                <div className="bg-[#40342E]">
-                    <p className="text-3xl text-center my-20 font-bold text-[#C8C8C8]">
-                        Collections on trending
-                    </p>
-                    <div>
-                        <div className="relative w-full bg-brown-900 p-4">
-                            {/* Tiêu đề */}
-                            <h1 className="text-white text-xl font-semibold">
-                                Old things collections
-                            </h1>
-                            {/* Đường ngang với hình tròn */}
-                            <CircleLine />
-                        </div>
-                        <ScrollArt />
-                    </div>
-                    <div className="bg-[#6A4D41]">
-                        <div className="relative w-full bg-brown-900 p-4">
-                            {/* Tiêu đề */}
-                            <h1 className="text-white text-xl font-semibold">
-                                Old things collections
-                            </h1>
-                            {/* Đường ngang với hình tròn */}
-                            <CircleLine />
-                        </div>
-                        <ScrollArt />
-                    </div>
-                </div>
-
+               
+                <Footer/>
                 {children}
             </main>
         </>

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { notFound } from 'next/navigation';
 import Hero from '@/components/features/hero'; // Đảm bảo rằng bạn đã tạo Hero component
 import Breadcrumb from '@/components/features/Breadcrumb';
+import Footer from '@/components/features/footer';
 
 type Product = {
   id: string;
@@ -74,6 +75,7 @@ const ProductDetail = async ({ params }: ProductDetailProps) => {
               </div>
             </div>
           </div>
+          <Footer/>
         </main>
       </>
     );

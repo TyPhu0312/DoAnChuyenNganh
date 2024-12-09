@@ -6,6 +6,7 @@ import Hero from "@/components/features/hero";
 import ScrollArt from "@/components/features/scrollart";
 import CircleLine from "@/components/features/circle-line";
 import axios from "axios";
+import Footer from "@/components/features/footer";
 
 export default function Home({
     children,
@@ -129,7 +130,7 @@ export default function Home({
                         <ScrollArt />
                     </div>
                 </div>
-
+                <Footer/>
                 {children}
             </main>
         </>
