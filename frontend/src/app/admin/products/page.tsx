@@ -223,27 +223,24 @@ export default function ProductManagement() {
 
 
 function ProductForm({ product, onSave, onCancel, categories }: ProductFormProps) {
-  // Ensure price is a number
   const [title, setTitle] = useState(product ? product.title : "");
   const [author, setAuthor] = useState(product ? product.author : "");
-  const [price, setPrice] = useState<number>(product ? product.price : 0);  // Store price as a number
+  const [price, setPrice] = useState<number>(product ? product.price : 0);  
   const [description, setDescription] = useState(product ? product.description : "");
   const [thumbnail, setThumbnail] = useState(product ? product.thumbnail : "");
   const [categoryId, setCategoryId] = useState(product ? product.categoryId : "");
 
-  // Handle price change to ensure it's a number
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const numericValue = value ? parseFloat(value) : 0;  // Convert to number (default to 0 if empty)
+    const numericValue = value ? parseFloat(value):0;  
     setPrice(numericValue);
   };
 
   const handleSubmit = () => {
     if (!title.trim() || !price || !categoryId) return;
   
-    // Create productToSave object, with null check for product
     const productToSave: Product = {
-      id: product ? product.id : "", // Use an empty string for new products, if id is required in the API
+      id: product ? product.id : "",
       title,
       author,
       price,
@@ -254,11 +251,8 @@ function ProductForm({ product, onSave, onCancel, categories }: ProductFormProps
       discount: 0
     };
   
-    onSave(productToSave); // Pass the product to the parent (Product)
+    onSave(productToSave); 
   };
-  
-  
-
   return (
     <div className="space-y-4">
       <Input
@@ -278,7 +272,7 @@ function ProductForm({ product, onSave, onCancel, categories }: ProductFormProps
         type="number"
         placeholder="Price"
         value={price}
-        onChange={handlePriceChange}  // Ensure the price is updated as a number
+        onChange={handlePriceChange} 
         required
       />
       <Input

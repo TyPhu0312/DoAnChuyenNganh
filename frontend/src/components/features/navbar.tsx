@@ -3,10 +3,13 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { UserButton, useAuth } from "@clerk/nextjs";
+import { useCart } from "@/components/features/cartContext";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { isCartOpen, toggleCart, cartItems } = useCart();
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -32,7 +35,7 @@ export default function Navbar() {
       <div className={`flex flex-col h-full items-center justify-between max-w-screen-xl px-4 mx-auto mt-2 ${isScrolled ? "mt-1" : ""} rounded-tl-[30px] rounded-tr-[30px]`}>
         {/* Logo, Artwork */}
         <div className={`flex items-center pl-[25px] pr-[25px] justify-center space-x-4 ${isScrolled ? "bg-[#140d07f8] rounded-[20px] sticky top-0 left-1/2 transform -translate-x-1/2" : "bg-transparent mb-[20px]"}`}>
-        <Link href="/" className={`flex items-center `}>
+          <Link href="/" className={`flex items-center `}>
             <Image
               src="/images/logo-main.png"
               alt="logo"
@@ -119,7 +122,7 @@ export default function Navbar() {
               <li>
                 {userId ? (
                   <UserButton
-                    appearance={{ 
+                    appearance={{
                       elements: {
                         footer: { display: "none" }, // Hide footer
                       },
@@ -148,8 +151,21 @@ export default function Navbar() {
               </li>
             </ul>
           </div>
+          <div
+            className="relative ml-4 cursor-pointer"
+            onClick={toggleCart}
+          >
+            {/* Thêm biểu tượng từ Heroicons */}
+            <ShoppingCartIcon className="w-6 h-6 text-white cursor-pointer" />
+            {cartItems.length > 0 && (
+              <div className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                {cartItems.length}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>
+
   );
 }
