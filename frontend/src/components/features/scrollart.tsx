@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react' // Make sure useState is impo
 import axios from "axios";
 import CircleLine from "@/components/features/circle-line";
 
-export default function scrollart() {
+export default function Scrollart() {
     type Product = {
         id: string;
         title: string;
