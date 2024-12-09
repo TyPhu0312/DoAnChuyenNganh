@@ -275,10 +275,6 @@ const deleteOrder = async (req, res) => {
             });
         }
 
-        // Start a transaction to ensure deletion is done atomically
-        connection = await queryAsync('SELECT 1'); // Ensures the db connection is available
-        await connection.beginTransaction();
-
         // Delete the order details first (if needed)
         const deleteOrderDetails = await queryAsync(
             `DELETE FROM \`orderdetail\` WHERE order_id = ?`, 
@@ -316,7 +312,6 @@ const deleteOrder = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        if (connection) await connection.rollback(); // Rollback if there's an error
         res.status(500).send({
             success: false,
             message: 'Không thể xoá order!',

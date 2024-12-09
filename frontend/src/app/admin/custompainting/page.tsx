@@ -152,7 +152,7 @@ export default function CustomPainting() {
                   {paintings.map((painting) => (
                     <TableRow key={painting.id}>
                       <TableCell>
-                        <img
+                      <img
                           src={painting.image}
                           alt={painting.name}
                           className="w-16 h-16 object-cover rounded-md" />

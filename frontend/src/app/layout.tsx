@@ -1,5 +1,7 @@
-import { ClerkProvider } from '@clerk/nextjs'
-import './globals.css'
+"use client"; // Thêm dòng này ở đầu file
+
+import { ClerkProvider } from "@clerk/nextjs";
+import './globals.css';
 
 export default function RootLayout({
   children,
@@ -12,5 +14,5 @@ export default function RootLayout({
         <body>{children}</body>
       </html>
     </ClerkProvider>
-  )
+  );
 }

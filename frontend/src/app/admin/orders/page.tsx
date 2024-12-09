@@ -55,21 +55,18 @@ export default function OrderManagement() {
       setLoading(false);
     }
   };
-
   // Handle saving order status
   const handleSaveStatus = async (order: Order) => {
     if (!order.status) {
       alert("Please select a valid order status.");
       return;
     }
-
     try {
       // Gửi yêu cầu PUT để cập nhật trạng thái đơn hàng
       const response = await axios.put(
         `http://localhost:5000/api/admin/order/update/${order.id}`,
         { status: order.status }
       );
-
       // Cập nhật đơn hàng trong state
       setOrders((prevOrders) =>
         prevOrders.map((o) => (o.id === order.id ? { ...o, status: order.status } : o))
@@ -82,30 +79,24 @@ export default function OrderManagement() {
       alert("Unable to update order. Please try again.");
     }
   };
-
-  // Handle deleting an order
   const handleDeleteOrder = async (orderId: string) => {
     try {
-      // Gửi yêu cầu DELETE để xoá đơn hàng
       await axios.delete(`http://localhost:5000/api/admin/order/delete/${orderId}`);
-      setOrders(orders.filter(order => order.id !== orderId)); // Xoá đơn hàng khỏi state
-      setDeleteDialogOpen(false); // Đóng dialog xoá
+      setOrders(orders.filter(order => order.id !== orderId)); 
+      setDeleteDialogOpen(false); 
       alert("Order deleted successfully!");
     } catch (err) {
       console.error("Error deleting order:", err);
       alert("Unable to delete order. Please try again.");
     }
   };
-
   // View order details (optional - if you need a detailed modal for the order)
   const handleViewDetails = (orderId: string) => {
     const order = orders.find(o => o.id === orderId);
     if (order) {
-      // Hiển thị chi tiết của đơn hàng (nếu cần)
       console.log("View details of order", order);
     }
   };
-
   return (
     <Admin>
       <Card>
@@ -138,7 +129,7 @@ export default function OrderManagement() {
                     <Button size="sm" onClick={() => handleViewDetails(order.id)}>
                       View Details
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => { setOrderToDelete(order); setDeleteDialogOpen(true); }}>
+                    <Button size="sm" variant="destructive" onClick={() =>handleDeleteOrder(order.id)}>
                       Delete
                     </Button>
                   </TableCell>
