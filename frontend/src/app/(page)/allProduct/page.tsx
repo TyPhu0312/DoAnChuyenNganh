@@ -9,8 +9,7 @@ import axios from "axios";
 import Breadcrumb from "@/components/features/Breadcrumb";
 import SortBar from "@/components/features/artworkFilter"
 import SearchBox from "@/components/features/searchBox";
-import { useRouter } from "next/router";
-export default function allProduct({
+export default function AllProduct({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -160,7 +159,7 @@ export default function allProduct({
                                     className="mb-3 max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                                 >
                                     <div className="h-[220px]"> {/* Đặt chiều cao cố định cho ảnh */}
-                                        <Link href="#">
+                                        <Link href="/ProductDetail/${product.id}">
                                             <Image
                                                 src={`/images/${product.thumbnail}`}
                                                 alt={product.title}
@@ -173,7 +172,7 @@ export default function allProduct({
                                     </div>
 
                                     <div className="p-5">
-                                        <Link href="#">
+                                        <Link href="/ProductDetail/${product.id}">
                                             <h5 className="mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white">
                                                 {product.title}
                                             </h5>
