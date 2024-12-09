@@ -33,7 +33,6 @@ export default function Hero() {
       <div
         className={`w-full h-[550px] bg-center bg-cover rounded-b-[100px] transition-opacity duration-500 bg-[url("/images/museum-lighting.png")]`}
       >
-        <Navbar />
         <div className="  pl-20 ">
           <div className=" opacity-70 max-w-2xl text-xl mt-56 text-[#EFEFEF]">
             <span className="font-serif">

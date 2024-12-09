@@ -6,7 +6,6 @@ import Hero from "@/components/features/hero";
 import ScrollArt from "@/components/features/scrollart";
 import CircleLine from "@/components/features/circle-line";
 import axios from "axios";
-
 export default function Collection({
     children,
 }: Readonly<{
@@ -128,8 +127,7 @@ export default function Collection({
                         </div>
                         <ScrollArt />
                     </div>
-                </div>
-
+                </div> 
                 {children}
             </main>
         </>

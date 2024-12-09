@@ -9,6 +9,7 @@ import axios from "axios";
 import Breadcrumb from "@/components/features/Breadcrumb";
 import SortBar from "@/components/features/artworkFilter"
 import SearchBox from "@/components/features/searchBox";
+
 export default function AllProduct({
     children,
 }: Readonly<{
@@ -227,7 +228,6 @@ export default function AllProduct({
                         <ScrollArt />
                     </div>
                 </div>
-
                 {children}
             </main>
         </>
