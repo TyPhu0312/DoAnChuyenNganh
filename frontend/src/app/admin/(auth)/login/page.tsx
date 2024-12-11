@@ -1,7 +1,7 @@
-"use client"; // Đánh dấu là Client Component
+"use client"; 
 
 import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation'; // Sử dụng next/navigation thay vì next/router
+import { useRouter } from 'next/navigation';
 import { login } from '../../api/auth/auth';
 import { Button } from "@/components/ui/button";
 import {
@@ -15,32 +15,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Spinner from '@/components/features/spinner';
+import { useUser } from '@/components/features/userContext'; // Import UserContext
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false); // Trạng thái loading
+    const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
+    const { setUser } = useUser(); // Access setUser from context
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Bắt đầu loading
+        setLoading(true);
         try {
-            await login(email, password);
+            const response = await login(email, password);
+            const userData = response.data; // Giả sử response trả về thông tin người dùng
+
+            // Lưu thông tin người dùng vào context
+            setUser({
+                email: userData.email,
+                name: userData.name,
+                phone: userData.phone,
+                address: userData.address,
+            });
+
             setTimeout(() => {
-                router.push('/admin/dashboard'); // Redirect sau khi đăng nhập thành công
+                router.push('/admin/dashboard');
             }, 2000);
         } catch (err) {
             setError((err as Error).message);
-            setLoading(false); // Kết thúc loading
+            setLoading(false);
         } 
     };
 
     return (
-
         <div className="flex items-center justify-center min-h-screen">
-          {loading && <Spinner />}
+            {loading && <Spinner />}
             <Card className="w-full max-w-sm">
                 <CardHeader>
                     <CardTitle className="text-2xl">Login</CardTitle>
@@ -83,7 +94,6 @@ const LoginPage: React.FC = () => {
             </Card>
         </div>
     );
-
 };
 
 export default LoginPage;

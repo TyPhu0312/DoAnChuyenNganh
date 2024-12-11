@@ -63,8 +63,9 @@ const getUserById = async (req, res) => {
 };
 const createUser = async (req, res) => {
     try {
-        const { firstname, lastname, email, password, phone, providerId, roleId } = req.body;
-        if (!firstname || !lastname || !email || !password || !phone || !providerId || !roleId) {
+        const { firstname, lastname, email, phone, providerId, roleId } = req.body;
+        console.log("da chay den day");
+        if (!firstname || !lastname || !email || !phone || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
@@ -116,7 +117,7 @@ const updateUser = async (req, res) => {
             });
         }
         const { firstname, lastname, email, password, phone, providerId, roleId } = req.body;
-        if (!firstname || !lastname || !email || !password || !phone || !providerId || !roleId) {
+        if (!firstname || !lastname || !email || !phone || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: 'Nhập thiếu trường dữ liệu',
@@ -165,7 +166,6 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
-        //console.log("ProductId:", id);
         if (!id) {
             return res.status(404).send({
                 success: false,

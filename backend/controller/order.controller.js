@@ -167,14 +167,6 @@ const addOrderDetails = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
-
-
 const updateOrder = async (req, res) => {
     try {
         const { id } = req.params;

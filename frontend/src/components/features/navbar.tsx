@@ -3,13 +3,19 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { UserButton, useAuth } from "@clerk/nextjs";
-import { useCart } from "@/components/features/cartContext";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
-
+import { Button } from "../ui/button";
+import CartSidebar from "@/components/features/cartSideBar";
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isCartOpen, toggleCart, cartItems } = useCart();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  }
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  }
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -18,14 +24,10 @@ export default function Navbar() {
         setIsScrolled(false);
       }
     };
-
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
   const { userId } = useAuth();
-
   return (
     <nav
       className={`${isScrolled ? "" : "bg-transparent  shadow-lg"
@@ -51,18 +53,28 @@ export default function Navbar() {
             >
               Artauct
             </span>
-            <div
-              className="relative ml-4 cursor-pointer"
-              onClick={toggleCart}
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen(!isMenuOpen)} // Toggle menu
+              className={`inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600   ${isScrolled ? "absolute top-3 left-2 z-20 transition-all duration-300" : "absolute top-7 left-2 z-20 transition-all duration-300"
+                }`}
             >
-              {/* Thêm biểu tượng từ Heroicons */}
-              <ShoppingCartIcon className={`w-6 h-6 text-white cursor-pointer transition-all duration-300 ${isScrolled ? "hidden lg:block sm:block" : "hidden"}`} />
-              {cartItems.length > 0 && (
-                <div className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 transition-all duration-300">
-                  {cartItems.length}
-                </div>
-              )}
-            </div>
+              <span className="sr-only">Open main menu</span>
+              <svg
+                className={`w-6 h-6 transform ${isMenuOpen ? "rotate-90" : ""} transition-transform duration-200`}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
+            </button>
+            {/* CART SIDE BAR MODAL */}
+            <CartSidebar isOpen={isSidebarOpen} closeSidebar={closeSidebar} />
           </Link>
         </div>
 
@@ -165,19 +177,21 @@ export default function Navbar() {
           </div>
           <div
             className="relative ml-4 cursor-pointer"
-            onClick={toggleCart}
+
           >
             {/* Thêm biểu tượng từ Heroicons */}
-            <ShoppingCartIcon className={`w-6 h-6 text-white cursor-pointer ${isScrolled ? "hidden" : ""}`} />
-            {cartItems.length > 0 && (
+            <Button onClick={toggleSidebar}>
+              <ShoppingCartIcon className={`w-6 h-6 text-white cursor-pointer ${isScrolled ? "hidden" : ""}`} />
+            </Button>
+
+            {/* {cartItems.length > 0 && (
               <div className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
                 {cartItems.length}
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
     </nav>
-
   );
 }

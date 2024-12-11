@@ -4,15 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import Hero from "@/components/features/hero";
 import ScrollArt from "@/components/features/scrollart";
-import CircleLine from "@/components/features/circle-line";
 import axios from "axios";
-import Footer from "@/components/features/footer";
-
+import { useUser } from '@clerk/clerk-react'
 export default function Home({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+
     type Product = {
         id: string; // hoặc string, tùy theo định nghĩa trong database
         title: string;
@@ -21,9 +20,8 @@ export default function Home({
         price: number;
         image: string;
     };
-
     const [products, setProducts] = useState<Product[]>([]);
-
+    const { isSignedIn, user, isLoaded } = useUser()
     useEffect(() => {
         axios
             .get("http://localhost:5000/api/admin/products/")
@@ -51,6 +49,12 @@ export default function Home({
             <main className="flex flex-1 flex-col m-0 bg-[#e0e0e0ee] ">
                 <Hero />
                 <div className="mt-[40px]">
+                    <a href='/updateProfileUser'>
+                    <p className="text-2xl font-robotoCondensed text-left ml-[40px] mb-[30px] font-bold">
+                        All new artwork
+                    </p>
+                    </a>
+            
                     <p className="text-2xl font-robotoCondensed text-left ml-[40px] mb-[30px] font-bold">
                         All new artwork
                     </p>
