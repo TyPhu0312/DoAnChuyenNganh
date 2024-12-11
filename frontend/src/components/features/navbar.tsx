@@ -4,12 +4,21 @@ import Link from "next/link";
 import Image from "next/image";
 import { UserButton, useAuth } from "@clerk/nextjs";
 import { useCart } from "@/components/features/cartContext";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {FaRegTrashAlt} from "react-icons/fa";
+import { Button } from "../ui/button";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isCartOpen, toggleCart, cartItems } = useCart();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { cart, removeFromCart }= useCart();
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  }
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  }
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -51,18 +60,76 @@ export default function Navbar() {
             >
               Artauct
             </span>
-            <div
-              className="relative ml-4 cursor-pointer"
-              onClick={toggleCart}
-            >
-              {/* Thêm biểu tượng từ Heroicons */}
-              <ShoppingCartIcon className={`w-6 h-6 text-white cursor-pointer transition-all duration-300 ${isScrolled ? "hidden lg:block sm:block" : "hidden"}`} />
-              {cartItems.length > 0 && (
-                <div className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 transition-all duration-300">
-                  {cartItems.length}
+            {isSidebarOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 z-20">
+                <div className="fixed right-0 top-0 w-80 bg-white h-full shadow-lg z-30">
+                  <div className="flex justify-between items-center p-4">
+                    <center><h2 className="text-xl font-semibold">Your Cart</h2></center>
+                    <button
+                      onClick={closeSidebar}
+                      className="text-gray-700 hover:text-black"
+                    >
+                      <XMarkIcon className="h-6 w-6" />
+                    </button>
+                  </div>
+                  <div className="px-4 py-2">
+                    {/* chỗ sẽ xuất hiện danh sách sản phẩm đã thêm vào gio */}
+                  </div>
+                  <center>
+                    <div className="p-4">
+                      <ul>
+                        {cart.map((item) => (
+                          <li
+                            key={item.id}
+                            className="flex justify-between items-center py-2"
+                          >
+                            <img
+                              src={item.image}
+                              className="w-12 h-12 object-cover"
+                            />
+                            <div className="flex-1 ml-3">
+                              <p className="text-sm font-semibold">{item.title}</p>
+                              <p className="text-xs text-gray-500">
+                                Đơn giá: {item.price} VNĐ
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Số lượng: x{item.quantity}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Giá tổng: {item.price * item.quantity}   VNĐ
+                              </p>
+                            </div>
+                            <center>
+                              <button
+                                onClick={() => removeFromCart(item.id)}
+                                className="text-red-500"
+                              >
+                                <FaRegTrashAlt />
+                              </button>
+                            </center>
+
+                          </li>
+                        ))}
+                      </ul>
+                      <div><hr /></div>
+                      <div className="mt-4 flex justify-between items-center">
+                        <span className="font-semibold">Total price:</span>
+                        <span className="font-semibold text-xl">
+                          {cart.reduce((total, item) => total + item.price * item.quantity, 0)} VNĐ
+                        </span>
+                      </div>
+                      <Link href="/cart">
+                        <button
+                          className="bg-gradient-to-r from-[#FFA008] to-[#FF6F00] mt-6 text-white font-bold py-2 px-4 rounded" >
+                          Check out
+                        </button>
+                      </Link>
+                    </div>
+                  </center>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+
           </Link>
         </div>
 
@@ -165,19 +232,21 @@ export default function Navbar() {
           </div>
           <div
             className="relative ml-4 cursor-pointer"
-            onClick={toggleCart}
+
           >
             {/* Thêm biểu tượng từ Heroicons */}
+            <Button onClick={toggleSidebar}>
             <ShoppingCartIcon className={`w-6 h-6 text-white cursor-pointer ${isScrolled ? "hidden" : ""}`} />
-            {cartItems.length > 0 && (
+            </Button>
+           
+            {/* {cartItems.length > 0 && (
               <div className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
                 {cartItems.length}
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
     </nav>
-
   );
 }

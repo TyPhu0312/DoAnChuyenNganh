@@ -3,10 +3,9 @@ import "../globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { cn } from "@/lib/utils";
 import { Inter as FontSans } from "next/font/google";
-import { CartProvider } from "@/components/features/cartContext";
 import Footer from "@/components/features/footer";
 import Navbar from "@/components/features/navbar";
-
+import { CartProvider } from "@/components/features/cartContext";
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
