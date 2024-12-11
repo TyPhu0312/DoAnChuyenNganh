@@ -14,6 +14,7 @@ export const CartContext = createContext<{
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
+  clearCart: () => void;
 } | null>(null);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
@@ -31,7 +32,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
-    setCart((prevCart) => [...prevCart, item]);
+    setCart((prevCart) => {
+      const existingItemIndex = prevCart.findIndex((cartItem) => cartItem.id === item.id);
+      if (existingItemIndex !== -1) {
+        const updatedCart = [...prevCart];
+        updatedCart[existingItemIndex].quantity += 1;  
+        return updatedCart;
+      } else {
+        return [...prevCart, item]; 
+      }
+    });
+  };
+  const clearCart = () => {
+    setCart([]); 
   };
 
   const removeFromCart = (id: string) => {
@@ -39,7 +52,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart}}>
       {children}
     </CartContext.Provider>
   );
