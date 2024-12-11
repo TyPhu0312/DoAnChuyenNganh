@@ -7,7 +7,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
 import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
-import { Input } from "@/components/ui/input";
+import ProductForm from "@/components/features/ProductForm";
 
 // Define Product interface with additional attributes
 interface Product {
@@ -27,12 +27,7 @@ interface Category {
   name: string;
 }
 
-interface ProductFormProps {
-  product: Product | null;
-  onSave: (product: Product) => void;
-  onCancel: () => void;
-  categories: Category[];
-}
+
 
 export default function ProductManagement() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -222,92 +217,5 @@ export default function ProductManagement() {
 
 
 
-function ProductForm({ product, onSave, onCancel, categories }: ProductFormProps) {
-  const [title, setTitle] = useState(product ? product.title : "");
-  const [author, setAuthor] = useState(product ? product.author : "");
-  const [price, setPrice] = useState<number>(product ? product.price : 0);  
-  const [description, setDescription] = useState(product ? product.description : "");
-  const [thumbnail, setThumbnail] = useState(product ? product.thumbnail : "");
-  const [categoryId, setCategoryId] = useState(product ? product.categoryId : "");
-
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const numericValue = value ? parseFloat(value):0;  
-    setPrice(numericValue);
-  };
-
-  const handleSubmit = () => {
-    if (!title.trim() || !price || !categoryId) return;
-  
-    const productToSave: Product = {
-      id: product ? product.id : "",
-      title,
-      author,
-      price,
-      description,
-      thumbnail,
-      categoryId,
-      status: "",
-      discount: 0
-    };
-  
-    onSave(productToSave); 
-  };
-  return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Product Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
-      <Input
-        placeholder="Author"
-        value={author}
-        onChange={(e) => setAuthor(e.target.value)}
-        required
-      />
-      {/* Price input with conversion to number */}
-      <Input
-        type="number"
-        placeholder="Price"
-        value={price}
-        onChange={handlePriceChange} 
-        required
-      />
-      <Input
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        required
-      />
-      <Input
-        placeholder="Thumbnail URL"
-        value={thumbnail}
-        onChange={(e) => setThumbnail(e.target.value)}
-      />
-
-      {/* Category Dropdown */}
-      <select
-        value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
-        required
-        className="input"
-      >
-        <option value="">Select Category</option>
-        {categories.map((category) => (
-          <option key={category.id} value={category.id}>
-            {category.name}
-          </option>
-        ))}
-      </select>
-
-      <DialogFooter>
-        <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-        <Button onClick={handleSubmit}>Save</Button>
-      </DialogFooter>
-    </div>
-  );
-}
 
 
