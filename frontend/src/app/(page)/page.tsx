@@ -64,7 +64,7 @@ export default function Home({
                                 className="mb-3 max-w-[200px] max-h-[400px] bg-white border border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                             >
                                 <div className="h-[220px]"> {/* Đặt chiều cao cố định cho ảnh */}
-                                    <Link href="#">
+                                    <Link href={`/ProductDetail/${product.id}`}>
                                         <Image
                                             src={`/images/${product.thumbnail}`}
                                             alt={product.title}
@@ -77,7 +77,7 @@ export default function Home({
                                 </div>
 
                                 <div className="p-5">
-                                    <Link href="#">
+                                    <Link href={`/ProductDetail/${product.id}`}>
                                         <h5 className="mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white">
                                             {product.title}
                                         </h5>
@@ -95,7 +95,7 @@ export default function Home({
 
 
                     <div className="text-center  m-20 text-xl">
-                        <Link href={"#"}>
+                        <Link href={"/allProduct"}>
                             {" "}
                             <span className="underline">See All </span>{" "}
                             <span></span>{" "}
@@ -103,34 +103,15 @@ export default function Home({
                         {/* // kiếm cái hình khác bỏ dô */}
                     </div>
                 </div>
-                <div className="bg-[#40342E]">
-                    <p className="text-3xl text-center my-20 font-bold text-[#C8C8C8]">
-                        Collections on trending
-                    </p>
-                    <div>
-                        <div className="relative w-full bg-brown-900 p-4">
-                            {/* Tiêu đề */}
-                            <h1 className="text-white text-xl font-semibold">
-                                Old things collections
-                            </h1>
-                            {/* Đường ngang với hình tròn */}
-                            <CircleLine />
-                        </div>
-                        <ScrollArt />
+                <ScrollArt/>
+                <div className="text-center  m-20 text-xl">
+                        <Link href={"/Collection"}>
+                            {" "}
+                            <span className="underline">See All </span>{" "}
+                            <span></span>{" "}
+                        </Link>
+                        {/* // kiếm cái hình khác bỏ dô */}
                     </div>
-                    <div className="bg-[#6A4D41]">
-                        <div className="relative w-full bg-brown-900 p-4">
-                            {/* Tiêu đề */}
-                            <h1 className="text-white text-xl font-semibold">
-                                Old things collections
-                            </h1>
-                            {/* Đường ngang với hình tròn */}
-                            <CircleLine />
-                        </div>
-                        <ScrollArt />
-                    </div>
-                </div>
-                <Footer/>
                 {children}
             </main>
         </>
