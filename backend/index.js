@@ -33,6 +33,9 @@ app.use("/api/admin/gallery", routerGallery );
 app.use("/api/admin/order", routerOrder );
 app.use("/api/admin/orderdetail", routerOrderDetail);
 app.use("/api/admin/provider", routerProvider );
+
+const path = require('path');
+app.use('/public', express.static(path.join(__dirname, 'public')));
 // if(process.env.NODE_ENV==='development') {
 //     db.sequelize.sync({force:true}).then(() => {
 //         app.listen(port, () => {
