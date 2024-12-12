@@ -11,7 +11,7 @@ export function AddToCartButton({ product }: { product: { id: string; title: str
     if (existingItem) {
       addToCart({
         ...existingItem,
-        quantity: existingItem.quantity + 1,  
+        quantity: existingItem.quantity++,  
       });
       showToast(`Sản phẩm ${product.title} đã được cập nhật số lượng!`, 'top-right', 'success');
     } else {
