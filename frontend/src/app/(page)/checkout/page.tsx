@@ -1,12 +1,15 @@
-"use client";
+"use client"
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import axios from "axios";
-import { useUser } from '@/components/features/userContext';
-// Định nghĩa giao diện cho sản phẩm và thông tin người dùng
+import { useUsers } from '@/components/features/userContext';
+import { useUser } from "@clerk/nextjs";
+import { formatCurrencyVND } from "@/lib/utils/currencyFormatter"
+import Hero from "@/components/features/hero";
+
 interface CartItem {
   id: string;
   title: string;
@@ -18,36 +21,38 @@ interface UserInfo {
   name: string;
   phone: string;
   address: string;
+  id: string;
 }
 
 export default function Checkout() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]); 
+  const { appUser } = useUsers();
+  const { user } = useUser();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: "",
     phone: "",
     address: "",
+    id: "",
   });
   const [totalPrice, setTotalPrice] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "cash" | "">(""); // Lựa chọn phương thức thanh toán
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "cash" | "">("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { user } = useUser(); // Lấy thông tin người dùng từ context
 
   useEffect(() => {
-    // lấy giỏ hàng từ localStorage
     const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(savedCart);
     calculateTotal(savedCart);
 
-    // Nếu đã có thông tin người dùng, tự động điền vào form
-    if (user) {
+    if (appUser) {
       setUserInfo({
-        name: user.name || "",
-        phone: user.phone || "",
-        address: user.address || "",
+        name: appUser.name || "",
+        phone: appUser.phone || "",
+        address: appUser.address || "",
+        id: user?.id || "",
       });
     }
-  }, [user]); // Chạy lại khi thông tin người dùng thay đổi
+  }, [appUser, user]);
 
   const calculateTotal = (cart: CartItem[]) => {
     const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -59,27 +64,25 @@ export default function Checkout() {
       alert("Please fill out all user information.");
       return;
     }
-
-    if (!paymentMethod) {
-      alert("Please select a payment method.");
-      return;
-    }
-
     setLoading(true);
-
     const orderData = {
-      userInfo,
-      items: cartItems,
-      total: totalPrice,
-      paymentMethod,
+      userId: user?.id,
+      note: "Thank you for your purchase!",
+      status: "Pending",
+      orderDetails: cartItems.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
     };
 
+    console.log("Order Data:", orderData);
     try {
-      const response = await axios.post("http://localhost:5000/api/checkout", orderData);
+      const response = await axios.post("http://localhost:5000/api/admin/order/create", orderData);
       alert("Order placed successfully!");
-      // Sau khi tạo đơn hàng, có thể xóa giỏ hàng và chuyển hướng người dùng
       localStorage.removeItem("cart");
       setCartItems([]);
+      window.location.href = `/order/${response.data.data.orderId}`;
     } catch (err) {
       setError("Error placing order. Please try again.");
       console.error("Checkout error:", err);
@@ -89,95 +92,114 @@ export default function Checkout() {
   };
 
   return (
-    <div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Checkout</CardTitle>
-          <CardDescription>Review your order and proceed with payment.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {cartItems.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.title}</TableCell>
-                  <TableCell>{item.price}</TableCell>
-                  <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{item.price * item.quantity}</TableCell>
+    <main className="flex flex-1 flex-col m-0 bg-[#e0e0e0ee]">
+              <Hero/>
+      <div className="p-4 space-y-6 max-w-2xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">Checkout</CardTitle>
+            <CardDescription className="text-gray-600">Xác nhận đơn hàng</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table className="w-full table-auto">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tác phẩm</TableHead>
+                  <TableHead>Giá</TableHead>
+                  <TableHead>Số lượng</TableHead>
+                  <TableHead>Thành tiền</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="mt-4">
-            <p className="font-medium">Total Price: {totalPrice}</p>
-          </div>
-            
-          <div className="mt-4">
-            <h3 className="font-medium">User Information</h3>
-            <Input
-              placeholder="Name"
-              value={userInfo.name}
-              onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
-            />
-            <Input
-              placeholder="Phone"
-              value={userInfo.phone}
-              onChange={(e) => setUserInfo({ ...userInfo, phone: e.target.value })}
-            />
-            <Input
-              placeholder="Address"
-              value={userInfo.address}
-              onChange={(e) => setUserInfo({ ...userInfo, address: e.target.value })}
-            />
-          </div>
-
-          <div className="mt-4">
-            <h3 className="font-medium">Payment Method</h3>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  value="card"
-                  checked={paymentMethod === "card"}
-                  onChange={() => setPaymentMethod("card")}
-                />
-                Credit Card
-              </label>
-              <label className="ml-4">
-                <input
-                  type="radio"
-                  value="cash"
-                  checked={paymentMethod === "cash"}
-                  onChange={() => setPaymentMethod("cash")}
-                />
-                Cash on Delivery
-              </label>
+              </TableHeader>
+              <TableBody>
+                {cartItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.title}</TableCell>
+                    <TableCell>{formatCurrencyVND(item.price)}</TableCell>
+                    <TableCell>{item.quantity}</TableCell>
+                    <TableCell>{formatCurrencyVND(item.price * item.quantity)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="mt-4">
+              <p className="font-medium text-lg">
+                <span className="font-bold">Total Price: </span>
+                <span className="text-red-500">{formatCurrencyVND(totalPrice)}</span>
+              </p>
             </div>
-          </div>
 
-          <div className="mt-4 flex space-x-4">
-            <Button variant="secondary" onClick={() => { localStorage.removeItem("cart"); window.location.href = "/"; }}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCheckout}
-              disabled={loading}
-            >
-              {loading ? "Processing..." : "Proceed to Payment"}
-            </Button>
-          </div>
+            <div className="mt-4 space-y-4 ">
+              <h3 className="font-medium text-lg">Thông tin nhận hàng</h3>
+              <Input
+                placeholder="Name"
+                value={userInfo.name}
+                onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
+                className="w-full border border-gray-300 rounded-md p-2"
+              />
+              <Input
+                placeholder="Phone"
+                value={userInfo.phone}
+                onChange={(e) => setUserInfo({ ...userInfo, phone: e.target.value })}
+                className="w-full border border-gray-300 rounded-md p-2"
+              />
+              <Input
+                placeholder="Address"
+                value={userInfo.address}
+                onChange={(e) => setUserInfo({ ...userInfo, address: e.target.value })}
+                className="w-full border border-gray-300 rounded-md p-2"
+              />
+            </div>
 
-          {error && <p className="text-red-500 mt-2">{error}</p>}
-        </CardContent>
-      </Card>
-    </div>
+            <div className="mt-4">
+              <h3 className="font-medium text-lg">Payment Method</h3>
+              <div className="flex space-x-4">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    value="card"
+                    checked={paymentMethod === "card"}
+                    onChange={() => setPaymentMethod("card")}
+                  />
+                  <span>Credit Card</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    value="cash"
+                    checked={paymentMethod === "cash"}
+                    onChange={() => setPaymentMethod("cash")}
+                  />
+                  <span>Cash on Delivery</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="mt-4 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  localStorage.removeItem("cart");
+                  window.location.href = "/";
+                }}
+                className="w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCheckout}
+                disabled={loading}
+                className="w-full sm:w-auto"
+              >
+                {loading ? "Processing..." : "Proceed to Payment"}
+              </Button>
+            </div>
+
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+          </CardContent>
+        </Card>
+      </div>
+    </main>
+
+
   );
 }

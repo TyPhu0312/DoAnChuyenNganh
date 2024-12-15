@@ -14,7 +14,6 @@ const queryAsync = (sql, params = []) => {
     });
 };
 const getUser = async (req, res) => {
-    console.log("API /api/admin/user được gọi!");
     try {
         const data = await queryAsync('SELECT * FROM qlbantranh.users'); //
         if (!data) {
@@ -43,10 +42,11 @@ const getUserById = async (req, res) => {
             return res.status(404).send({
                 success: false,
                 message: 'Không thấy user này!'
-            })
+            });
         }
+
         const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.users WHERE id =?`, [id]);
-        if (!dataWithId) {
+        if (!dataWithId || dataWithId.length === 0) {
             return res.status(404).send({
                 success: false,
                 message: 'Không có user mang id này',
@@ -55,23 +55,49 @@ const getUserById = async (req, res) => {
         res.status(200).send({
             success: true,
             ProductDetail: dataWithId
-        })
+        });
 
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ message: error.message });
     }
 };
+const checkUserForOrder = async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res.status(400).send({
+          success: false,
+          message: 'ID người dùng không hợp lệ!'
+        });
+      }
+  
+      const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.users WHERE id =?`, [id]);
+      if (!dataWithId || dataWithId.length === 0) {
+        return res.status(200).send({
+          success: false,
+          message: 'Không có người dùng trong hệ thống, vui lòng cập nhật thông tin!'
+        });
+      }
+  
+      res.status(200).send({
+        success: true,
+        ProductDetail: dataWithId
+      });
+  
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
 const createUser = async (req, res) => {
     try {
-        const { firstname, lastname, email, phone, providerId, roleId } = req.body;
-        console.log("da chay den day");
-        if (!firstname || !lastname || !email || !phone || !providerId || !roleId) {
+        const {id, firstname, lastname, email, phone, providerId, roleId } = req.body;
+        if (!id || !firstname || !lastname || !email || !phone || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
             });
         }
-        const id = crypto.randomUUID();
+        //const id = crypto.randomUUID();
         if (!validator.isEmail(email)) {
             return res.status(400).send({
                 success: false,
@@ -83,8 +109,8 @@ const createUser = async (req, res) => {
             return res.status(400).json({ error: 'Phone number must contain only digits' });
         }
         const data = await queryAsync(
-            `INSERT INTO users (id, firstname, lastname, email, password, phone, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
-            [id, firstname, lastname, email, password, phone, providerId, roleId]
+            `INSERT INTO users (id, firstname, lastname, email, phone, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?,?)`,
+            [id, firstname, lastname, email, phone, providerId, roleId]
         );
         if (!data) {
             console.log("Không đủ dữ liệu để INSERT hoặc nhập sai dữ liệu");
@@ -191,4 +217,5 @@ const deleteUser = async (req, res) => {
         });
     }
 };
-module.exports = { getUser, getUserById, createUser, updateUser, deleteUser };
+
+module.exports = { getUser, getUserById, createUser, updateUser, deleteUser,checkUserForOrder };

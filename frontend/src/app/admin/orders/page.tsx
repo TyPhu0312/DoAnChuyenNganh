@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input";
 interface Order {
   id: string;
   status: string;
-  customer: string;
-  totalAmount: number;
+  customerName: string;
+  total_amount: number;
   orderItems: string; // Or a more complex structure, depending on your order data
 }
 
@@ -119,8 +119,8 @@ export default function OrderManagement() {
               {orders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell>{order.id}</TableCell>
-                  <TableCell>{order.customer}</TableCell>
-                  <TableCell>{order.totalAmount}</TableCell>
+                  <TableCell>{order.customerName}</TableCell>
+                  <TableCell>{order.total_amount}</TableCell>
                   <TableCell>{order.status}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button size="sm" onClick={() => { setEditingOrder(order); setDialogOpen(true); }}>
@@ -180,8 +180,8 @@ function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
     const orderToSave: Order = {
       id: order ? order.id : "",
       status,
-      customer: order ? order.customer : "",
-      totalAmount: order ? order.totalAmount : 0,
+      customerName: order ? order.customerName : "",
+      total_amount: order ? order.total_amount : 0,
       orderItems: order ? order.orderItems : "",
     };
 
