@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
+
 export default function UpdateUserPage() {
   const { user, isSignedIn, isLoaded } = useUser();
-  const [userData, setUserData] = useState<any>({
+  const [userData, setUserData] = useState({
     id: "",
     firstname: "",
     lastname: "",
@@ -14,12 +15,13 @@ export default function UpdateUserPage() {
     roleId: "ceb09234-2b63-4ca1-89b3-3aab90d9f716",
   });
 
+  // Load dữ liệu từ Clerk vào state
   useEffect(() => {
     if (isSignedIn && user && isLoaded) {
       setUserData({
-        id: user?.id,
-        firstname: user?.firstName,
-        lastname: user?.lastName,
+        id: user.id,
+        firstname: user.firstName || "",
+        lastname: user.lastName || "",
         email: user.primaryEmailAddress?.emailAddress || "",
         phone: user.phoneNumbers[0]?.phoneNumber || "",
         providerId: "43e41e65-7d2f-4d0e-a4b5-6d649cc67c70",
@@ -27,20 +29,20 @@ export default function UpdateUserPage() {
       });
     }
   }, [isSignedIn, user, isLoaded]);
-  console.log("user data: ", user);
-  const handleSubmit = async () => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); 
     try {
       await axios.post("http://localhost:5000/api/admin/user/create", userData);
-      //alert("Cập nhật thông tin thành công!");
+      alert("Cập nhật thông tin thành công!");
     } catch (error) {
-      //alert("Có lỗi xảy ra khi cập nhật thông tin!");
+      console.error("Error updating user:", error);
+      alert("Có lỗi xảy ra khi cập nhật thông tin!");
     }
   };
+
   if (!isSignedIn || !isLoaded) {
     return <div>Loading...</div>;
-  }
-  if(isSignedIn) {
-    handleSubmit();
   }
 
   return (
