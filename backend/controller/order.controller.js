@@ -14,9 +14,8 @@ const queryAsync = (sql, params = []) => {
 };
 const getOrder = async (req, res) => {
     try {
-        // Fetch all orders with customer name and total amount
         const data = await queryAsync(`
-            SELECT o.id, o.note, o.status, o.total_amount, u.lastname AS customerName 
+            SELECT o.id, o.note, o.status, o.total_amount, u.firstname AS customerName 
             FROM qlbantranh.order o
             JOIN qlbantranh.users u ON o.userId = u.id
         `);
@@ -54,10 +53,8 @@ const getOrderById = async (req, res) => {
                 message: 'Không tìm thấy ID!'
             });
         }
-
-        // Fetch order by ID with customer name and total amount
         const dataWithId = await queryAsync(`
-            SELECT o.id, o.note, o.status, o.total_amount, u.lastname AS customerName 
+            SELECT o.id, o.note, o.status, o.total_amount, u.firstname AS customerName 
             FROM qlbantranh.order o
             JOIN qlbantranh.users u ON o.userId = u.id
             WHERE o.id = ?
@@ -82,38 +79,38 @@ const getOrderById = async (req, res) => {
 
 const createOrder = async (req, res) => {
     try {
-        const { note, status, userId } = req.body;
-
-        // Kiểm tra thông tin bắt buộc
-        if (!userId || !note) {
-            return res.status(400).send({
-                success: false,
-                message: "Thiếu trường thông tin bắt buộc",
-            });
-        }
-
-        // Tạo ID duy nhất cho đơn hàng
+        const { note, status, userId, orderDetails   } = req.body;
         const orderId = crypto.randomUUID();
-
-        // Mặc định trạng thái đơn hàng là 'Pending' nếu không có
         const orderStatus = status || 'Pending';
-        let totalAmount = 0; // Nếu có logic tính toán tổng tiền, thêm ở đây
-
-        // Tạo đơn hàng mới vào bảng 'order'
+        let totalAmount = 0; 
+        orderDetails.forEach(detail => {
+            totalAmount += detail.quantity * detail.price;
+        });
         const orderData = await queryAsync(
             `INSERT INTO \`order\` (id, note, status, userId, total_amount) VALUES (?, ?, ?, ?, ?)`,
             [orderId, note, orderStatus, userId, totalAmount]
         );
-
-        // Kiểm tra kết quả truy vấn
+        console.log("order data:", orderData);
         if (!orderData) {
             return res.status(500).send({
                 success: false,
                 message: 'Lỗi trong câu truy vấn INSERT order',
             });
         }
+        try {
+            console.log("order id", orderId);``
+            const addDetailsRes = await addOrderDetailsInternal(orderId, orderDetails);
 
-        // Trả về thông tin đơn hàng đã tạo
+            if (!addDetailsRes.success) {
+                throw new Error(addDetailsRes.message);
+            }
+        } catch (error) {
+            return res.status(500).send({
+                success: false,
+                message: 'Tạo order thành công nhưng lỗi khi thêm chi tiết sản phẩm',
+                error: error.message,
+            });
+        }
         res.status(201).send({
             success: true,
             message: 'Order đã được tạo thành công!',
@@ -129,44 +126,30 @@ const createOrder = async (req, res) => {
     }
 };
 
-const addOrderDetails = async (req, res) => {
-    const { orderId, orderDetails } = req.body;
-
-    // Kiểm tra thông tin yêu cầu
-    if (!orderId || !orderDetails || orderDetails.length === 0) {
-        return res.status(400).send({
-            success: false,
-            message: "Thiếu thông tin orderId hoặc order details",
-        });
-    }
-
+const addOrderDetailsInternal = async (orderId, orderDetails) => {
     try {
-        // Insert order details vào bảng 'orderdetails'
         const orderDetailsPromises = orderDetails.map(detail => {
             const { productId, quantity, price } = detail;
             return queryAsync(
-                `INSERT INTO \`orderdetails\` (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`,
+                `INSERT INTO \`orderdetail\` (orderId, productId, num, price) VALUES (?, ?, ?, ?)`,
                 [orderId, productId, quantity, price]
             );
         });
-
-        // Chờ tất cả các insert order details hoàn thành
         await Promise.all(orderDetailsPromises);
-
-        res.status(201).send({
+        return {
             success: true,
             message: 'Order details đã được thêm thành công!',
-        });
+       
+        };
     } catch (error) {
         console.error(error);
-        res.status(500).send({
+        return {
             success: false,
-            message: 'Lỗi trong yêu cầu API thêm order details',
+            message: 'Lỗi khi thêm chi tiết sản phẩm',
             error,
-        });
+        };
     }
 };
-
 const updateOrder = async (req, res) => {
     try {
         const { id } = req.params;
@@ -257,6 +240,61 @@ const updateOrderStatus = async (req, res) => {
 
 
 const deleteOrder = async (req, res) => {
+    let connection; // Declare connection variable to ensure proper release
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(404).send({
+                success: false,
+                message: 'Không tìm thấy order này',
+            });
+        }
+
+        // Delete the order details first (if needed)
+        const deleteOrderDetails = await queryAsync(
+            `DELETE FROM \`orderdetail\` WHERE order_id = ?`, 
+            [id]
+        );
+
+        if (deleteOrderDetails.affectedRows === 0) {
+            await connection.rollback();
+            return res.status(404).send({
+                success: false,
+                message: 'Không tìm thấy order details để xoá!',
+            });
+        }
+
+        // Delete the order itself
+        const deleteOrder = await queryAsync(
+            `DELETE FROM \`order\` WHERE id = ?`, 
+            [id]
+        );
+
+        if (deleteOrder.affectedRows === 0) {
+            await connection.rollback();
+            return res.status(404).send({
+                success: false,
+                message: 'Không tìm thấy order để xoá!',
+            });
+        }
+
+        // Commit the transaction if both deletions are successful
+        await connection.commit();
+
+        res.status(200).send({
+            success: true,
+            message: 'Xoá order và order details thành công!',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Không thể xoá order!',
+            error,
+        });
+    }
+};
+const checkUserConditionForOrder = async (req, res) => {
     let connection; // Declare connection variable to ensure proper release
     try {
         const { id } = req.params;

@@ -9,7 +9,6 @@ import { CartProvider } from "@/components/features/cartContext";
 import { ToastProvider } from "@/components/features/toastContext";
 import { UserProvider } from "@/components/features/userContext"; // Import UserProvider
 import 'react-toastify/dist/ReactToastify.css';
-import useSWR, { SWRConfig } from 'swr';
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -25,6 +24,7 @@ export default function RootLayout({
     <ClerkProvider>
         <ToastProvider>
           <CartProvider>
+            <Navbar/>
             <UserProvider> {/* Bọc toàn bộ layout với UserProvider */}
               <html lang="en">
                 <body
@@ -33,13 +33,15 @@ export default function RootLayout({
                     fontSans.variable
                   )}
                 >
-                  <Navbar />
+                  
                   <ThemeProvider
+                  
                     attribute="class"
                     defaultTheme="system"
                     enableSystem
                     disableTransitionOnChange
                   >
+                    
                     {children}
                     <Footer />
                   </ThemeProvider>

@@ -1,4 +1,3 @@
-// userContext.tsx
 "use client"
 import { createContext, useContext, useState, ReactNode } from 'react';
 
@@ -10,16 +9,16 @@ interface User {
 }
 
 interface UserContextType {
-  user: User | null;
+  appUser: User | null; // Đổi tên từ 'user' thành 'appUser'
   setUser: (user: User | null) => void;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const useUser = (): UserContextType => {
+export const useUsers = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error('useUsers must be used within a UserProvider');
   }
   return context;
 };
@@ -29,10 +28,10 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [appUser, setAppUser] = useState<User | null>(null); // Đổi tên từ 'user' thành 'appUser'
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ appUser, setUser: setAppUser }}>
       {children}
     </UserContext.Provider>
   );
