@@ -44,6 +44,13 @@ module.exports = (sequelize, DataTypes) => {
             },
             unique: false,
         },
+        address: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [1, 100],
+            },
+        },
     },
     {
         indexes: [] //tắt index - tạo chỉ mục trên database để không bị quá 64key index...

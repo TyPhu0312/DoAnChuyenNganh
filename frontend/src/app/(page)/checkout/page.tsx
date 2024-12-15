@@ -9,7 +9,7 @@ import { useUsers } from '@/components/features/userContext';
 import { useUser } from "@clerk/nextjs";
 import { formatCurrencyVND } from "@/lib/utils/currencyFormatter"
 import Hero from "@/components/features/hero";
-
+import { redirect } from 'next/navigation';
 interface CartItem {
   id: string;
   title: string;
@@ -90,6 +90,11 @@ export default function Checkout() {
       setLoading(false);
     }
   };
+  const isAuth = false; // Giả sử giá trị này đến từ trạng thái đăng nhập của bạn
+
+    if (!isAuth) {
+        redirect('/sign-in'); // Chuyển hướng đến trang đăng nhập
+    }
 
   return (
     <main className="flex flex-1 flex-col m-0 bg-[#e0e0e0ee]">
