@@ -18,7 +18,7 @@ import {
 
 export default function AdminHeader() {
     return (
-        <header className="sticky top-0 flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
+        <header className="sticky top-0 flex h-14 items-center gap-4 border-b bg-white z-10 px-4 lg:h-[60px] lg:px-6">
             <Sheet>
                 <SheetTrigger asChild>
                     <Button

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
 import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
 import ProductForm from "@/components/features/ProductForm";
+import Image from "next/image";
 
 // Define Product interface with additional attributes
 interface Product {
@@ -91,7 +92,7 @@ export default function ProductManagement() {
         const response = await axios.put(`http://localhost:5000/api/admin/products/update/${product.id}`, product);
         // Update product in the state
         setProducts((prevProducts) =>
-          prevProducts.map((p) => (p.id === product.id ? { ...p, title: product.title, price: product.price } : p))
+          prevProducts.map((p) => (p.id === product.id ? { ...p, title: product.title, price: product.price, author: product.author, description: product.description, discount: product.discount } : p))
         );
         alert("Product updated successfully!");
       } else {
@@ -128,21 +129,43 @@ export default function ProductManagement() {
 
   return (
     <Admin>
+
       <Card>
+
         <CardHeader className="px-7">
           <CardTitle>Product Management</CardTitle>
           <CardDescription>List of all products in your store.</CardDescription>
         </CardHeader>
+
         <CardContent>
+
           <div className="mb-4 flex justify-end">
             <Button onClick={() => { setEditingProduct(null); setDialogOpen(true); }}>
               Add Product
             </Button>
+
           </div>
+          <div className="">
+            <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
+              <DialogContent >
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingProduct ? "Edit Product" : "Add Product"}
+                  </DialogTitle>
+                </DialogHeader>
+                <ProductForm
+                  product={editingProduct}
+                  categories={categories} // Pass categories to the form
+                  onSave={handleAddOrEdit}
+                  onCancel={() => setDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
+          {/* Dialog for Add/Edit */}
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product ID</TableHead>
                 <TableHead>Product Title</TableHead>
                 <TableHead>Author</TableHead>
                 <TableHead>Thumbnail</TableHead>
@@ -156,7 +179,16 @@ export default function ProductManagement() {
               {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
-                    <div className="font-medium">{product.id}</div>
+                    <div>
+                      <Image
+                        src={`/images/${product.thumbnail}`}
+                        alt={product.title}
+                        width={100}
+                        height={100}
+                        quality={100}
+                        className="rounded-t-md w-full h-full object-cover"
+                      />
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="font-medium">{product.title}</div>
@@ -164,9 +196,7 @@ export default function ProductManagement() {
                   <TableCell>
                     <div>{product.author}</div>
                   </TableCell>
-                  <TableCell>
-                    <div>{product.thumbnail}</div>
-                  </TableCell>
+
                   <TableCell>
                     <div>{product.price}</div>
                   </TableCell>
@@ -194,22 +224,7 @@ export default function ProductManagement() {
         </CardContent>
       </Card>
 
-      {/* Dialog for Add/Edit */}
-      <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {editingProduct ? "Edit Product" : "Add Product"}
-            </DialogTitle>
-          </DialogHeader>
-          <ProductForm
-            product={editingProduct}
-            categories={categories} // Pass categories to the form
-            onSave={handleAddOrEdit}
-            onCancel={() => setDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
+
     </Admin>
 
   );

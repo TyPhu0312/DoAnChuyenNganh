@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-
+import styles from "@/lib/css/Modal.module.css";
 interface Product {
     id: string;
     title: string;
