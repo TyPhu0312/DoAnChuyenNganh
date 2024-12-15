@@ -3,14 +3,14 @@ import { useCart } from "@/components/features/cartContext";
 import { FaRegTrashAlt } from "react-icons/fa";
 import Link from "next/link";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import Image from "next/image"; 
+import Image from "next/image";
 interface CartSidebarProps {
   isOpen: boolean;
   closeSidebar: () => void;
 }
 const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, closeSidebar }) => {
   const { cart, removeFromCart } = useCart();
-  const [isClosing, setIsClosing] = useState(false); 
+  const [isClosing, setIsClosing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -21,7 +21,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, closeSidebar }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        closeSidebar(); 
+        closeSidebar();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -35,7 +35,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, closeSidebar }) => {
       setIsClosing(true);
       setTimeout(() => {
         setIsClosing(false);
-      }, 300); 
+      }, 300);
     }
   }, [isOpen]);
 
@@ -45,9 +45,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, closeSidebar }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-20">
           <div
             ref={sidebarRef}
-            className={`fixed right-0 top-0 w-80 bg-white h-full shadow-lg z-30 transition-all ${
-              isClosing ? "cart-sidebar-closing" : "cart-sidebar"
-            }`}
+            className={`fixed right-0 top-0 w-80 bg-white h-full shadow-lg z-30 transition-all ${isClosing ? "cart-sidebar-closing" : "cart-sidebar"
+              }`}
           >
             <div className="flex justify-between items-center p-4">
               <center><h2 className="text-xl font-semibold">Your Cart</h2></center>
@@ -83,7 +82,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, closeSidebar }) => {
                   </li>
                 ))}
               </ul>
-              <div><hr/></div>
+              <div><hr /></div>
               <div className="mt-4 flex justify-between items-center">
                 <span className="font-semibold">Total price:</span>
                 <span className="font-semibold text-xl">
@@ -91,12 +90,12 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, closeSidebar }) => {
                 </span>
               </div>
               <Link href={'/checkout'}>
-              <button className="bg-gradient-to-r from-[#59a83e] to-[#3f9b1b] mt-6 text-white font-bold py-2 px-4 rounded hover:opacity-80 hover:scale-105 transition-all duration-200"
-              >
+                <button className="bg-gradient-to-r from-[#59a83e] to-[#3f9b1b] mt-6 text-white font-bold py-2 px-4 rounded hover:opacity-80 hover:scale-105 transition-all duration-200"
+                >
                   Check out
-              </button>
+                </button>
               </Link>
-              
+
             </div>
           </div>
         </div>
