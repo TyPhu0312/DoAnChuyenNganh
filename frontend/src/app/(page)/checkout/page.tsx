@@ -10,6 +10,7 @@ import { useUser } from "@clerk/nextjs";
 import { formatCurrencyVND } from "@/lib/utils/currencyFormatter"
 import Hero from "@/components/features/hero";
 import { redirect } from 'next/navigation';
+import AuthGuard from "@/components/features/authGuard";
 interface CartItem {
   id: string;
   title: string;
@@ -60,10 +61,10 @@ export default function Checkout() {
   };
 
   const handleCheckout = async () => {
-    if (!userInfo.name || !userInfo.phone || !userInfo.address) {
-      alert("Please fill out all user information.");
-      return;
-    }
+    // if (!userInfo.name || !userInfo.phone || !userInfo.address) {
+    //   alert("Please fill out all user information.");
+    //   return;
+    // }
     setLoading(true);
     const orderData = {
       userId: user?.id,
@@ -82,7 +83,7 @@ export default function Checkout() {
       alert("Order placed successfully!");
       localStorage.removeItem("cart");
       setCartItems([]);
-      window.location.href = `/order/${response.data.data.orderId}`;
+      window.location.href = "/checkout";
     } catch (err) {
       setError("Error placing order. Please try again.");
       console.error("Checkout error:", err);
@@ -90,13 +91,8 @@ export default function Checkout() {
       setLoading(false);
     }
   };
-  const isAuth = false; // Giả sử giá trị này đến từ trạng thái đăng nhập của bạn
-
-    if (!isAuth) {
-        redirect('/sign-in'); // Chuyển hướng đến trang đăng nhập
-    }
-
   return (
+    <AuthGuard userId={user?.id ?? null}>
     <main className="flex flex-1 flex-col m-0 bg-[#e0e0e0ee]">
               <Hero/>
       <div className="p-4 space-y-6 max-w-2xl mx-auto">
@@ -133,7 +129,7 @@ export default function Checkout() {
               </p>
             </div>
 
-            <div className="mt-4 space-y-4 ">
+            {/* <div className="mt-4 space-y-4 ">
               <h3 className="font-medium text-lg">Thông tin nhận hàng</h3>
               <Input
                 placeholder="Name"
@@ -153,7 +149,7 @@ export default function Checkout() {
                 onChange={(e) => setUserInfo({ ...userInfo, address: e.target.value })}
                 className="w-full border border-gray-300 rounded-md p-2"
               />
-            </div>
+            </div> */}
 
             <div className="mt-4">
               <h3 className="font-medium text-lg">Payment Method</h3>
@@ -204,7 +200,7 @@ export default function Checkout() {
         </Card>
       </div>
     </main>
-
+    </AuthGuard>
 
   );
 }

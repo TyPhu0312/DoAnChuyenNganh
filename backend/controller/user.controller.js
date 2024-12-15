@@ -90,8 +90,8 @@ const checkUserForOrder = async (req, res) => {
   };
 const createUser = async (req, res) => {
     try {
-        const {id, firstname, lastname, email, phone, providerId, roleId } = req.body;
-        if (!id || !firstname || !lastname || !email || !phone || !providerId || !roleId) {
+        const {id, firstname, lastname, email, phone, address, providerId, roleId } = req.body;
+        if (!id || !firstname || !lastname || !email || !phone || !address|| !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
@@ -109,8 +109,8 @@ const createUser = async (req, res) => {
             return res.status(400).json({ error: 'Phone number must contain only digits' });
         }
         const data = await queryAsync(
-            `INSERT INTO users (id, firstname, lastname, email, phone, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?,?)`,
-            [id, firstname, lastname, email, phone, providerId, roleId]
+            `INSERT INTO users (id, firstname, lastname, email, phone, address, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?,?,?)`,
+            [id, firstname, lastname, email, phone, address, providerId, roleId]
         );
         if (!data) {
             console.log("Không đủ dữ liệu để INSERT hoặc nhập sai dữ liệu");
@@ -142,8 +142,8 @@ const updateUser = async (req, res) => {
                 message: 'Không tìm thấy user này',
             });
         }
-        const { firstname, lastname, email, password, phone, providerId, roleId } = req.body;
-        if (!firstname || !lastname || !email || !phone || !providerId || !roleId) {
+        const { firstname, lastname, email, password, phone, address, providerId, roleId } = req.body;
+        if (!firstname || !lastname || !email || !phone || !address|| !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: 'Nhập thiếu trường dữ liệu',
@@ -163,9 +163,9 @@ const updateUser = async (req, res) => {
         }
         const data = await queryAsync(
             `UPDATE users 
-             SET firstname = ?, lastname = ?, email = ?, password = ?, phone = ?, providerId = ?, roleId = ?
+             SET firstname = ?, lastname = ?, email = ?, password = ?, phone = ?, address = ? , providerId = ?, roleId = ?
              WHERE id = ?`,
-            [firstname, lastname, email, password, phone, providerId, roleId, id]
+            [firstname, lastname, email, password, phone, address, providerId, roleId, id]
         );
         if (data.affectedRows === 0) {
             return res.status(404).send({
