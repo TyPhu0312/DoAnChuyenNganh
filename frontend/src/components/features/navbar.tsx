@@ -62,9 +62,9 @@ export default function Navbar() {
           </Link>
           <Button
             onClick={toggleSidebar}
-            className="ml-4 p-2 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="ml-4 p-2 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 hover:bg-white hover:text-black"
           >
-            <ShoppingCartIcon className="w-6 h-6 text-white cursor-pointer" />
+            <ShoppingCartIcon className="w-6 h-6 text-white cursor-pointer hover:text-black"/>
           </Button>
 
           <div className={`${isScrolled ? "flex justify-center items-center ml-2" : "hidden"}`}>
