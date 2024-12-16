@@ -25,7 +25,7 @@ router.get('/', getProducts);
 router.get('/:id', getProductById);
 router.get('/category/:categoryId', getProductByIdCategory);
 router.post('/create', upload.single('thumbnail'), createProduct); // Middleware upload trước createProduct
-router.put('/update/:id', updateProduct);
+router.put('/update/:id', upload.single('thumbnail'), updateProduct);
 router.delete('/delete/:id', deleteProduct);
 
 module.exports = router;
