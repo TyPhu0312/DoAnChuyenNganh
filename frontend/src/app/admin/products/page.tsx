@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Admin from "../page"; // Layout Admin
@@ -7,10 +7,10 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
 import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
-import ProductForm from "@/components/features/ProductForm";
+import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
-// Define Product interface with additional attributes
+// Interfaces for Product and Category
 interface Product {
   id: string;
   title: string;
@@ -19,8 +19,8 @@ interface Product {
   price: number;
   description: string;
   categoryId: string;
-  status: string;
-  discount: number;
+  // status: string;
+  // discount: number;
 }
 
 interface Category {
@@ -28,41 +28,151 @@ interface Category {
   name: string;
 }
 
+// Product Form Component
+interface ProductFormProps {
+  product: Product | null;
+  categories: Category[];
+  onSave: (product: Product) => void;
+  onCancel: () => void;
+}
 
-
-export default function ProductManagement() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]); // Categories state
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [isDialogOpen, setDialogOpen] = useState(false); // Manage dialog state
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null); // Product to edit
+function ProductForm({ product, categories, onSave, onCancel }: ProductFormProps) {
+  const [title, setTitle] = useState(product ? product.title : "");
+  const [author, setAuthor] = useState(product ? product.author : "");
+  const [price, setPrice] = useState<number>(product ? product.price : 0);
+  const [description, setDescription] = useState(product ? product.description : "");
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [categoryId, setCategoryId] = useState(product ? product.categoryId : "");
+  const [existingThumbnail, setExistingThumbnail] = useState(product ? product.thumbnail : "");
+  // const [status, setStatus] = useState(product ? product.status : "available");
+  // const [discount, setDiscount] = useState<number>(product ? product.discount : 0);
 
   useEffect(() => {
-    fetchProducts();
-    fetchCategories(); // Fetch categories on component mount
-  }, []);
+    if (product) {
+      setTitle(product.title);
+      setAuthor(product.author);
+      setPrice(product.price);
+      setDescription(product.description);
+      setCategoryId(product.categoryId);
+      setExistingThumbnail(product.thumbnail);
+      // setStatus(product.status);
+      // setDiscount(product.discount);
+    }
+  }, [product]);
 
-  // Fetch products from the API
-  const fetchProducts = async () => {
+  const handleSubmit = async () => {
+    if (!title) {
+      alert("Title are required!");
+      return;
+    }
+    if (!price) {
+      alert("Price are required!");
+      return;
+    }
+    if (!categoryId) {
+      alert("Category are required!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("author", author);
+    formData.append("price", price.toString());
+    formData.append("description", description);
+    formData.append("categoryId", categoryId);
+
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail);  // Đảm bảo rằng bạn gửi đúng file
+    }
+
+
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/products/");
-      const data = response.data.data || response.data;
-      if (Array.isArray(data)) {
-        setProducts(data);
+      if (product?.id) {
+        // Update Product
+        await axios.put(
+          `http://localhost:5000/api/admin/products/update/${product.id}`,
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
       } else {
-        console.error("API response is not an array", response.data);
-        setProducts([]);
+        // Add Product
+        await axios.post(
+          "http://localhost:5000/api/admin/products/create",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
       }
-    } catch (err) {
-      console.error("Error fetching products:", err);
-      setError("Error loading products.");
-    } finally {
-      setLoading(false);
+      onSave(product || ({} as Product));
+    } catch (error) {
+      console.error("Error saving product:", error);
+      alert("Failed to save the product. Please try again.");
     }
   };
 
-  // Fetch categories from the API
+
+  return (
+    <div className="space-y-4">
+      <Input placeholder="Product Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+      <Input placeholder="Author" value={author} onChange={(e) => setAuthor(e.target.value)} required />
+      <Input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(parseFloat(e.target.value))} required />
+      <Input placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} required />
+      {/* <Input type="number" placeholder="Discount" value={discount} onChange={(e) => setDiscount(parseFloat(e.target.value))} /> */}
+      {/* <select value={status} onChange={(e) => setStatus(e.target.value)} required>
+        <option value="available">Available</option>
+        <option value="unavailable">Unavailable</option>
+      </select> */}
+      <input type="file" onChange={(e) => e.target.files && setThumbnail(e.target.files[0])} />
+      {existingThumbnail && !thumbnail && (
+        <Image src={`/images/${existingThumbnail}`} alt="Existing Thumbnail" width={100} height={100} />
+      )}
+      <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
+        <option value="">Select Category</option>
+        {categories.map((cat) => (
+          <option key={cat.id} value={cat.id}>
+            {cat.name}
+          </option>
+        ))}
+      </select>
+      <DialogFooter>
+        <Button variant="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit}>Save</Button>
+      </DialogFooter>
+    </div>
+  );
+}
+
+
+// Product Management Component
+export default function ProductManagement() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [error, setError] = useState<string | null>(null); // Thêm state error
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
+  const fetchProducts = useCallback(() => {
+    setLoading(true); // Bắt đầu trạng thái loading
+    axios
+      .get("http://localhost:5000/api/admin/products/")
+      .then((response) => {
+        setProducts(response.data.data || []); // Lấy dữ liệu từ API
+        setLoading(false); // Kết thúc loading
+      })
+      .catch((err) => {
+        console.error("Error fetching products:", err);
+        setLoading(false); // Dù lỗi cũng cần dừng loading
+      });
+  }, []);
+
+
   const fetchCategories = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/admin/category/");
@@ -71,166 +181,152 @@ export default function ProductManagement() {
         setCategories(data);
       } else {
         console.error("API response is not an array", response.data);
-        setCategories([]);
+        setCategories([]); // Cập nhật categories là một mảng trống nếu API không trả về mảng
       }
     } catch (err) {
       console.error("Error fetching categories:", err);
-      setError("Error loading categories.");
+      setError("Error loading categories."); // Lưu thông báo lỗi vào state
     }
   };
 
-  // Save product (Add/Edit)
-  const handleAddOrEdit = async (product: Product) => {
-    if (!product.title.trim()) {
-      alert("Please enter a product title.");
-      return;
-    }
 
-    try {
-      if (product.id) {
-        // Update existing product
-        const response = await axios.put(`http://localhost:5000/api/admin/products/update/${product.id}`, product);
-        // Update product in the state
-        setProducts((prevProducts) =>
-          prevProducts.map((p) => (p.id === product.id ? { ...p, title: product.title, price: product.price, author: product.author, description: product.description, discount: product.discount } : p))
-        );
-        alert("Product updated successfully!");
-      } else {
-        // Add new product
-        const response = await axios.post("http://localhost:5000/api/admin/products/create", product);
-        setProducts((prevProducts) => [
-          ...prevProducts,
-          { ...product, id: response.data.id },
-        ]);
-        alert("Product added successfully!");
-      }
-      fetchProducts();
-      setDialogOpen(false); // Close dialog after saving
-      setEditingProduct(null); // Reset editing state
-    } catch (err) {
-      console.error("Error saving product:", err);
-      alert("Unable to save product. Please try again.");
-    }
+
+
+  const handleAddOrEdit = (product: Product) => {
+    fetchProducts();
+    setDialogOpen(false);
+    setEditingProduct(null);
   };
 
-  // Delete product
   const handleDelete = async (productId: string) => {
     try {
       await axios.delete(`http://localhost:5000/api/admin/products/delete/${productId}`);
-      // Remove deleted product from the state
-      setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
-      fetchProducts();
-      alert("Product deleted successfully!");
-    } catch (err) {
-      console.error("Error deleting product:", err);
-      alert("Unable to delete product. Please try again.");
+      fetchProducts(); // Refresh products
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("Failed to delete the product. Please try again.");
     }
   };
 
   return (
     <Admin>
-
       <Card>
-
         <CardHeader className="px-7">
           <CardTitle>Product Management</CardTitle>
-          <CardDescription>List of all products in your store.</CardDescription>
+          <CardDescription>Manage your store's products</CardDescription>
         </CardHeader>
-
         <CardContent>
-
           <div className="mb-4 flex justify-end">
-            <Button onClick={() => { setEditingProduct(null); setDialogOpen(true); }}>
-              Add Product
-            </Button>
+            <Button onClick={() => {
+              setEditingProduct(null); // Reset editingProduct về null khi bấm "Add Product"
+              setDialogOpen(true);      // Mở modal
+            }}>Add Product</Button>
 
           </div>
-          <div className="">
-            <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
-              <DialogContent >
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingProduct ? "Edit Product" : "Add Product"}
-                  </DialogTitle>
-                </DialogHeader>
-                <ProductForm
-                  product={editingProduct}
-                  categories={categories} // Pass categories to the form
-                  onSave={handleAddOrEdit}
-                  onCancel={() => setDialogOpen(false)}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
-          {/* Dialog for Add/Edit */}
+          <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
+              </DialogHeader>
+              <ProductForm
+                product={editingProduct}  // Nếu không có dữ liệu (null), form sẽ để trống
+                categories={categories}
+                onSave={(product) => {
+                  handleAddOrEdit(product);
+                  setDialogOpen(false);
+                }}
+                onCancel={() => {
+                  setDialogOpen(false);
+                  setEditingProduct(null); // Reset lại editingProduct sau khi cancel
+                }}
+              />
+
+
+            </DialogContent>
+          </Dialog>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product Title</TableHead>
-                <TableHead>Author</TableHead>
                 <TableHead>Thumbnail</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead>Author</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>
-                    <div>
-                      <Image
-                        src={`/images/${product.thumbnail}`}
-                        alt={product.title}
-                        width={100}
-                        height={100}
-                        quality={100}
-                        className="rounded-t-md w-full h-full object-cover"
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{product.title}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{product.author}</div>
-                  </TableCell>
-
-                  <TableCell>
-                    <div>{product.price}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{product.description}</div>
-                  </TableCell>
-                  <TableCell>
-                    {/* Display category name */}
-                    <div>
-                      {categories.find((category) => category.id === product.categoryId)?.name || 'N/A'}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button size="sm" onClick={() => { setEditingProduct(product); setDialogOpen(true); }}>
-                      Edit
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDelete(product.id)}>
-                      Delete
-                    </Button>
-                  </TableCell>
+              {loading ? (
+                // Show Loading State
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center">Loading...</TableCell>
                 </TableRow>
-              ))}
+              ) : products.length > 0 ? (
+                // Map over Products
+                products.map((product) => (
+                  <TableRow key={product.id}>
+                    {/* Product Thumbnail */}
+                    <TableCell>
+                      {product.thumbnail ? (
+                        <Image
+                          src={`/images/${product.thumbnail}`}
+                          alt={product.title}
+                          width={50}
+                          height={50}
+                          className="object-cover rounded"
+                        />
+                      ) : (
+                        <span>No Image</span> // Fallback for Missing Thumbnail
+                      )}
+                    </TableCell>
+
+                    {/* Product Details */}
+                    <TableCell>{product.title}</TableCell>
+                    <TableCell>{product.author}</TableCell>
+                    <TableCell>{product.price}</TableCell>
+                    <TableCell>{product.description}</TableCell>
+
+                    {/* Category Name */}
+                    <TableCell>
+                      {categories.find((category) => category.id === product.categoryId)?.name || 'N/A'}
+                    </TableCell>
+
+                    {/* Actions */}
+                    <TableCell>
+                      <Button
+                        variant="default"
+                        onClick={() => {
+                          setEditingProduct(product);
+                          setDialogOpen(true);
+                        }}
+                        className="mr-2"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                // No Products Available
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center">No products available.</TableCell>
+                </TableRow>
+              )}
             </TableBody>
+
           </Table>
         </CardContent>
       </Card>
-
-
     </Admin>
 
   );
-};
-
-
-
+}
 
 

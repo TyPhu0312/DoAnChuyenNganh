@@ -127,6 +127,21 @@ export default function Category() {
                             Add Category
                         </Button>
                     </div>
+                    {/* Dialog for Add/Edit */}
+                    <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>
+                                    {editingCategory ? "Edit Category" : "Add Category"}
+                                </DialogTitle>
+                            </DialogHeader>
+                            <CategoryForm
+                                category={editingCategory}
+                                onSave={handleAddOrEdit}
+                                onCancel={() => setDialogOpen(false)}
+                            />
+                        </DialogContent>
+                    </Dialog>
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -159,21 +174,7 @@ export default function Category() {
                 </CardContent>
             </Card>
 
-            {/* Dialog for Add/Edit */}
-            <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
-                            {editingCategory ? "Edit Category" : "Add Category"}
-                        </DialogTitle>
-                    </DialogHeader>
-                    <CategoryForm
-                        category={editingCategory}
-                        onSave={handleAddOrEdit}
-                        onCancel={() => setDialogOpen(false)}
-                    />
-                </DialogContent>
-            </Dialog>
+
         </Admin>
     );
 };
@@ -184,12 +185,12 @@ function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) {
 
     const handleSubmit = () => {
         if (!name.trim()) return;
-    
+
         // If category is null (for Add case), create a new category object
         const categoryToSave = category
             ? { ...category, name } // Edit existing category
             : { id: "", name }; // Add new category with no ID (you can handle ID generation when saving)
-    
+
         onSave(categoryToSave); // Pass the category to the parent (Category)
     };
 
