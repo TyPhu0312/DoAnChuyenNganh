@@ -16,7 +16,7 @@ const queryAsync = (sql, params = []) => {
 
 const login = async (req, res) => {
     const { email, password } = req.body;
-
+    console.log(email,password)
     try {
         // Lấy người dùng từ cơ sở dữ liệu
         const users = await queryAsync(`

@@ -19,23 +19,32 @@ const AdminDashboard: React.FC = () => {
   // Hàm để lấy thống kê sản phẩm
   const fetchStatistics = async () => {
     try {
-      const [productsResponse, usersResponse, customPaintingsResponse, ordersResponse] = await Promise.all([
-        axios.get('http://localhost:5000/api/admin/products'),
-        axios.get('http://localhost:5000/api/admin/user'),
-        axios.get('http://localhost:5000/api/admin/custompainting'),
-        axios.get('http://localhost:5000/api/admin/order'),
-      ]);
+      const requests = [
+        axios.get('http://localhost:5000/api/admin/products').catch((err) => err),
+        axios.get('http://localhost:5000/api/admin/user').catch((err) => err),
+        axios.get('http://localhost:5000/api/admin/custompainting').catch((err) => err),
+        axios.get('http://localhost:5000/api/admin/order').catch((err) => err),
+      ];
 
-      // Cập nhật state với dữ liệu nhận được từ API
-      setStatistics({
-        products: productsResponse.data.data.length,
-        users: usersResponse.data.data.length,
-        customPaintings: customPaintingsResponse.data.data.length,
-        orders: ordersResponse.data.data.length,
-      });
-      
+      const [productsResponse, usersResponse, customPaintingsResponse, ordersResponse] = await Promise.all(requests);
+
+      const statisticsData: Statistics = {
+        products: productsResponse?.status === 200 ? productsResponse.data.data?.length || 0 : 0,
+        users: usersResponse?.status === 200 ? usersResponse.data.data?.length || 0 : 0,
+        customPaintings: customPaintingsResponse?.status === 200 ? customPaintingsResponse.data.data?.length || 0 : 0,
+        orders: ordersResponse?.status === 200 ? ordersResponse.data.data?.length || 0 : 0,
+      };
+
+      setStatistics(statisticsData);
+
     } catch (error) {
       console.error("Error fetching statistics:", error);
+      setStatistics({
+        products: 0,
+        users: 0,
+        customPaintings: 0,
+        orders: 0,
+      });
     }
   };
 
@@ -46,6 +55,15 @@ const AdminDashboard: React.FC = () => {
   // Kiểm tra nếu statistics chưa có dữ liệu thì không hiển thị thông tin
   if (!statistics) {
     return <div>Loading...</div>;
+  }
+
+  if (
+    statistics.products === 0 &&
+    statistics.users === 0 &&
+    statistics.customPaintings === 0 &&
+    statistics.orders === 0
+  ) {
+    return <div>No data available at the moment.</div>;
   }
 
   return (
