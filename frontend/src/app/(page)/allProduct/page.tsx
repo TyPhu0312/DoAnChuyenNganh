@@ -57,31 +57,36 @@ export default function AllProduct() {
         setSearchResults(query.toLowerCase());
     }, []);
 
-    const filteredProducts = searchResults
+    const filteredProducts = searchResults.trim() !== ""
         ? products.filter((product) =>
-              product.title.toLowerCase().includes(searchResults) ||
-              product.author.toLowerCase().includes(searchResults)
-          )
+            product.title.toLowerCase().includes(searchResults) ||
+            product.author.toLowerCase().includes(searchResults)
+        )
         : products; // Hiển thị tất cả sản phẩm khi searchResults rỗng
 
     return (
-        <main className="flex flex-1 flex-col m-0 bg-[#e0e0e0ee]">
+        <main className="flex flex-1 flex-col m-0 bg-[#e4e3e2fa]">
             <Hero />
-            <div className="flex flex-col space-y-[50px]">
+            <div className="mt-5 mb-[50px] ml-3 font-robotoSerif">
                 <Breadcrumb
                     links={[
                         { label: "Home", href: "/" },
                         { label: "All Product", href: "/allProduct" },
                     ]}
                 />
+            </div>
+            <div className="flex flex-col sm:flex-row align-top mb-[30px]">
                 <SortBar
-                    label="Filter by Category"
+                    label="Filter In Category"
                     placeholder="Select category"
                     onCategoryChange={setSelectedCategory}
                 />
-                <div className="w-full max-w-md lg:ml-10 mx-3">
+                <div className="lg:w-full max-w-sm lg:ml-10 mx-3 w-[70%]">
                     <SearchBox onSearch={handleSearch} />
                 </div>
+            </div>
+            <div className="flex flex-col space-y-[50px]">
+
                 <div className="AllNewArtWork">
                     <p className="text-2xl font-robotoCondensed text-left ml-[40px] mb-[30px] font-bold">
                         All new artwork
