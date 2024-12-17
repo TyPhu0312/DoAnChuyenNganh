@@ -37,6 +37,7 @@
     "cors": "^2.8.5",
     "debounce": "^2.2.0",
     "keycloak-connect": "^25.0.2",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.417.0",
     "messages": "^0.1.0",
     "mongodb": "^6.8.0",

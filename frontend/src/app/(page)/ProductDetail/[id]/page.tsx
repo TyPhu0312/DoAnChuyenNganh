@@ -4,6 +4,7 @@ import Hero from '@/components/features/hero';
 import Breadcrumb from '@/components/features/Breadcrumb';
 import Image from 'next/image';
 import { AddToCartButton } from '@/components/features/addToCartButton';
+import { formatCurrencyVND } from '@/lib/utils/currencyFormatter';
 //interface product
 type Product = {
   id: string;
@@ -76,7 +77,7 @@ export function ProductDetailContent({
             <div className="flex flex-col space-y-6">
               <h1 className="text-3xl font-extrabold text-gray-800">{product.title}</h1>
               <p className="text-xl text-gray-800 font-semibold">Author: {product.author}</p>
-              <p className="text-2xl text-red-600 font-bold">${product.price}</p>
+              <p className="text-2xl text-red-600 font-bold"> {formatCurrencyVND(product.price)}</p>
 
               <div className="flex space-x-4">
                 <AddToCartButton product={product}/>

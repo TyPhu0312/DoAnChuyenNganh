@@ -153,7 +153,51 @@ const getProductByIdCategory = async (req, res) => {
         });
     }
 };
+const getProductByArtist = async (req, res) => {
+    try {
+        const { artistId } = req.params;
+        if (!artistId) {
+            return res.status(400).send({
+                success: false,
+                message: "Không tìm thấy artistId!",
+            });
+        }
 
+        const dataByArtist = await queryAsync(
+            `SELECT 
+                p.id, 
+                p.title, 
+                p.price, 
+                p.thumbnail, 
+                p.description, 
+                p.author
+             FROM 
+                qlbantranh.product p
+             WHERE 
+                p.author = ?`, [artistId]);
+
+        if (!dataByArtist || dataByArtist.length === 0) {
+            return res.status(404).send({
+                success: false,
+                message: "Không tìm thấy tác phẩm của artist này.",
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: `Tác phẩm của artist ${artistId}`,
+            data: dataByArtist,
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Lỗi khi lấy dữ liệu tác phẩm của artist',
+            error,
+        });
+    }
+};
 ///////
 const fs = require('fs');
 const createProduct = async (req, res) => {
@@ -357,4 +401,11 @@ const deleteProduct = async (req, res) => {
     }
 };
 
-module.exports = { getProducts, getProductById, getProductByIdCategory, createProduct, updateProduct, deleteProduct };
+module.exports = { getProducts, 
+                getProductById, 
+                getProductByIdCategory, 
+                createProduct, 
+                updateProduct, 
+                deleteProduct,
+                getProductByArtist
+             };

@@ -3,7 +3,7 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
-
+const colors = require('colors'); 
 const db = require('./models');
 const connection = require('./database/db')
 const routerProduct= require('./routes/product.routes');
@@ -15,6 +15,7 @@ const routerGallery = require('./routes/gallery.routes')
 const routerOrder = require('./routes/order.routes')
 const routerOrderDetail = require('./routes/orderdetail.routes')
 const routerProvider = require('./routes/provider.routes')
+
 //màu báo DB đang chạy
 const morgan = require('morgan');
 const { FORCE } = require('sequelize/lib/index-hints');
@@ -50,13 +51,13 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 if(process.env.NODE_ENV === 'development') {
     db.sequelize.sync({ force: true }).then(() => {
         app.listen(port, () => {
-            console.log(`Server is running on port ${port}`);
+            console.log(`Server is running on port ${port}`.bgGreen.black);
         });
     });
 } else {
     db.sequelize.sync({ alter: true }).then(() => {
         app.listen(port, () => {
-            console.log(`Server is running on port ${port}`);
+            console.log(`Server is running on port ${port}`.bgBlue.black);
         });
     });
 }
