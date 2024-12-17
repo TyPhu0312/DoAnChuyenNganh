@@ -1,6 +1,6 @@
 const validator = require('validator')
 const dbConnect = require('../database/db')
-const crypto = require('crypto');
+
 //hàm chuyển những cau query về thành promsise function
 const queryAsync = (sql, params = []) => {
     return new Promise((resolve, reject) => {
@@ -15,7 +15,22 @@ const queryAsync = (sql, params = []) => {
 };
 const getUser = async (req, res) => {
     try {
-        const data = await queryAsync('SELECT * FROM qlbantranh.users'); //
+        const data = await queryAsync(`
+    SELECT 
+        users.firstname, 
+        users.lastname, 
+        users.email, 
+        users.phone,
+        roles.name AS roleName, 
+        provider.name AS providerName
+    FROM 
+        users
+    LEFT JOIN 
+    roles ON users.roleId = roles.id
+    LEFT JOIN 
+        provider ON users.providerId = provider.id
+`);
+
         if (!data) {
             return res.status(404).send({
                 success: false,
@@ -45,7 +60,22 @@ const getUserById = async (req, res) => {
             });
         }
 
-        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.users WHERE id =?`, [id]);
+        const dataWithId = await queryAsync(`
+                SELECT 
+                users.firstname, 
+                users.lastname, 
+                users.email, 
+                users.phone,
+                roles.name AS roleName, 
+                provider.name AS providerName
+            FROM 
+                users
+            LEFT JOIN 
+            roles ON users.roleId = roles.id
+            LEFT JOIN 
+                provider ON users.providerId = provider.id
+        
+        WHERE users.id =?`, [id]);
         if (!dataWithId || dataWithId.length === 0) {
             return res.status(404).send({
                 success: false,
@@ -63,35 +93,35 @@ const getUserById = async (req, res) => {
 };
 const checkUserForOrder = async (req, res) => {
     try {
-      const { id } = req.params;
-      if (!id) {
-        return res.status(400).send({
-          success: false,
-          message: 'ID người dùng không hợp lệ!'
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).send({
+                success: false,
+                message: 'ID người dùng không hợp lệ!'
+            });
+        }
+
+        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.users WHERE id =?`, [id]);
+        if (!dataWithId || dataWithId.length === 0) {
+            return res.status(200).send({
+                success: false,
+                message: 'Không có người dùng trong hệ thống, vui lòng cập nhật thông tin!'
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            ProductDetail: dataWithId
         });
-      }
-  
-      const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.users WHERE id =?`, [id]);
-      if (!dataWithId || dataWithId.length === 0) {
-        return res.status(200).send({
-          success: false,
-          message: 'Không có người dùng trong hệ thống, vui lòng cập nhật thông tin!'
-        });
-      }
-  
-      res.status(200).send({
-        success: true,
-        ProductDetail: dataWithId
-      });
-  
+
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  };
+};
 const createUser = async (req, res) => {
     try {
-        const {id, firstname, lastname, email, phone, address, providerId, roleId } = req.body;
-        if (!id || !firstname || !lastname || !email || !phone || !address|| !providerId || !roleId) {
+        const { id, firstname, lastname, email, phone, address, providerId, roleId, password = null } = req.body;
+        if (!id || !firstname || !lastname || !email || !phone || !address || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
@@ -109,8 +139,9 @@ const createUser = async (req, res) => {
             return res.status(400).json({ error: 'Phone number must contain only digits' });
         }
         const data = await queryAsync(
-            `INSERT INTO users (id, firstname, lastname, email, phone, address, providerId, roleId) VALUES (?, ?, ?, ?, ?, ?,?,?)`,
-            [id, firstname, lastname, email, phone, address, providerId, roleId]
+            `INSERT INTO users (id, firstname, lastname, email, phone, address, providerId, roleId, createdAt, updatedAt) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [id, firstname, lastname, email, phone, address, providerId, roleId, password]
         );
         if (!data) {
             console.log("Không đủ dữ liệu để INSERT hoặc nhập sai dữ liệu");
@@ -143,7 +174,7 @@ const updateUser = async (req, res) => {
             });
         }
         const { firstname, lastname, email, password, phone, address, providerId, roleId } = req.body;
-        if (!firstname || !lastname || !email || !phone || !address|| !providerId || !roleId) {
+        if (!firstname || !lastname || !email || !phone || !address || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
                 message: 'Nhập thiếu trường dữ liệu',
@@ -218,4 +249,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getUser, getUserById, createUser, updateUser, deleteUser,checkUserForOrder };
+module.exports = { getUser, getUserById, createUser, updateUser, deleteUser, checkUserForOrder };

@@ -1,22 +1,36 @@
-"use client"
-import { CircleUser, Menu, Package2, } from 'lucide-react'
-import { Button } from '../ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
-import { ModeToggle } from '../ui/mode-toggle'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
-import AdminSearch from './admin-search'
-import Link from 'next/link'
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+'use client';
 
+import { CircleUser, Menu, Package2 } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import { ModeToggle } from '../ui/mode-toggle';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import AdminSearch from './admin-search';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
 
 export default function AdminHeader() {
+    const router = useRouter();
+
+    useEffect(() => {
+        // Kiểm tra xem token có trong localStorage hay không
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            // Redirect về trang login nếu không có token
+            router.push('/admin/login');
+        }
+    }, [router]);
+
+    const handleLogout = () => {
+        // Xóa token khỏi localStorage
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user'); // Xóa thông tin user nếu có
+
+        // Redirect về trang login
+        router.push('/admin/login');
+    };
+
     return (
         <header className="sticky top-0 flex h-14 items-center gap-4 border-b bg-white z-10 px-4 lg:h-[60px] lg:px-6">
             <Sheet>
@@ -37,34 +51,40 @@ export default function AdminHeader() {
                             className="flex items-center gap-2 text-lg font-semibold"
                         >
                             <Package2 className="h-6 w-6" />
-                            <span className="sr-only ">Artauct</span>
+                            <span className="sr-only">Artauct</span>
                         </Link>
                         <Link
-                            href="#"
+                            href="/"
+                            className="text-muted-foreground hover:text-foreground"
+                        >
+                            Dashboard
+                        </Link>
+                        <Link
+                            href="/categories"
                             className="text-muted-foreground hover:text-foreground"
                         >
                             Categories
                         </Link>
                         <Link
-                            href="#"
+                            href="/custompainting"
                             className="text-muted-foreground hover:text-foreground"
                         >
                             CustomPainting
                         </Link>
                         <Link
-                            href="#"
+                            href="/products"
                             className="text-muted-foreground hover:text-foreground"
                         >
                             Products
                         </Link>
                         <Link
-                            href="#"
+                            href="/user"
                             className="text-muted-foreground hover:text-foreground"
                         >
                             User
                         </Link>
                         <Link
-                            href="#"
+                            href="/orders"
                             className="text-muted-foreground hover:text-foreground"
                         >
                             Orders
@@ -79,25 +99,6 @@ export default function AdminHeader() {
             <div className="w-full flex-1">
                 <AdminSearch />
             </div>
-            {/* <Breadcrumb className="hidden md:flex">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="#">Dashboard</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="#">Orders</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Recent Orders</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb> */}
             <ModeToggle />
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -112,10 +113,13 @@ export default function AdminHeader() {
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                     <DropdownMenuItem>Support</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                    <DropdownMenuItem>
+                        <button onClick={handleLogout}>
+                            Logout
+                        </button>
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-
         </header>
-    )
+    );
 }

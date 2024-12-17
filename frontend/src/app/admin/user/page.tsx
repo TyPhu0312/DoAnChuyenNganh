@@ -17,35 +17,14 @@ import {
 } from "@/components/ui/table"
 
 import Admin from "../page"
-import { useToast } from "@/components/ui/use-toast"
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import axios from "axios"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
-import { MoreHorizontal } from "lucide-react"
 
 export default function User() {
     const [users, setUsers] = useState([]); // Khởi tạo là mảng rỗng
     const [showAlert, setShowAlert] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
-    const { toast } = useToast()
-
-    const [newUser, setNewUser] = useState({
-        firstname: '',
-        lastname: '',
-        email: '',
-        password: '',
-        phone: '',
-        providerId: '',
-        roleId: ''
-    });
-
-    const handleInputChange = () => {
-        setNewUser({
-            ...newUser,
-        });
-    };
 
     useEffect(() => {
         axios.get("http://localhost:5000/api/admin/user")
@@ -106,14 +85,14 @@ export default function User() {
                                             {user.email}
                                         </div>
                                     </TableCell>
-                                    <TableCell className="hidden sm:table-cell">
-                                        {user.password}
+                                    <TableCell className="hidden sm:table-cell" >
+                                        ********
                                     </TableCell>
                                     <TableCell className="hidden sm:table-cell">
                                         {user.phone}
                                     </TableCell>
-                                    <TableCell>{user.providerId}</TableCell>
-                                    <TableCell>{user.roleId}</TableCell>
+                                    <TableCell>{user.providerName || "N/A"}</TableCell>
+                                    <TableCell>{user.roleName || "N/A"}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

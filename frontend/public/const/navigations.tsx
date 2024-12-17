@@ -1,6 +1,12 @@
 import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users } from 'lucide-react'
 
 export const DASHBOARD_SIDEBAR_LINKS = [
+   {
+    key: 'Dashboard',
+    label: 'Dashboard',
+    path: '/admin/dashboard',
+    icon: <Home/>
+   },
     {
         key: 'Categories',
         label: 'Categories',
@@ -31,10 +37,5 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         path: '/admin/orders',
         icon: <ShoppingCart />
     },
-    {
-        key: 'Messengers',
-        label: 'Messengers',
-        path: '/admin/messengers',
-        icon: <Bell />
-    }
+
 ]
