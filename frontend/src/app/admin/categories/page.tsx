@@ -145,7 +145,7 @@ export default function Category() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Category ID</TableHead>
+                                <TableHead hidden>Category ID</TableHead>
                                 <TableHead>Category Name</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -153,7 +153,7 @@ export default function Category() {
                         <TableBody>
                             {categories.map((category) => (
                                 <TableRow key={category.id}>
-                                    <TableCell>
+                                    <TableCell hidden>
                                         <div className="font-medium">{category.id}</div>
                                     </TableCell>
                                     <TableCell>

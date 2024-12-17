@@ -15,9 +15,13 @@ const routerGallery = require('./routes/gallery.routes')
 const routerOrder = require('./routes/order.routes')
 const routerOrderDetail = require('./routes/orderdetail.routes')
 const routerProvider = require('./routes/provider.routes')
+const routerAuth = require('./routes/auth.routes')
+
 //màu báo DB đang chạy
 const morgan = require('morgan');
 const { FORCE } = require('sequelize/lib/index-hints');
+const path = require('path');
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -33,21 +37,14 @@ app.use("/api/admin/gallery", routerGallery );
 app.use("/api/admin/order", routerOrder );
 app.use("/api/admin/orderdetail", routerOrderDetail);
 app.use("/api/admin/provider", routerProvider );
+app.use("/api/admin/auth", routerAuth );
 
-const path = require('path');
+// API Backend để lấy số liệu thống kê
+
+
 app.use('/public', express.static(path.join(__dirname, 'public')));
-// if(process.env.NODE_ENV==='development') {
-//     db.sequelize.sync({force:true}).then(() => {
-//         app.listen(port, () => {
-//             console.log(`Server is running on port ${port}`.bgMagenta.white);
-//         });
-//     });
-// }
-// else {
-//     await sequelize.sync({ alter: true });
-// }
 
-if(process.env.NODE_ENV === 'development') {
+if(process.env.NODE_ENV === 'dev') {
     db.sequelize.sync({ force: true }).then(() => {
         app.listen(port, () => {
             console.log(`Server is running on port ${port}`);

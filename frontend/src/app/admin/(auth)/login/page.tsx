@@ -1,8 +1,7 @@
-"use client"; 
+'use client';
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '../../api/auth/auth';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,38 +14,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Spinner from '@/components/features/spinner';
-import { useUsers } from '@/components/features/userContext'; // Import UserContext
+import axios from 'axios';
 
 const LoginPage: React.FC = () => {
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [error, setError] = useState<string>('');
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
-    const { setUser } = useUsers(); // Access setUser from context
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setError("");  // Reset error before making a new attempt
+
         try {
-            const response = await login(email, password);
-            const userData = response.data; // Giả sử response trả về thông tin người dùng
+            const response = await axios.post(
+                'http://localhost:5000/api/admin/auth/login',
+                { email, password }
+            );
+            
+            if (response.status === 200) {
+                // Lưu thông tin người dùng vào localStorage hoặc context
+                localStorage.setItem("user", JSON.stringify(response.data));
+                localStorage.setItem("authToken", response.data.token);
 
-            // Lưu thông tin người dùng vào context
-            setUser({
-                email: userData.email,
-                name: userData.name,
-                phone: userData.phone,
-                address: userData.address,
-            });
-
-            setTimeout(() => {
-                router.push('/admin/dashboard');
-            }, 2000);
-        } catch (err) {
-            setError((err as Error).message);
+                // Redirect tới trang admin dashboard
+                router.push("/admin/dashboard");
+            } else {
+                setError("You do not have admin privileges!");
+            }
+        } catch (err: any) {
+            // Lỗi chung khi không thể đăng nhập
+            const errorMessage = err?.response?.data?.message || "Failed to login";
+            setError(errorMessage);
+        } finally {
             setLoading(false);
-        } 
+        }
     };
 
     return (
