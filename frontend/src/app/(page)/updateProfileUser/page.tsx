@@ -26,14 +26,15 @@ export default function UpdateUserPage() {
         email: user.primaryEmailAddress?.emailAddress || "",
         phone: user.phoneNumbers[0]?.phoneNumber || "",
         address:"",
-        providerId: "f5e12c5c-fce4-4168-ba9e-03c19ea2b11a",
-        roleId: "a3b4d788-68b6-4eac-a22c-9c8b286bd5bf",
+        providerId: "43e41e65-7d2f-4d0e-a4b5-6d649cc67c70",
+        roleId: "ceb09234-2b63-4ca1-89b3-3aab90d9f716",
       });
     }
   }, [isSignedIn, user, isLoaded]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); 
+    console.log("userdata:", userData);
     try {
       await axios.post("http://localhost:5000/api/admin/user/create", userData);
       alert("Cập nhật thông tin thành công!");

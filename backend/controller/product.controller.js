@@ -236,7 +236,7 @@ const createProduct = async (req, res) => {
 
         // Thêm sản phẩm vào database
         const result = await queryAsync(
-            `INSERT INTO product (id, title, author, price, thumbnail, description, categoryId) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO product (id, title, author, price, thumbnail, description, categoryId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(),NOW())`,
             [id, title, author, price, `${thumbnail}`, description, categoryId]
         );
 
