@@ -36,9 +36,8 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`${isScrolled ? "" : "bg-transparent shadow-lg "
-        } fixed top-0 left-0 w-full z-10 transition-all duration-300 ${isScrolled ? "h-16 rounded-b-[100px]" : "h-30"
-        }`}
+      className={`${isScrolled ? "" : "bg-transparent shadow-lg "} 
+    fixed top-0 left-0 w-full z-10 transition-all duration-300 ${isScrolled ? "h-16 rounded-b-[100px]" : "h-30"}`}
     >
       <div className={`flex flex-col h-full items-center justify-between max-w-screen-xl px-4 mx-auto mt-5 ${isScrolled ? "mt-1" : ""} rounded-tl-[30px] rounded-tr-[30px]`}>
         {/* Logo, Artwork */}
@@ -50,72 +49,56 @@ export default function Navbar() {
               width={isScrolled ? 30 : 80}
               height={isScrolled ? 30 : 80}
               quality={100}
-              className={`object-cover rounded-full transition-all duration-300 ${isScrolled ? "scale-80" : "scale-100"
-                }`}
+              className={`object-cover rounded-full transition-all duration-300 ${isScrolled ? "scale-80" : "scale-100"}`}
             />
-            <span
-              className={`self-center text-4xl font-semibold whitespace-nowrap text-white font-robotoSerif ml-3 transition-all duration-300 ${isScrolled ? " text-xl" : "opacity-100"
-                }`}
-            >
+            <span className={`self-center text-4xl font-semibold whitespace-nowrap text-white font-robotoSerif ml-3 transition-all duration-300 ${isScrolled ? " text-xl" : "opacity-100"}`}>
               Artauct
             </span>
           </Link>
+
+          {/* Button to open Cart Sidebar */}
           <Button
             onClick={toggleSidebar}
             className="ml-4 p-2 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 hover:bg-white hover:text-black"
           >
-            <ShoppingCartIcon className="w-6 h-6 text-white cursor-pointer hover:text-black"/>
+            <ShoppingCartIcon className="w-6 h-6 text-white cursor-pointer hover:text-black" />
           </Button>
 
+          {/* User Button / Sign In/Up */}
           <div className={`${isScrolled ? "flex justify-center items-center ml-2" : "hidden"}`}>
             {userId ? (
               <UserButton
                 appearance={{
-                  elements: {
-                    footer: { display: "none" }, // Hide footer
-                  },
+                  elements: { footer: { display: "none" } }, // Hide footer
                 }}
               />
             ) : (
               <ul className="flex flex-col mt-1 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
                 <li>
-                  <a
-                    href="/sign-in"
-                    className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-yellow-300 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                  >
-                    Sign In
-                  </a>
+                  <a href="/sign-in" className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white hover:text-yellow-300">Sign In</a>
                 </li>
                 <li>
-                  <a
-                    href="/sign-up"
-                    className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-yellow-300 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                  >
-                    Sign Up
-                  </a>
+                  <a href="/sign-up" className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white hover:text-yellow-300">Sign Up</a>
                 </li>
               </ul>
             )}
           </div>
-
         </div>
+
         {/* CART SIDE BAR MODAL */}
         <CartSidebar isOpen={isSidebarOpen} closeSidebar={closeSidebar} />
+
         {/* Menu on the Bottom */}
         <div className="flex items-center justify-between w-full lg:flex lg:w-auto opacity-100">
-          <div
-            className={`${isMenuOpen ? "block " : "hidden"
-              } items-center justify-between w-full lg:flex lg:w-auto  `}
-          >
+          <div className={`${isMenuOpen ? "block" : "hidden"} items-center justify-between w-full lg:flex lg:w-auto`}>
             <ul
-              className={`flex  flex-col font-medium lg:flex-row lg:space-x-8 lg:mt-0 lg:justify-center  lg:transition-all duration-300 ${isScrolled ? "lg:hidden" : ""
+              className={`flex flex-col font-medium lg:flex-row lg:space-x-8 lg:mt-0 lg:justify-center ${isScrolled ? "lg:hidden" : ""
                 }`}
             >
               <li>
                 <a
                   href="/"
-                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-yellow-300 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                  aria-current="page"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-white"
                 >
                   Home
                 </a>
@@ -123,7 +106,7 @@ export default function Navbar() {
               <li>
                 <a
                   href="/allProduct"
-                  className="text-[18px] block py-2 pl-3 pr-4 font-robotoSlab text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-yellow-300 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-white"
                 >
                   All Artwork
                 </a>
@@ -131,7 +114,7 @@ export default function Navbar() {
               <li>
                 <a
                   href="/Collection"
-                  className="text-[18px] block py-2 pl-3 pr-4 font-robotoSlab text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-yellow-300 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-white"
                 >
                   Collection
                 </a>
@@ -139,7 +122,7 @@ export default function Navbar() {
               <li>
                 <a
                   href="/orderArtwork"
-                  className="text-[18px] block py-2 pl-3 pr-4 font-robotoSlab text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-yellow-300 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-white"
                 >
                   Order Artwork
                 </a>
@@ -148,19 +131,15 @@ export default function Navbar() {
                 {userId ? (
                   <UserButton
                     appearance={{
-                      elements: {
-                        footer: { display: "none" }, // Hide footer
-                      },
+                      elements: { footer: { display: "none" } },
                     }}
-                  // userProfileMode="navigation"
-                  // userProfileUrl="/"
                   />
                 ) : (
                   <ul className="flex flex-col mt-1 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
                     <li>
                       <a
                         href="/sign-in"
-                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-yellow-300 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-white"
                       >
                         Sign In
                       </a>
@@ -168,7 +147,7 @@ export default function Navbar() {
                     <li>
                       <a
                         href="/sign-up"
-                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-yellow-300 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-white"
                       >
                         Sign Up
                       </a>
@@ -176,32 +155,39 @@ export default function Navbar() {
                   </ul>
                 )}
               </li>
-              <li>
-                <Button
-                  type="button"
-                  onClick={() => setIsMenuOpen(!isMenuOpen)} // Toggle menu
-                  className={`inline-flex items-center p-2 ml-1 text-sm rounded-lg lg:hidden focus:outline-none focus:ring-2 focus:ring-gray-200  ${isScrolled ? "absolute top-3 left-2 z-20 transition-all duration-300" : "absolute top-7 left-2 z-20 transition-all duration-300"
-                    }`}
-                >
-                  <span className="sr-only">Open main menu</span>
-                  <svg
-                    className={`w-6 h-6 transform ${isMenuOpen ? "rotate-90" : ""} transition-transform duration-200`}
-                    fill=""
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                </Button>
-              </li>
             </ul>
           </div>
+
+
+          {/* Hamburger Menu Button */}
+          <Button
+            type="button"
+            onClick={() => setIsMenuOpen(!isMenuOpen)} // Toggle menu
+            className={`inline-flex items-center p-2 ml-1 text-sm rounded-lg lg:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 
+              ${isScrolled ? "absolute top-3 left-2 z-20 transition-all duration-300" : "absolute top-7 left-2 z-20 transition-all duration-300"}
+              bg-white hover:bg-white`}
+          >
+            <span className="sr-only">Open main menu</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              width="100"
+              height="100"
+              viewBox="0 0 50 50"
+              className={`w-6 h-6 transition-transform duration-300 ${isMenuOpen ? "rotate-90" : "rotate-0"
+                } text-white`}
+            >
+              <path
+                d="M 5 8 A 2.0002 2.0002 0 1 0 5 12 L 45 12 A 2.0002 2.0002 0 1 0 45 8 L 5 8 z M 5 23 A 2.0002 2.0002 0 1 0 5 27 L 45 27 A 2.0002 2.0002 0 1 0 45 23 L 5 23 z M 5 38 A 2.0002 2.0002 0 1 0 5 42 L 45 42 A 2.0002 2.0002 0 1 0 45 38 L 5 38 z"
+              ></path>
+            </svg>
+
+          </Button>
+
         </div>
       </div>
     </nav>
+
   );
 }

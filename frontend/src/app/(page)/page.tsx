@@ -15,32 +15,6 @@ export default function Home({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const blogItems = [
-        {
-            title: 'How to photograph your art',
-            description: 'Learn how to photograph your art in the best way possible to showcase its details.',
-            imageUrl: '',
-            link: '#',
-        },
-        {
-            title: 'Screen Printing Tools',
-            description: 'Explore the best tools for screen printing and create your own designs.',
-            imageUrl: '',
-            link: '#',
-        },
-        {
-            title: 'Sell your art through interior design',
-            description: 'Discover how to sell your art through collaborations with interior designers.',
-            imageUrl: '',
-            link: '#',
-        },
-        {
-            title: 'Naming your Artwork',
-            description: 'Find the perfect name for your artwork and make it more marketable.',
-            imageUrl: '',
-            link: '#',
-        },
-    ];
     type Product = {
         id: string;
         title: string;
