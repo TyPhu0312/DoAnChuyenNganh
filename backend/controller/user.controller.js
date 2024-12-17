@@ -120,7 +120,7 @@ const checkUserForOrder = async (req, res) => {
 };
 const createUser = async (req, res) => {
     try {
-        const { id, firstname, lastname, email, phone, address, providerId, roleId, password  } = req.body;
+        const { id, firstname, lastname, email, phone, address, providerId, roleId, password =null } = req.body;
         if (!id || !firstname || !lastname || !email || !phone || !address || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
