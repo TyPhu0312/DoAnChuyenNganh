@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Spinner from '@/components/features/spinner';
-import { useUser } from '@/components/features/userContext'; // Import UserContext
+import { useUsers } from '@/components/features/userContext'; // Import UserContext
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState<string>('');
@@ -23,7 +23,7 @@ const LoginPage: React.FC = () => {
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
-    const { setUser } = useUser(); // Access setUser from context
+    const { setUser } = useUsers(); // Access setUser from context
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();

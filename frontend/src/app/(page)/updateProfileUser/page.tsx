@@ -11,6 +11,7 @@ export default function UpdateUserPage() {
     lastname: "",
     email: "",
     phone: "",
+    address:"",
     providerId: "43e41e65-7d2f-4d0e-a4b5-6d649cc67c70",
     roleId: "ceb09234-2b63-4ca1-89b3-3aab90d9f716",
   });
@@ -24,8 +25,9 @@ export default function UpdateUserPage() {
         lastname: user.lastName || "",
         email: user.primaryEmailAddress?.emailAddress || "",
         phone: user.phoneNumbers[0]?.phoneNumber || "",
-        providerId: "43e41e65-7d2f-4d0e-a4b5-6d649cc67c70",
-        roleId: "ceb09234-2b63-4ca1-89b3-3aab90d9f716",
+        address:"",
+        providerId: "f5e12c5c-fce4-4168-ba9e-03c19ea2b11a",
+        roleId: "a3b4d788-68b6-4eac-a22c-9c8b286bd5bf",
       });
     }
   }, [isSignedIn, user, isLoaded]);
@@ -35,6 +37,7 @@ export default function UpdateUserPage() {
     try {
       await axios.post("http://localhost:5000/api/admin/user/create", userData);
       alert("Cập nhật thông tin thành công!");
+      window.location.href = "/checkout";
     } catch (error) {
       console.error("Error updating user:", error);
       alert("Có lỗi xảy ra khi cập nhật thông tin!");
@@ -50,13 +53,12 @@ export default function UpdateUserPage() {
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-lg">
         <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">Cập nhật thông tin</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">ID Người dùng</label>
+          <div style={{ visibility: "hidden" }}>
             <input
               type="text"
               value={userData.id}
               onChange={(e) => setUserData({ ...userData, id: e.target.value })}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none"
+              className=" block w-full  border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none"
               placeholder="ID người dùng"
               readOnly
             />
@@ -106,6 +108,18 @@ export default function UpdateUserPage() {
               onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none"
               placeholder="Nhập số điện thoại"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
+            <input
+              type="text"
+              value={userData.address}
+              onChange={(e) => setUserData({ ...userData, address: e.target.value })}
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none"
+              placeholder="Nhập đại chỉ"
               required
             />
           </div>

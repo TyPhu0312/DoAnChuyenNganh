@@ -264,47 +264,113 @@ const createProduct = async (req, res) => {
 };
 const updateProduct = async (req, res) => {
     try {
-        const { id } = req.params;
-        if (!id) {
-            return res.status(400).send({
-                success: false,
-                message: 'Không tìm thấy sản phẩm này',
-            });
-        }
-        const { title, author, price, thumbnail, categoryId, description } = req.body;
-        if (!title || !author || !price || !thumbnail || !description || !categoryId) {
-            return res.status(400).send({
-                success: false,
-                message: 'Nhập thiếu trường dữ liệu',
-            });
-        }
-
-        const data = await queryAsync(
-            `UPDATE product 
-             SET title = ?, author = ?, price = ?, thumbnail = ?, description = ?, categoryId = ?
-             WHERE id = ?`, // Điều kiện WHERE
-            [title, author, price, thumbnail, description, categoryId, id]
-        );
-        if (data.affectedRows === 0) {
-            return res.status(404).send({
-                success: false,
-                message: 'Không có gì xảy ra ở database cả!!!',
-            });
-        }
-        res.status(200).send({
-            success: true,
-            message: 'Cập nhật sản phẩm thành công!',
+      const { id } = req.params; // Lấy id từ tham số URL
+      const { title, author, price, description, categoryId } = req.body;
+      let thumbnail = req.file ? req.file.filename : null; // Lấy thumbnail từ file nếu có
+    //   console.log("req.body: ", req.body);
+  
+      // Kiểm tra nếu không có id
+      if (!id) {
+        return res.status(400).send({
+          success: false,
+          message: 'Product ID is required!',
         });
-
+      }
+  
+      // Kiểm tra các trường dữ liệu bắt buộc
+      if (!title) {
+        return res.status(400).send({
+          success: false,
+          message: 'Missing title!',
+        });
+      }
+      if (!author) {
+        return res.status(400).send({
+          success: false,
+          message: 'Missing author!',
+        });
+      }
+      if (!price) {
+        return res.status(400).send({
+          success: false,
+          message: 'Missing price!',
+        });
+      }
+      if (!description) {
+        return res.status(400).send({
+          success: false,
+          message: 'Missing description!',
+        });
+      }
+      if (!categoryId) {
+        return res.status(400).send({
+          success: false,
+          message: 'Missing categoryId!',
+        });
+      }
+  
+      // Lấy thông tin sản phẩm hiện tại từ cơ sở dữ liệu
+      const [existingProduct] = await queryAsync(
+        `SELECT thumbnail FROM product WHERE id = ?`, [id]
+      );
+  
+      // Kiểm tra nếu sản phẩm không tồn tại
+      if (!existingProduct) {
+        return res.status(404).send({
+          success: false,
+          message: 'Product not found!',
+        });
+      }
+  
+      // Xử lý ảnh nếu có ảnh mới
+      if (thumbnail) {
+        const backendPath = path.join(__dirname, '../public/images', thumbnail);
+        const frontendPath = path.join(__dirname, '../../frontend/public/images', thumbnail);
+  
+        // Kiểm tra và tạo thư mục nếu chưa có
+        if (!fs.existsSync(path.dirname(frontendPath))) {
+          fs.mkdirSync(path.dirname(frontendPath), { recursive: true });
+        }
+  
+        // Sao chép ảnh từ backend sang frontend
+        fs.copyFileSync(backendPath, frontendPath);
+      } else {
+        // Nếu không có ảnh mới, giữ ảnh cũ
+        thumbnail = existingProduct.thumbnail;
+      }
+  
+      // Cập nhật thông tin sản phẩm vào cơ sở dữ liệu
+      const data = await queryAsync(
+        `UPDATE product SET title = ?, author = ?, price = ?, thumbnail = ?, description = ?, categoryId = ? WHERE id = ?`,
+        [title, author, price, thumbnail, description, categoryId, id]
+      );
+  
+      // Kiểm tra nếu không có sự thay đổi nào
+      if (data.affectedRows === 0) {
+        return res.status(404).send({
+          success: false,
+          message: 'No changes were made to the product (perhaps the new title is the same as the old one).',
+        });
+      }
+  
+      // Trả về phản hồi thành công
+      res.status(200).send({
+        success: true,
+        message: 'Product updated successfully!',
+      });
     } catch (error) {
-        console.error(error);
-        res.status(500).send({
-            success: false,
-            message: 'Không lấy được API update product!',
-            error,
-        });
+      console.error("Error in updateProduct:", error);
+      res.status(500).send({
+        success: false,
+        message: 'Unable to update product.',
+        error: error.message,
+      });
     }
-};
+  };
+  
+
+  
+
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;

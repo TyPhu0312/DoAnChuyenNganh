@@ -32,7 +32,7 @@ router.get('/:id', getProductById);
 router.get('/category/:categoryId', getProductByIdCategory);
 router.get('./artist/:artistId', getProductByArtist);
 router.post('/create', upload.single('thumbnail'), createProduct); // Middleware upload trước createProduct
-router.put('/update/:id', updateProduct);
+router.put('/update/:id', upload.single('thumbnail'), updateProduct);
 router.delete('/delete/:id', deleteProduct);
 
 module.exports = router;
