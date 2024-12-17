@@ -120,7 +120,7 @@ const checkUserForOrder = async (req, res) => {
 };
 const createUser = async (req, res) => {
     try {
-        const { id, firstname, lastname, email, phone, address, providerId, roleId, password = null } = req.body;
+        const { id, firstname, lastname, email, phone, address, providerId, roleId, password  } = req.body;
         if (!id || !firstname || !lastname || !email || !phone || !address || !providerId || !roleId) {
             return res.status(400).send({
                 success: false,
@@ -139,8 +139,8 @@ const createUser = async (req, res) => {
             return res.status(400).json({ error: 'Phone number must contain only digits' });
         }
         const data = await queryAsync(
-            `INSERT INTO users (id, firstname, lastname, email, phone, address, providerId, roleId, createdAt, updatedAt) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            `INSERT INTO users (id, firstname, lastname, email, phone, address, providerId, roleId, createdAt, updatedAt,password) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(),?)`,
             [id, firstname, lastname, email, phone, address, providerId, roleId, password]
         );
         if (!data) {
