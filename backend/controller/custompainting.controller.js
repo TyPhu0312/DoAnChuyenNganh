@@ -1,7 +1,7 @@
 const dbConnect = require('../database/db')
 const crypto = require('crypto');
 //hàm chuyển những cau query về thành promsise function
-const queryAsync = (sql, params = []) => { 
+const queryAsync = (sql, params = []) => {
     return new Promise((resolve, reject) => {
         dbConnect.query(sql, params, (err, results) => {
             if (err) {
@@ -12,67 +12,86 @@ const queryAsync = (sql, params = []) => {
         });
     });
 };
-const getCustomPainting = async(req,res)=> {
+const getCustomPainting = async (req, res) => {
     try {
         const data = await queryAsync('SELECT * FROM qlbantranh.custompainting'); //
-        if(!data) {
+        if (!data) {
             return res.status(404).send({
-                success:false,
-                message:"Không tìm thấy custompainting nào"
+                success: false,
+                message: "Không tìm thấy custompainting nào"
             })
         }
         res.status(200).send({
-            success:true,
-            message:'Tất cả custompainting',
+            success: true,
+            message: 'Tất cả custompainting',
             data: data,
         });
     } catch (error) {
         res.status(500).send({
             success: false,
-            message:'Không lấy được API custompainting',
+            message: 'Không lấy được API custompainting',
             error: error,
         })
     }
 };
-const getCustomPaintingById = async(req,res)=> {
+const getCustomPaintingById = async (req, res) => {
     try {
-        const {id} = req.params; 
-        if(!id){
+        const { id } = req.params;
+        if (!id) {
             return res.status(404).send({
-                success:false,
+                success: false,
                 message: 'Không tìm thấy ID!'
             })
         }
-        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.custompainting WHERE id =?`,[id]);
-        if(!dataWithId) {
+        const dataWithId = await queryAsync(`SELECT * FROM qlbantranh.custompainting WHERE id =?`, [id]);
+        if (!dataWithId) {
             return res.status(404).send({
                 success: false,
-                message:'Không thấy data từ database',
+                message: 'Không thấy data từ database',
             });
-        }    
+        }
         res.status(200).send({
             success: true,
             ProductDetail: dataWithId
         })
-        
+
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({ message: error.message })
     }
 };
+
 const createCustomPainting = async (req, res) => {
     try {
-        const {image, linkImage, name, size_width, size_height, picture_frame, note, userId} = req.body;
-        if (!name) {
+        const {image, linkImage, name, size_width, size_height, picture_frame, note, userId } = req.body;
+
+        if (!name||!userId) {
             return res.status(400).send({
                 success: false,
                 message: "Thiếu trường thông tin bắt buộc",
             });
         }
-        const id = crypto.randomUUID(); 
-        console.log(userId);
+        // Kiểm tra nếu file không tồn tại
+        // if (!req.file) {
+        //     return res.status(400).send({
+        //         success: false,
+        //         message: "Please upload a thumbnail image.",
+        //     });
+        // }
+        // // Lấy thông tin file từ multer
+        // const image = req.file.filename; // Lấy tên file
+        // const backendPath = path.join(__dirname, '../public/images', image); // File đã lưu ở backend
+        // const frontendPath = path.join(__dirname, '../../frontend/public/images', image); // Đường dẫn lưu ở frontend
+
+        // // Sao chép file từ backend sang frontend
+        // if (!fs.existsSync(path.dirname(frontendPath))) {
+        //     fs.mkdirSync(path.dirname(frontendPath), { recursive: true });
+        // }
+        // fs.copyFileSync(backendPath, frontendPath);
+        // fs.unlinkSync(backendPath);
+        const id = crypto.randomUUID();
         const data = await queryAsync(
             `INSERT INTO custompainting (id, image,link_image,name,size_width,size_height,picture_frame,note,userId) VALUES (?,?,?,?,?,?,?,?,?)`,
-            [id, image, linkImage, name, size_width, size_height, picture_frame, note, userId]
+            [id, `${image}`, linkImage, name, size_width, size_height, picture_frame, note, userId]
         );
         if (!data) {
             console.log("Không đủ dữ liệu để INSERT hoặc nhập sai dữ liệu");
@@ -96,14 +115,14 @@ const createCustomPainting = async (req, res) => {
 };
 const updateCustomPainting = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
         if (!id) {
             return res.status(400).send({
                 success: false,
                 message: 'Không tìm thấy sản phẩm này',
             });
         }
-        const {name, linkImage, image, size_width, size_height, picture_frame, note } = req.body;
+        const { name, linkImage, image, size_width, size_height, picture_frame, note } = req.body;
         if (!name) {
             return res.status(400).send({
                 success: false,
@@ -113,8 +132,8 @@ const updateCustomPainting = async (req, res) => {
         const data = await queryAsync(
             `UPDATE custompainting 
              SET image = ?, link_image = ?, name = ?, size_width = ?, size_height = ?,  picture_frame = ?, note = ?
-             WHERE id = ?`, 
-             [image, linkImage, name, size_width, size_height, picture_frame, note, id]
+             WHERE id = ?`,
+            [image, linkImage, name, size_width, size_height, picture_frame, note, id]
         );
         if (data.affectedRows === 0) {
             return res.status(404).send({
@@ -136,9 +155,9 @@ const updateCustomPainting = async (req, res) => {
         });
     }
 };
-const deleteCustomPainting = async(req,res)=> {
+const deleteCustomPainting = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
         if (!id) {
             return res.status(404).send({
                 success: false,

@@ -222,6 +222,7 @@ const createProduct = async (req, res) => {
             fs.mkdirSync(path.dirname(frontendPath), { recursive: true });
         }
         fs.copyFileSync(backendPath, frontendPath);
+        fs.unlinkSync(backendPath);
 
         // Validate các trường còn lại
         if (!title || !author || !price || !categoryId) {
@@ -334,6 +335,7 @@ const updateProduct = async (req, res) => {
   
         // Sao chép ảnh từ backend sang frontend
         fs.copyFileSync(backendPath, frontendPath);
+        fs.unlinkSync(backendPath);
       } else {
         // Nếu không có ảnh mới, giữ ảnh cũ
         thumbnail = existingProduct.thumbnail;
@@ -371,28 +373,53 @@ const updateProduct = async (req, res) => {
 
   
 
-const deleteProduct = async (req, res) => {
+  const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        //console.log("ProductId:", id);
+
+        // Kiểm tra ID sản phẩm
         if (!id) {
             return res.status(404).send({
                 success: false,
                 message: 'Không tìm thấy sản phẩm này',
             });
         }
-        await queryAsync(
-            `DELETE FROM product 
-             WHERE id = ?`, // Điều kiện WHERE
+
+        // Lấy thông tin sản phẩm (bao gồm đường dẫn ảnh)
+        const product = await queryAsync(
+            `SELECT thumbnail FROM product WHERE id = ?`,
             [id]
         );
+
+        if (!product || product.length === 0) {
+            return res.status(404).send({
+                success: false,
+                message: 'Không tìm thấy sản phẩm này',
+            });
+        }
+
+        const thumbnail = product[0].thumbnail;
+        const imagePath = path.join(__dirname, '../../frontend/public/images', thumbnail); // Đường dẫn ảnh
+
+        // Xóa sản phẩm trong cơ sở dữ liệu
+        await queryAsync(
+            `DELETE FROM product WHERE id = ?`,
+            [id]
+        );
+
+        // Xóa ảnh nếu tồn tại
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath); // Xóa tệp ảnh
+        }
+
+        // Phản hồi thành công
         res.status(200).send({
             success: true,
-            message: 'Xoá sản phẩm thành công!',
-        })
+            message: 'Xóa sản phẩm và ảnh thành công!',
+        });
 
     } catch (error) {
-        console.error(error);
+        console.error("Lỗi trong deleteProduct:", error);
         res.status(500).send({
             success: false,
             message: 'Không lấy được API delete product!',
