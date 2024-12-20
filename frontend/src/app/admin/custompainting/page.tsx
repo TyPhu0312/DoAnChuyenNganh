@@ -86,21 +86,6 @@ export default function CustomPainting() {
       });
   }, []);
   
-  // useEffect(() => {
-  //   const fetchPaintings = async () => {
-  //     try {
-  //       const res = await fetch('/api/get-paintings');
-  //       const data = await res.json();
-  //       setPaintings(data);
-  //     } catch (error) {
-  //       console.error('Lỗi khi lấy danh sách tranh:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchPaintings();
-  // }, []);
   // Hàm xử lý khi chọn status mới
   const handleStatusChange = (id: any, newStatus: any) => {
     setPaintings((prevPaintings) =>
@@ -140,6 +125,7 @@ export default function CustomPainting() {
                   <TableRow>
                     <TableHead>Ảnh</TableHead>
                     <TableHead>Tên Tranh</TableHead>
+                    <TableHead>Tên Khách Hàng</TableHead>
                     <TableHead className="hidden sm:table-cell">Kích Thước</TableHead>
                     <TableHead className="hidden sm:table-cell">Khung Tranh</TableHead>
                     <TableHead className="hidden md:table-cell">Ghi chú</TableHead>
@@ -156,6 +142,9 @@ export default function CustomPainting() {
                           src={painting.image}
                           alt={painting.name}
                           className="w-16 h-16 object-cover rounded-md" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{painting.name}</div>
                       </TableCell>
                       <TableCell>
                         <div className="font-medium">{painting.name}</div>

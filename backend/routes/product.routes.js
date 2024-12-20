@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
+const upload = require('../controller/multer.controller');
 const { createProduct,
      getProducts, 
      getProductById, 
@@ -10,21 +8,6 @@ const { createProduct,
      deleteProduct, 
      getProductByIdCategory, 
      getProductByArtist } = require('../controller/product.controller');
-
-// Cấu hình Multer
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadPath = path.join(__dirname, '../public/images'); // Đường dẫn lưu file trong backend
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true }); // Tạo thư mục nếu chưa tồn tại
-        }
-        cb(null, uploadPath); // Lưu file vào thư mục backend
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Tạo tên file duy nhất
-    }
-});
-const upload = multer({ storage: storage });
 
 // Định nghĩa các route
 router.get('/', getProducts);
