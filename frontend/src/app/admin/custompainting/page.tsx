@@ -46,16 +46,7 @@ import Image from "next/image";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-interface Painting {
-  id: string,
-  image: string,
-  name: string,
-  size_width: number,
-  size_height: number,
-  picture_frame: string | null,
-  note: string | null,
-  userId: string,
-}
+
 
 
 export default function CustomPainting() {
@@ -76,28 +67,7 @@ export default function CustomPainting() {
   const [takeUserId, setTakeUserId] = useState("");
   const [takecustompainting, setTakeCustompainting] = useState("");
   const [contacts, setContacts] = useState<any[]>([]);
-
-
-  const fetchContacts = async (userId: string, custompaintingId: string) => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/admin/contact/${userId}/${custompaintingId}`);
-      console.log(response.data);
-      // Kiểm tra response.data là mảng trước khi set vào state
-      if (Array.isArray(response.data)) {
-        setContacts(response.data);
-      } else {
-        console.error("Dữ liệu trả về không phải mảng:", response.data);
-        setContacts([]); // Nếu dữ liệu không phải mảng, set mảng rỗng
-      }
-    } catch (error) {
-      console.error("Error fetching contacts:", error);
-      // Hiển thị thông báo lỗi chi tiết nếu có lỗi
-      alert("Đã xảy ra lỗi khi tải danh sách contact.");
-      setContacts([]); // Set mảng rỗng nếu có lỗi
-    }
-  };
-  
-
+  const [userInfo, setUserInfo] = useState<any>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -106,6 +76,16 @@ export default function CustomPainting() {
       [id]: value, // Cập nhật giá trị tương ứng với ID của input
     }));
   };
+  const fetchUserInfo = async (userId: string) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/admin/user/${userId}`);
+      console.log(response.data.data);
+      setUserInfo(response.data.data[0]); // Đảm bảo response.data.data chứa thông tin người dùng
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
+
   const handleStatusChange = (id: any, newStatus: string) => {
     // Cập nhật trạng thái trong state trước
     setPaintings((prevPaintings) =>
@@ -155,15 +135,18 @@ export default function CustomPainting() {
         setPaintings([]); // Nếu có lỗi, fallback về mảng rỗng
       });
   }, []);
-
-  const handleView = (newPainting: Painting) => {
-    setSelectedPainting(newPainting); // Lưu painting được chọn vào state
-    setTakeUserId(newPainting.userId); // Lưu userId vào state
-    setTakeCustompainting(newPainting.id); // Lưu customPaintingId vào state
-    fetchContacts(newPainting.userId, newPainting.id); // Gọi API lấy contact
-    setIsDialogOpen(true); // Mở AlertDialog
+  const fetchContacts = async (userId: string, custompaintingId: string) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/admin/contact/${userId}/${custompaintingId}`);
+      console.log(response.data); // Kiểm tra dữ liệu trả về
+      const contactsData = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
+      console.log(contactsData); // Kiểm tra dữ liệu đã được chuẩn hóa thành mảng chưa
+      setContacts(contactsData);  // Lưu vào state
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      setContacts([]); // Set mảng rỗng nếu có lỗi
+    }
   };
-
 
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,16 +190,32 @@ export default function CustomPainting() {
       alert("Đã xảy ra lỗi khi tạo contact");
     }
   };
+  interface Painting {
+    id: string;
+    image: string;
+    name: string;
+    status: 'processing' | 'completed' | 'cancelled' | 'pending'; // Định nghĩa kiểu cho status
+    size_width: number;
+    size_height: number;
+    picture_frame: string | null;
+    note: string | null;
+    userId: string;
+  }
 
 
-
-
-
+  const handleView = (newPainting: Painting) => {
+    setSelectedPainting(newPainting);
+    setTakeUserId(newPainting.userId);  // Cập nhật userId từ painting
+    setTakeCustompainting(newPainting.id);  // Cập nhật custom painting ID
+    fetchContacts(newPainting.userId, newPainting.id);  // Lấy contacts cho painting
+    fetchUserInfo(newPainting.userId);  // Lấy thông tin user cho painting
+    setIsDialogOpen(true);  // Mở dialog
+  };
 
 
   // if (loading) return <p>Đang tải dữ liệu...</p>;
   return (
-    <Admin>
+    <><Admin>
 
       <Tabs defaultValue="all">
         <div className="flex items-center">
@@ -252,16 +251,16 @@ export default function CustomPainting() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {/* Render dữ liệu tranh từ API */}
                   {paintings.map((painting) => (
-                    <TableRow key={painting.id}>
+                    <><TableRow key={painting.id}>
                       <TableCell>
                         <Image
                           src={`/images/${painting.image}`}
                           width={50}
                           height={50}
                           alt={painting.name}
-                          className="w-16 h-16 object-cover rounded-md"
-                        />
+                          className="w-16 h-16 object-cover rounded-md" />
                       </TableCell>
                       <TableCell>
                         <div className="font-medium">{painting.name}</div>
@@ -282,15 +281,31 @@ export default function CustomPainting() {
                         {painting.price ? `$${painting.price.toFixed(2)}` : "Liên hệ"}
                       </TableCell>
                       <TableCell>
+                        <Select value={painting.status || "Chờ xử lý"} onValueChange={(newStatus: any) => handleStatusChange(painting.id, newStatus)}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Chọn trạng thái" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="processing">Đang xử lý</SelectItem>
+                            <SelectItem value="completed">Hoàn thành</SelectItem>
+                            <SelectItem value="cancelled">Hủy</SelectItem>
+                            <SelectItem value="pending">Chờ xử lý</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button aria-haspopup="true" size="icon" variant="ghost">
+                            <Button
+                              aria-haspopup="true"
+                              size="icon"
+                              variant="ghost"
+                            >
                               <MoreHorizontal className="h-4 w-4" />
                               <span className="sr-only">Toggle menu</span>
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            {/* Truyền painting đã chọn vào handleView */}
                             <DropdownMenuItem onClick={() => handleView(painting)}>
                               View
                             </DropdownMenuItem>
@@ -298,87 +313,113 @@ export default function CustomPainting() {
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
+
+                      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <ScrollArea className="h-[70%] w-[100%] rounded-md border">
+                          <AlertDialogContent className="md:max-w-[90%] xs:h-[50%] md:h-[80%]">
+                            {selectedPainting && (
+                              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="col-span-1 rounded-xl">
+                                  <AlertDialogDescription>
+                                    <div className="space-y-4">
+                                      <p><strong>Thông tin tranh</strong></p>
+                                      <p><strong>Name:</strong> {selectedPainting.name}</p>
+                                      <p><strong>Size:</strong> {selectedPainting.size_width} x {selectedPainting.size_height} cm</p>
+                                      <p><strong>Picture Frame:</strong> {selectedPainting.picture_frame || "No frame"}</p>
+                                      <p><strong>Note:</strong> {selectedPainting.note || "No notes"}</p>
+                                    </div>
+                                  </AlertDialogDescription>
+                                  <AlertDialogDescription>
+                                    <div className="space-y-4 my-4">
+                                      <p><strong>Thông tin khách hàng</strong></p>
+                                      {userInfo ? (
+                                        <>
+                                          <p><strong>Name:</strong>{userInfo.lastname} {userInfo.firstname}</p>
+                                          <p><strong>Email:</strong> {userInfo.email}</p>
+                                          <p><strong>Phone:</strong> {userInfo.phone}</p>
+                                          <p><strong>Address:</strong> {userInfo.address}</p>
+                                        </>
+                                      ) : (
+                                        <p>Loading user info...</p>  // Đợi dữ liệu từ API
+                                      )}
+                                    </div>
+                                  </AlertDialogDescription>
+                                  <div className="my-4">
+                                    <Select
+                                      value={selectedPainting.status || "pending"} // Nếu không có trạng thái, mặc định là "pending"
+                                      onValueChange={(newStatus: string) => handleStatusChange(selectedPainting.id, newStatus)} // Cập nhật trạng thái
+                                    >
+                                      <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Chọn trạng thái" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="processing">Đang xử lý</SelectItem>
+                                        <SelectItem value="completed">Hoàn thành</SelectItem>
+                                        <SelectItem value="cancelled">Hủy</SelectItem>
+                                        <SelectItem value="pending">Chờ xử lý</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <AlertDialogAction onClick={() => setIsDialogOpen(false)}>Close</AlertDialogAction>
+                                </div>
+                                {/* Form liên hệ */}
+                                <div className="col-span-3 rounded-xl">
+                                  <ScrollArea className="h-[70%] w-[100%] rounded-md border">
+                                    <div className="p-4 space-y-4">
+                                      {contacts.length > 0 ? (
+                                        contacts.map((contact) => (
+                                          <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
+                                            <p><strong>Name:</strong>{userInfo.lastname} {userInfo.firstname}</p>
+                                            <p><strong>Note:</strong> {contact.note}</p>
+                                            {contact.image && (
+                                              <Image
+                                                src={`/images/${contact.image}`}
+                                                alt="Contact Image"
+                                                width={100}
+                                                height={100}
+                                                className="rounded-md"
+                                              />
+                                            )}
+                                            <p><strong>Date:</strong> {new Date(contact.createAt).toLocaleString()}</p>
+                                          </div>
+                                        ))
+                                      ) : (
+                                        <p className="text-center text-gray-500">No contacts found</p>
+                                      )}
+                                    </div>
+                                  </ScrollArea>
+
+                                  <div className="flex">
+                                    <Input
+                                      type="file"
+                                      name="image"
+                                      onChange={handleFileChange}
+                                      accept="image/*"
+                                      className="w-[20%]"
+                                    />
+                                    <Input
+                                      type="text"
+                                      className="flex-1"
+                                      name="note"
+                                      placeholder="Nhập ghi chú"
+                                      value={note}
+                                      onChange={handleNoteChange}
+                                    ></Input>
+                                    <Button onClick={handleSubmitContact}>Gửi</Button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </AlertDialogContent>
+                        </ScrollArea>
+                      </AlertDialog>
+
+                    </>
+
                   ))}
                 </TableBody>
               </Table>
             </CardContent>
-            <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <AlertDialogContent className="md:max-w-[90%] md:h-[80%]">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Detail of the Painting</AlertDialogTitle>
-                </AlertDialogHeader>
-                {selectedPainting && (
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="col-span-1 rounded-xl">
-                      <AlertDialogDescription>
-                        <div className="space-y-4">
-                          <p><strong>Thông tin tranh</strong></p>
-                          <p><strong>Name:</strong> {selectedPainting.name}</p>
-                          <p><strong>Size:</strong> {selectedPainting.size_width} x {selectedPainting.size_height} cm</p>
-                          <p><strong>Picture Frame:</strong> {selectedPainting.picture_frame || "No frame"}</p>
-                          <p><strong>Note:</strong> {selectedPainting.note || "No notes"}</p>
-                        </div>
-                      </AlertDialogDescription>
-                      <AlertDialogDescription>
-                        <div className="space-y-4 my-4">
-                          <p><strong>Thông tin khách hàng</strong></p>
-                          <p><strong>Name:</strong> {selectedPainting.name}</p>
-                          <p><strong>Size:</strong> {selectedPainting.size_width} x {selectedPainting.size_height} cm</p>
-                          <p><strong>Picture Frame:</strong> {selectedPainting.picture_frame || "No frame"}</p>
-                          <p><strong>Note:</strong> {selectedPainting.note || "No notes"}</p>
-                        </div>
-                      </AlertDialogDescription>
-                      <AlertDialogAction onClick={() => setIsDialogOpen(false)}>Close</AlertDialogAction>
-                    </div>
-                    {/* Form liên hệ */}
-                    <div className="col-span-3 rounded-xl">
-                      <ScrollArea className="h-[80%] w-[100%] rounded-md border">
-                        <div className="p-4 space-y-4">
-                          {contacts.length > 0 ? (
-                            contacts.map((contact) => (
-                              <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
-                                <p><strong>Note:</strong> {contact.note}</p>
-                                {contact.image && (
-                                  <Image
-                                    src={`/images/${contact.image}`}
-                                    alt="Contact Image"
-                                    width={100}
-                                    height={100}
-                                    className="rounded-md"
-                                  />
-                                )}
-                                <p><strong>Date:</strong> {new Date(contact.createdAt).toLocaleString()}</p>
-                              </div>
-                            ))
-                          ) : (
-                            <p className="text-center text-gray-500">No contacts found</p>
-                          )}
-                        </div>
-                      </ScrollArea>
-
-                      <div className="flex">
-                        <Input
-                          type="file"
-                          name="image"
-                          onChange={handleFileChange}
-                          accept="image/*"
-                          className="w-[20%]"
-                        />
-                        <Input
-                          type="text"
-                          className="flex-1"
-                          name="note"
-                          placeholder="Nhập ghi chú"
-                          value={note}
-                          onChange={handleNoteChange}
-                        ></Input>
-                        <Button onClick={handleSubmitContact}>Gửi</Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </AlertDialogContent>
-            </AlertDialog>;
             <CardFooter>
               <div className="text-xs text-muted-foreground">
                 Showing <strong>1-10</strong> of <strong>32</strong> products
@@ -388,6 +429,6 @@ export default function CustomPainting() {
         </TabsContent>
       </Tabs>
 
-    </Admin>
+    </Admin></>
   )
 }
