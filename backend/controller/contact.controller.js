@@ -14,7 +14,7 @@ const queryAsync = (sql, params = []) => {
 
 const getContact = async(req,res) =>{
     try {
-        const data = await queryAsync('SELECT * FROM qlbantranh.contact'); //
+        const data = await queryAsync('SELECT * FROM qlbantranh.contacts'); //
         if (!data) {
             return res.status(404).send({
                 success: false,
@@ -49,7 +49,7 @@ const getContactByUserIdAndPaintingId = async (req, res) => {
 
         // Truy vấn cơ sở dữ liệu với cả userId và customPaintingId
         const data = await queryAsync(
-            `SELECT * FROM qlbantranh.contact WHERE userId = ? AND custompaintingId = ?`,
+            `SELECT * FROM qlbantranh.contacts WHERE userId = ? AND custompaintingId = ?`,
             [userId, customPaintingId]
         );
 
@@ -72,7 +72,7 @@ const getContactByUserIdAndPaintingId = async (req, res) => {
 const fs = require('fs');
 const createContact = async (req, res) => {
     try {
-        const { userId, customPaintingId, note, price = null,name } = req.body;
+        const { userId, customPaintingId, note } = req.body;
 
         // Kiểm tra dữ liệu đầu vào
         if (!userId || !customPaintingId) {
@@ -81,9 +81,9 @@ const createContact = async (req, res) => {
                 message: 'userId và customPaintingId là bắt buộc!',
             });
         }
-
+        const image = null;
         if (req.file) {
-            const image = req.file.filename; // Lấy tên file
+            image = req.file.filename; // Lấy tên file
             const backendPath = path.join(__dirname, '../public/images', image); // File đã lưu ở backend
             const frontendPath = path.join(__dirname, '../../frontend/public/images', image); // Đường dẫn lưu ở frontend
 
@@ -95,11 +95,11 @@ const createContact = async (req, res) => {
             fs.unlinkSync(backendPath);
         }
 
-        const id = crypto.randomUUID();
+        // const id = crypto.randomUUID();
         // Tạo một Contact mới
         const data = await queryAsync(
-            `INSERT INTO contact (id, image,name,note,userId,price,createAt) VALUES (?,?,?,?,?,?,NOW())`,
-            [id,image, name, note, userId, price]
+            `INSERT INTO contacts ( image,note,userId,custompaintingId,createAt) VALUES (?,?,?,?,NOW())`,
+            [image, note, userId,customPaintingId]
         );
         if (!data) {
             return res.status(500).send({
@@ -111,7 +111,6 @@ const createContact = async (req, res) => {
         res.status(201).send({
             success: true,
             message: 'Tạo Contact thành công!',
-            contact: newContact,
         });
     } catch (error) {
         // Phản hồi nếu xảy ra lỗi
