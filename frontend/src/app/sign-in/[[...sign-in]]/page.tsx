@@ -36,7 +36,7 @@ export default function Page() {
   }, [signIn, user]);
 
   return (
-    <div className="flex items-center justify-center flex-col gap-10">
+    <div className="flex items-center flex-col justify-center gap-10 w-screen h-screen">
       <SignIn
         appearance={{
           elements: {

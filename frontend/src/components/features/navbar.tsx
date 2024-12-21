@@ -73,12 +73,12 @@ export default function Navbar() {
                 }}
               />
             ) : (
-              <ul className="flex flex-col mt-1 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-                <li>
-                  <a href="/sign-in" className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white hover:text-yellow-300">Sign In</a>
+              <ul className="flex mt-1 font-medium lg:flex-row lg:space-x-1 lg:mt-0">
+                <li className=" hover:text-black">
+                  <a href="/sign-in" className="text-[18px] font-robotoSlab block py-2 pl-3 pr-2 text-white  hover:text-black hover:bg-white">Sign In</a>
                 </li>
                 <li>
-                  <a href="/sign-up" className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-white hover:text-yellow-300">Sign Up</a>
+                  <a href="/sign-up" className="text-[18px] font-robotoSlab block py-2 pl-2 pr-4 text-white hover:text-black hover:bg-white">Sign Up</a>
                 </li>
               </ul>
             )}
@@ -92,7 +92,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between w-full lg:flex lg:w-auto opacity-100">
           <div className={`${isMenuOpen ? "block" : "hidden"} items-center justify-between w-full lg:flex lg:w-auto`}>
             <ul
-              className={`flex flex-col font-medium lg:flex-row lg:space-x-8 lg:mt-0 lg:justify-center ${isScrolled ? "lg:hidden" : ""
+              className={`flex flex-col font-medium lg:flex-row lg:space-x-2 lg:mt-0 lg:justify-center ${isScrolled ? "lg:hidden" : ""
                 }`}
             >
               <li>
@@ -135,11 +135,11 @@ export default function Navbar() {
                     }}
                   />
                 ) : (
-                  <ul className="flex flex-col mt-1 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+                  <ul className="flex flex-col mt-1 font-medium lg:flex-row lg:space-x-2 lg:mt-0">
                     <li>
                       <a
                         href="/sign-in"
-                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-white"
+                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-white hover:text-black"
                       >
                         Sign In
                       </a>
@@ -147,7 +147,7 @@ export default function Navbar() {
                     <li>
                       <a
                         href="/sign-up"
-                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-white"
+                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-white hover:text-black"
                       >
                         Sign Up
                       </a>

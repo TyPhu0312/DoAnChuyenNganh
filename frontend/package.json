@@ -11,7 +11,7 @@
   "dependencies": {
     "@ant-design/nextjs-registry": "1.0.0",
     "@auth/mongodb-adapter": "^3.4.2",
-    "@clerk/nextjs": "^6.5.0",
+    "@clerk/nextjs": "^6.9.6",
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.9.1",
@@ -33,6 +33,7 @@
     "body-parser": "^1.20.3",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
+    "clerk": "^0.8.3",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "debounce": "^2.2.0",
