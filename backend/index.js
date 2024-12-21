@@ -16,7 +16,7 @@ const routerOrder = require('./routes/order.routes')
 const routerOrderDetail = require('./routes/orderdetail.routes')
 const routerProvider = require('./routes/provider.routes')
 const routerAuth = require('./routes/auth.routes')
-
+const routerContact = require('./routes/contact.routes')
 
 //màu báo DB đang chạy
 const morgan = require('morgan');
@@ -39,7 +39,7 @@ app.use("/api/admin/order", routerOrder );
 app.use("/api/admin/orderdetail", routerOrderDetail);
 app.use("/api/admin/provider", routerProvider );
 app.use("/api/admin/auth", routerAuth );
-
+app.use("/api/admin/contact", routerContact );
 // API Backend để lấy số liệu thống kê
 
 

@@ -1,5 +1,11 @@
 
 module.exports = (sequelize, DataTypes) => {
+    const CustomPaintingStatus = Object.freeze({
+        PENDING: 'pending',
+        PROCESSING: 'processing',
+        COMPLETED: 'completed',
+        CANCELLED: 'cancelled'
+      });
     const CustomPainting = sequelize.define("CustomPainting",{
         id: {
             type: DataTypes.UUID,
@@ -7,13 +13,6 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
           },
         image: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            validate: {
-                len: [1, 150],
-            }
-        },
-        link_image: {
             type: DataTypes.STRING,
             allowNull: true,
             validate: {
@@ -46,10 +45,11 @@ module.exports = (sequelize, DataTypes) => {
                 len: [1, 500],
             },
         },
-        // userId: {  // Đảm bảo trường userId là UUID và có giá trị trong bảng User
-        //     type: DataTypes.UUID,
-        //     allowNull: false,
-        // }
+        status: {
+            type: DataTypes.ENUM(...Object.values(CustomPaintingStatus)), 
+            allowNull: false,
+            defaultValue: CustomPaintingStatus.PENDING, //  mặc định là pending
+          },
     },
         {
             timestamps: true,
