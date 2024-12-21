@@ -21,6 +21,7 @@ const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const order = require("./routes/order");
+const routerContact = require('./routes/contact.routes')
 
 
 //màu báo DB đang chạy
@@ -40,8 +41,9 @@ app.use("/api/admin/custompainting", routerCustomPainting);
 app.use("/api/admin/gallery", routerGallery);
 app.use("/api/admin/order", routerOrder);
 app.use("/api/admin/orderdetail", routerOrderDetail);
-app.use("/api/admin/provider", routerProvider);
-app.use("/api/admin/auth", routerAuth);
+app.use("/api/admin/provider", routerProvider );
+app.use("/api/admin/auth", routerAuth );
+app.use("/api/admin/contact", routerContact );
 
 // API Backend để lấy số liệu thống kê
 
