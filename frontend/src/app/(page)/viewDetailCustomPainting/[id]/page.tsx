@@ -42,6 +42,7 @@ export default function ViewDetailCustomPainting() {
     const [image, setImage] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [userInfo, setUserInfo] = useState<any>(null);
     const [selectedPainting, setSelectedPainting] = useState<Painting | null>(null);
     const [takeUserId, setTakeUserId] = useState("");
     const [takecustompainting, setTakeCustompainting] = useState("");
@@ -54,6 +55,7 @@ export default function ViewDetailCustomPainting() {
                 setPainting(paintingData);
                 setSelectedPainting(paintingData);
                 setTakeUserId(paintingData.userId);  // Gán giá trị userId
+                // fetchUserInfo(paintingData.userId);
                 setTakeCustompainting(paintingData.id);  // Gán giá trị customPaintingId
                 setLoading(false);
             })
@@ -74,13 +76,19 @@ export default function ViewDetailCustomPainting() {
             setContacts([]); // Set mảng rỗng nếu có lỗi
         }
     };
-    // Fetch các phản hồi (contact) sau khi painting đã được tải
+    // const fetchUserInfo = async (userId: string) => {
+    //     try {
+    //       const response = await axios.get(`http://localhost:5000/api/admin/user/${userId}`);
+    //       console.log(response.data.data);
+    //       setUserInfo(response.data.data[0]); // Đảm bảo response.data.data chứa thông tin người dùng
+    //     } catch (error) {
+    //       console.error("Error fetching user info:", error);
+    //     }
+    //   };
     useEffect(() => {
         if (!painting) return;
         fetchContacts(painting.userId, painting.id);
-    }, [painting]); // Chỉ gọi khi painting đã được set
-
-    // Fetch các phản hồi (contact)
+    }, [painting]);
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -174,6 +182,7 @@ export default function ViewDetailCustomPainting() {
                 {contacts.length > 0 ? (
                     contacts.map((contact) => (
                         <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
+                            {/* <p className="text-blue-500 font-bold text-[10px]">{} {userInfo.firstname}</p> */}
                             <p><strong>Note:</strong> {contact.note}</p>
                             {contact.image && (
                                 <Image
