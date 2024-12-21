@@ -15,7 +15,14 @@ const queryAsync = (sql, params = []) => {
 };
 const getCustomPainting = async (req, res) => {
     try {
-        const data = await queryAsync('SELECT * FROM qlbantranh.custompainting'); //
+        const data = await queryAsync(`SELECT 
+        cp.*, 
+        CONCAT(u.lastname, ' ', u.firstname) AS userName
+        FROM 
+        qlbantranh.custompainting cp
+        JOIN 
+        qlbantranh.users u ON cp.userId = u.id
+        `);
         if (!data) {
             return res.status(404).send({
                 success: false,
@@ -25,7 +32,7 @@ const getCustomPainting = async (req, res) => {
         res.status(200).send({
             success: true,
             message: 'Tất cả custompainting',
-            data: data,
+            data
         });
     } catch (error) {
         res.status(500).send({
@@ -44,9 +51,9 @@ const getCustomPaintingById = async (req, res) => {
                 message: 'Không tìm thấy ID!'
             })
         }
-        const dataWithId = await queryAsync(`SELECT 
+        const data = await queryAsync(`SELECT 
         cp.*, 
-        CONCAT(u.firstname, ' ', u.lastname) AS userName
+        CONCAT(u.lastname, ' ', u.firstname) AS userName
         FROM 
         qlbantranh.custompainting cp
         JOIN 
@@ -54,7 +61,7 @@ const getCustomPaintingById = async (req, res) => {
         WHERE 
         cp.id = ?;
         `, [id]);
-        if (!dataWithId) {
+        if (!data) {
             return res.status(404).send({
                 success: false,
                 message: 'Không thấy data từ database',
@@ -62,7 +69,7 @@ const getCustomPaintingById = async (req, res) => {
         }
         res.status(200).send({
             success: true,
-            data: dataWithId
+            data
         })
 
     } catch (error) {
