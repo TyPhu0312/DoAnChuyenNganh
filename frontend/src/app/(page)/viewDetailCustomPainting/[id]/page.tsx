@@ -16,8 +16,9 @@ type Contact = {
     id: string;
     content: string;
     image: string;
-    createdAt: string;
+    createAt: string;
     sender: string;
+    note: string;
 };
 interface Painting {
     id: string;
@@ -35,37 +36,50 @@ interface Painting {
 }
 export default function ViewDetailCustomPainting() {
     const [painting, setPainting] = useState<Painting | null>(null);
+    const [file, setFile] = useState<File | null>(null);
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [note, setNote] = useState<string>('');
     const [image, setImage] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
+    const [selectedPainting, setSelectedPainting] = useState<Painting | null>(null);
+    const [takeUserId, setTakeUserId] = useState("");
+    const [takecustompainting, setTakeCustompainting] = useState("");
     useEffect(() => {
         const id = window.location.pathname.split('/').pop();
-
         if (!id) return;
         axios.get(`http://localhost:5000/api/admin/custompainting/${id}`)
             .then((response) => {
-                setPainting(response.data.data[0]);
+                const paintingData = response.data.data[0];
+                setPainting(paintingData);
+                setSelectedPainting(paintingData);
+                setTakeUserId(paintingData.userId);  // Gán giá trị userId
+                setTakeCustompainting(paintingData.id);  // Gán giá trị customPaintingId
                 setLoading(false);
             })
             .catch((err) => {
                 setError('Không thể tải thông tin yêu cầu');
                 setLoading(false);
             });
-        // Fetch các phản hồi (contact)
-        axios.get(`http://localhost:5000/api/admin/contact`)
-            .then((response) => {
-                setContacts(response.data.data); // Set contact từ response
-            })
-            .catch((err) => {
-                setError('Không thể tải các phản hồi');
-            });
-
     }, []);
+    const fetchContacts = async (userId: string, custompaintingId: string) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/admin/contact/${userId}/${custompaintingId}`);
+            console.log(response.data); // Kiểm tra dữ liệu trả về
+            const contactsData = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
+            console.log(contactsData); // Kiểm tra dữ liệu đã được chuẩn hóa thành mảng chưa
+            setContacts(contactsData);  // Lưu vào state
+        } catch (error) {
+            console.error("Error fetching contacts:", error);
+            setContacts([]); // Set mảng rỗng nếu có lỗi
+        }
+    };
+    // Fetch các phản hồi (contact) sau khi painting đã được tải
+    useEffect(() => {
+        if (!painting) return;
+        fetchContacts(painting.userId, painting.id);
+    }, [painting]); // Chỉ gọi khi painting đã được set
 
-    console.log(painting);
     // Fetch các phản hồi (contact)
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -73,30 +87,46 @@ export default function ViewDetailCustomPainting() {
             setImage(file);
         }
     };
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            setFile(event.target.files[0]);
+        }
+    };
 
-    const handleSendResponse = () => {
+    const handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNote(event.target.value);
+    };
+    const handleSubmitContact = async () => {
         if (!note) {
-            setError('Vui lòng nhập nội dung phản hồi');
+            alert("Note không được để trống");
             return;
         }
 
         const formData = new FormData();
-        formData.append('note', note);
-        if (image) {
-            formData.append('image', image);
+        if (file) {
+            formData.append("image", file); // Thêm file ảnh nếu có
         }
+        formData.append("note", note); // Thêm note
+        formData.append("userId", takeUserId); // Lấy userId từ state
+        formData.append("customPaintingId", takecustompainting); // Lấy customPaintingId từ state
 
-        axios.post(`http://localhost:5000/api/admin/contact/custompainting/${window.location.pathname.split('/').pop()}`, formData)
-            .then((response) => {
-                setContacts((prev) => [...prev, response.data]); // Thêm phản hồi mới vào danh sách
-                setNote('');
-                setImage(null);
-            })
-            .catch((err) => {
-                setError('Không thể gửi phản hồi');
+        try {
+            const response = await fetch("http://localhost:5000/api/admin/contact/create", {
+                method: "POST",
+                body: formData,
             });
-    };
 
+            const result = await response.json();
+            if (result.success) {
+                alert("Contact created successfully!");
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error("Error creating contact:", error);
+            alert("Đã xảy ra lỗi khi tạo contact");
+        }
+    };
     if (loading) return <p>Đang tải...</p>;
     if (error) return <Alert className="w-full mb-4">{error}</Alert>;
 
@@ -113,35 +143,73 @@ export default function ViewDetailCustomPainting() {
 
             <h2 className="text-xl font-bold mt-5 mb-3">Phản hồi</h2>
             <div className="space-y-4">
-                {contacts.map((contact) => (
-                    <Card key={contact.id} className="border p-4 rounded-lg">
-                        <p><strong>{contact.sender}:</strong> {contact.content}</p>
-                        {contact.image && <Image src={contact.image} width={50} height={50} alt="Image" className="max-w-full mt-2" />}
-                        <p className="text-sm text-gray-500"><em>{new Date(contact.createdAt).toLocaleString()}</em></p>
-                    </Card>
-                ))}
-            </div>
+                {selectedPainting && (
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="col-span-1 rounded-xl">
 
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline" className="mt-5">Gửi phản hồi</Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogTitle>Gửi phản hồi</DialogTitle>
-                    <Textarea
-                        value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                        placeholder="Nhập phản hồi của bạn"
-                        className="w-full p-2 mt-2 border rounded-lg"
-                    />
-                    <Input
-                        type="file"
-                        onChange={handleImageUpload}
-                        className="mt-3"
-                    />
-                    <Button onClick={handleSendResponse} className="mt-5">Gửi phản hồi</Button>
-                </DialogContent>
-            </Dialog>
+                            <div className="space-y-4">
+                                <p><strong>Thông tin tranh</strong></p>
+                                <p><strong>Name:</strong> {selectedPainting.name}</p>
+                                <p><strong>Size:</strong> {selectedPainting.size_width} x {selectedPainting.size_height} cm</p>
+                                <p><strong>Picture Frame:</strong> {selectedPainting.picture_frame || "No frame"}</p>
+                                <p><strong>Note:</strong> {selectedPainting.note || "No notes"}</p>
+                            </div>
+
+                            {/* <div className="my-4">
+                            <Select value={painting.status || "Chờ xử lý"} onValueChange={(newStatus: any) => handleStatusChange(painting.id, newStatus)}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Chọn trạng thái" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="processing">Đang xử lý</SelectItem>
+                                <SelectItem value="completed">Hoàn thành</SelectItem>
+                                <SelectItem value="cancelled">Hủy</SelectItem>
+                                <SelectItem value="pending">Chờ xử lý</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div> */}
+                        </div>
+                    </div>
+                )}
+                {contacts.length > 0 ? (
+                    contacts.map((contact) => (
+                        <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
+                            <p><strong>Note:</strong> {contact.note}</p>
+                            {contact.image && (
+                                <Image
+                                    src={`/images/${contact.image}`}
+                                    alt="Contact Image"
+                                    width={100}
+                                    height={100}
+                                    className="rounded-md"
+                                />
+                            )}
+                            <p><strong>Date:</strong> {new Date(contact.createAt).toLocaleString()}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500">No contacts found</p>
+                )}
+            </div>
+            <Button variant="outline" className="mt-5">Gửi phản hồi</Button>
+            <div className="flex">
+                <Input
+                    type="file"
+                    name="image"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="w-[20%]"
+                />
+                <Input
+                    type="text"
+                    className="flex-1"
+                    name="note"
+                    placeholder="Nhập ghi chú"
+                    value={note}
+                    onChange={handleNoteChange}
+                ></Input>
+                <Button onClick={handleSubmitContact}>Gửi</Button>
+            </div>
         </div>
     );
 }
