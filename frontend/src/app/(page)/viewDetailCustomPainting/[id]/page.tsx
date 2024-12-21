@@ -31,7 +31,7 @@ interface Painting {
     createdAt: string;
     updatedAt: string;
     userId: string;
-    customerName:string;
+    userName: string;
 }
 export default function ViewDetailCustomPainting() {
     const [painting, setPainting] = useState<Painting | null>(null);
@@ -47,7 +47,6 @@ export default function ViewDetailCustomPainting() {
         if (!id) return;
         axios.get(`http://localhost:5000/api/admin/custompainting/${id}`)
             .then((response) => {
-                // Lưu trữ chỉ phần tử đầu tiên của ProductDetail
                 setPainting(response.data.data[0]);
                 setLoading(false);
             })
@@ -55,17 +54,19 @@ export default function ViewDetailCustomPainting() {
                 setError('Không thể tải thông tin yêu cầu');
                 setLoading(false);
             });
+        // Fetch các phản hồi (contact)
+        axios.get(`http://localhost:5000/api/admin/contact`)
+            .then((response) => {
+                setContacts(response.data.data); // Set contact từ response
+            })
+            .catch((err) => {
+                setError('Không thể tải các phản hồi');
+            });
 
     }, []);
+
     console.log(painting);
     // Fetch các phản hồi (contact)
-    // axios.get(`http://localhost:5000/api/contact/custompainting/${id}`)
-    //     .then((response) => {
-    //         setContacts(response.data);
-    //     })
-    //     .catch((err) => {
-    //         setError('Không thể tải các phản hồi');
-    //     });
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -74,26 +75,26 @@ export default function ViewDetailCustomPainting() {
     };
 
     const handleSendResponse = () => {
-        // if (!note) {
-        //     setError('Vui lòng nhập nội dung phản hồi');
-        //     return;
-        // }
+        if (!note) {
+            setError('Vui lòng nhập nội dung phản hồi');
+            return;
+        }
 
-        // const formData = new FormData();
-        // formData.append('note', note);
-        // if (image) {
-        //     formData.append('image', image);
-        // }
+        const formData = new FormData();
+        formData.append('note', note);
+        if (image) {
+            formData.append('image', image);
+        }
 
-        // axios.post(`http://localhost:5000/api/admin/contact/custompainting/${window.location.pathname.split('/').pop()}`, formData)
-        //     .then((response) => {
-        //         setContacts((prev) => [...prev, response.data]); // Thêm phản hồi mới vào danh sách
-        //         setNote('');
-        //         setImage(null);
-        //     })
-        //     .catch((err) => {
-        //         setError('Không thể gửi phản hồi');
-        //     });
+        axios.post(`http://localhost:5000/api/admin/contact/custompainting/${window.location.pathname.split('/').pop()}`, formData)
+            .then((response) => {
+                setContacts((prev) => [...prev, response.data]); // Thêm phản hồi mới vào danh sách
+                setNote('');
+                setImage(null);
+            })
+            .catch((err) => {
+                setError('Không thể gửi phản hồi');
+            });
     };
 
     if (loading) return <p>Đang tải...</p>;
@@ -104,18 +105,18 @@ export default function ViewDetailCustomPainting() {
 
             <h1 className="text-2xl font-bold mb-4">Chi tiết yêu cầu đặt vẽ tranh </h1>
             <Card className="mb-4 p-4 border rounded-lg">
-                
+
                 <p><strong>Mã đơn:</strong> {painting?.id}</p>
                 <p><strong>Tên:</strong> {painting?.name}</p>
-                <p><strong>Tên khách hàng: </strong>{painting?.customerName} </p>
+                <p><strong>Tên khách hàng: </strong>{painting?.userName} </p>
             </Card>
 
-            {/* <h2 className="text-xl font-bold mt-5 mb-3">Phản hồi</h2> */}
+            <h2 className="text-xl font-bold mt-5 mb-3">Phản hồi</h2>
             <div className="space-y-4">
                 {contacts.map((contact) => (
                     <Card key={contact.id} className="border p-4 rounded-lg">
                         <p><strong>{contact.sender}:</strong> {contact.content}</p>
-                        {contact.image && <Image src={contact.image} alt="Image" className="max-w-full mt-2" />}
+                        {contact.image && <Image src={contact.image} width={50} height={50} alt="Image" className="max-w-full mt-2" />}
                         <p className="text-sm text-gray-500"><em>{new Date(contact.createdAt).toLocaleString()}</em></p>
                     </Card>
                 ))}
