@@ -121,6 +121,7 @@ export default function CustomPainting() {
         const data = response.data.data || response.data;
         if (Array.isArray(data)) {
           setPaintings(data); // Nếu là mảng, set vào state
+          // Lấy thông tin user cho painting
         } else {
           console.error("API response is not an array", response.data);
           setPaintings([]); // Nếu không phải mảng, set là mảng rỗng
@@ -208,7 +209,7 @@ export default function CustomPainting() {
     setTakeUserId(newPainting.userId);  // Cập nhật userId từ painting
     setTakeCustompainting(newPainting.id);  // Cập nhật custom painting ID
     fetchContacts(newPainting.userId, newPainting.id);  // Lấy contacts cho painting
-    fetchUserInfo(newPainting.userId);  // Lấy thông tin user cho painting
+    fetchUserInfo(newPainting.userId);
     setIsDialogOpen(true);  // Mở dialog
   };
 
@@ -369,7 +370,13 @@ export default function CustomPainting() {
                                       {contacts.length > 0 ? (
                                         contacts.map((contact) => (
                                           <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
-                                            <p><strong>Name:</strong>{userInfo.lastname} {userInfo.firstname}</p>
+                                            {userInfo ? (
+                                              <>
+                                                <p className="text-blue-500 font-bold text-[10px]">{userInfo.lastname} {userInfo.firstname}</p>
+                                              </>
+                                            ) : (
+                                              <p>Loading user info...</p>  // Đợi dữ liệu từ API
+                                            )}
                                             <p><strong>Note:</strong> {contact.note}</p>
                                             {contact.image && (
                                               <Image
