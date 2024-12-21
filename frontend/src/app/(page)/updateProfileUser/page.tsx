@@ -26,8 +26,8 @@ export default function UpdateUserPage() {
         email: user.primaryEmailAddress?.emailAddress || "",
         phone: user.phoneNumbers[0]?.phoneNumber || "",
         address:"",
-        providerId: "43e41e65-7d2f-4d0e-a4b5-6d649cc67c70",
-        roleId: "ceb09234-2b63-4ca1-89b3-3aab90d9f716",
+        providerId: "f5e12c5c-fce4-4168-ba9e-03c19ea2b11a",
+        roleId: "785c15a6-c2ae-407c-84cc-a715e6563867",
       });
     }
   }, [isSignedIn, user, isLoaded]);

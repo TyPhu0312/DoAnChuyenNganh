@@ -208,7 +208,8 @@ export default function CustomPainting() {
                       <TableCell>
                       <Image
                           src={`/images/${painting.image}`}
-
+                          width={16}
+                          height={16}
                           alt={painting.name}
                           className="w-16 h-16 object-cover rounded-md" />
                       </TableCell>
