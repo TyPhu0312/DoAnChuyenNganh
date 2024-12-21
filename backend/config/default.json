@@ -1,0 +1,7 @@
+{
+  "vnp_TmnCode":"D46BIE38",
+  "vnp_HashSecret":"9UIT48PGKD1A3RH6034BRWPB3KCRKSLI",
+  "vnp_Url":"https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+  "vnp_Api":"https://sandbox.vnpayment.vn/merchant_webapi/api/transaction",
+  "vnp_ReturnUrl": "http://localhost:3000/statusPayment?vnpay_return"
+}
