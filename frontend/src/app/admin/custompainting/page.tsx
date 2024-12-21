@@ -40,6 +40,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLab
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
 import { MoreHorizontal } from "lucide-react";
 import axios from "axios";
+import Image from "next/image";
 
 
 export default function CustomPainting() {
@@ -138,7 +139,7 @@ export default function CustomPainting() {
                   {paintings.map((painting) => (
                     <TableRow key={painting.id}>
                       <TableCell>
-                      <img
+                      <Image
                           src={painting.image}
                           alt={painting.name}
                           className="w-16 h-16 object-cover rounded-md" />

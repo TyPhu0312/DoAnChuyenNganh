@@ -6,6 +6,17 @@ import { UserButton, useAuth } from "@clerk/nextjs";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/button";
 import CartSidebar from "@/components/features/cartSideBar";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu"
+import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,7 +47,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`${isScrolled ? "" : "bg-transparent shadow-lg "} 
+      className={`${isScrolled ? "" : "bg-white shadow-lg "} 
     fixed top-0 left-0 w-full z-10 transition-all duration-300 ${isScrolled ? "h-16 rounded-b-[100px]" : "h-30"}`}
     >
       <div className={`flex flex-col h-full items-center justify-between max-w-screen-xl px-4 mx-auto mt-5 ${isScrolled ? "mt-1" : ""} rounded-tl-[30px] rounded-tr-[30px]`}>
@@ -51,7 +62,7 @@ export default function Navbar() {
               quality={100}
               className={`object-cover rounded-full transition-all duration-300 ${isScrolled ? "scale-80" : "scale-100"}`}
             />
-            <span className={`self-center text-4xl font-semibold whitespace-nowrap text-white font-robotoSerif ml-3 transition-all duration-300 ${isScrolled ? " text-xl" : "opacity-100"}`}>
+            <span className={`self-center text-4xl font-semibold whitespace-nowrap text-black font-robotoSerif ml-3 transition-all duration-300 ${isScrolled ? " text-xl text-white" : "opacity-100"}`}>
               Artauct
             </span>
           </Link>
@@ -98,7 +109,7 @@ export default function Navbar() {
               <li>
                 <a
                   href="/"
-                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-white"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-black"
                 >
                   Home
                 </a>
@@ -106,7 +117,7 @@ export default function Navbar() {
               <li>
                 <a
                   href="/allProduct"
-                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-white"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-black"
                 >
                   All Artwork
                 </a>
@@ -114,7 +125,7 @@ export default function Navbar() {
               <li>
                 <a
                   href="/Collection"
-                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-white"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-black"
                 >
                   Collection
                 </a>
@@ -122,7 +133,15 @@ export default function Navbar() {
               <li>
                 <a
                   href="/orderArtwork"
-                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-white"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-black"
+                >
+                  Order Artwork
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/orderArtwork"
+                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-black"
                 >
                   Order Artwork
                 </a>
@@ -139,7 +158,7 @@ export default function Navbar() {
                     <li>
                       <a
                         href="/sign-in"
-                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-white hover:text-black"
+                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-black hover:text-black"
                       >
                         Sign In
                       </a>
@@ -147,12 +166,81 @@ export default function Navbar() {
                     <li>
                       <a
                         href="/sign-up"
-                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-white hover:text-black"
+                        className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 text-black bg-white hover:bg-gray-300 rounded-md lg:bg-transparent lg:text-black hover:text-black"
                       >
                         Sign Up
                       </a>
                     </li>
                   </ul>
+                )}
+              </li>
+              <li>
+                {userId ? (
+                  <NavigationMenu>
+                    <NavigationMenuList>
+
+                      <NavigationMenuItem>
+                        <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <a
+                              href="/updateProfileUser"
+                              className="text-[15px] font-robotoSlab"
+                            >
+                              Update Profile
+                            </a>
+                          </NavigationMenuLink>
+                          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <a
+                              href="/viewUserOrder"
+                              className="text-[15px] font-robotoSlab"
+                            >
+                              My Order
+                            </a>
+                          </NavigationMenuLink> 
+                          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <a
+                              href={`/viewUserPaintingOrder/${userId}`}
+                              className="text-[15px] font-robotoSlab"
+                            >
+                              My Custom Painting
+                            </a>
+                          </NavigationMenuLink>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+                    </NavigationMenuList>
+                  </NavigationMenu>
+                ) : (
+                  <NavigationMenu className="hidden font-robotoCondensed">
+                    <NavigationMenuList>
+
+                      <NavigationMenuItem>
+                        <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                          <Link href={"/updateProfileUser"} legacyBehavior passHref>
+                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                              Update Profile
+                            </NavigationMenuLink>
+                          </Link>
+
+                          <Link href={"/viewUserOrder"}>
+                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                              My Order
+                            </NavigationMenuLink>
+                          </Link>
+
+                          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <a
+                              href={`/viewUserPaintingOrder/${userId}`}
+                              className="text-[15px] font-robotoSlab"
+                            >
+                              My Custom Painting
+                            </a>
+                          </NavigationMenuLink>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+                    </NavigationMenuList>
+                  </NavigationMenu>
                 )}
               </li>
             </ul>
