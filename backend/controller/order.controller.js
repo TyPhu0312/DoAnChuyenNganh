@@ -87,7 +87,7 @@ const createOrder = async (req, res) => {
             totalAmount += detail.quantity * detail.price;
         });
         const orderData = await queryAsync(
-            `INSERT INTO \`order\` (id, note, status, userId, total_amount) VALUES (?, ?, ?, ?, ?)`,
+            `INSERT INTO \`order\` (id, note, status, userId, total_amount, createdAt) VALUES (?, ?, ?, ?, ?,NOW())`,
             [orderId, note, orderStatus, userId, totalAmount]
         );
         console.log("order data:", orderData);
