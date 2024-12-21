@@ -40,9 +40,13 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLab
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { MoreHorizontal } from "lucide-react";
 import axios from "axios";
+
+import Image from "next/image";
+
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
 
 
 export default function CustomPainting() {
@@ -202,7 +206,7 @@ export default function CustomPainting() {
                   {paintings.map((painting) => (
                     <><TableRow key={painting.id}>
                       <TableCell>
-                        <img
+                      <Image
                           src={`/images/${painting.image}`}
 
                           alt={painting.name}

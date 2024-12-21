@@ -213,7 +213,7 @@ export default function ProductManagement() {
       <Card>
         <CardHeader className="px-7">
           <CardTitle>Product Management</CardTitle>
-          <CardDescription>Manage your store's products</CardDescription>
+          <CardDescription>Manage your store products</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex justify-end">
