@@ -60,12 +60,13 @@ const getUserById = async (req, res) => {
             });
         }
 
-        const dataWithId = await queryAsync(`
+        const data = await queryAsync(`
                 SELECT 
                 users.firstname, 
                 users.lastname, 
                 users.email, 
                 users.phone,
+                users.address,
                 roles.name AS roleName, 
                 provider.name AS providerName
             FROM 
@@ -76,7 +77,7 @@ const getUserById = async (req, res) => {
                 provider ON users.providerId = provider.id
         
         WHERE users.id =?`, [id]);
-        if (!dataWithId || dataWithId.length === 0) {
+        if (!data || data.length === 0) {
             return res.status(404).send({
                 success: false,
                 message: 'Không có user mang id này',
@@ -84,7 +85,7 @@ const getUserById = async (req, res) => {
         }
         res.status(200).send({
             success: true,
-            ProductDetail: dataWithId
+            data,
         });
 
     } catch (error) {

@@ -63,7 +63,7 @@ const getContactByUserIdAndPaintingId = async (req, res) => {
         // Trả về kết quả
         res.status(200).send({
             success: true,
-            Contact: data,
+            data,
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
