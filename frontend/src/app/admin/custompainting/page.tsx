@@ -68,6 +68,7 @@ export default function CustomPainting() {
   const [takecustompainting, setTakeCustompainting] = useState("");
   const [contacts, setContacts] = useState<any[]>([]);
   const [userInfo, setUserInfo] = useState<any>(null);
+  const [price, setPrice] = useState<number>();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -79,7 +80,7 @@ export default function CustomPainting() {
   const fetchUserInfo = async (userId: string) => {
     try {
       const response = await axios.get(`http://localhost:5000/api/admin/user/${userId}`);
-      console.log(response.data.data);
+      
       setUserInfo(response.data.data[0]); // Đảm bảo response.data.data chứa thông tin người dùng
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -139,9 +140,7 @@ export default function CustomPainting() {
   const fetchContacts = async (userId: string, custompaintingId: string) => {
     try {
       const response = await axios.get(`http://localhost:5000/api/admin/contact/${userId}/${custompaintingId}`);
-      console.log(response.data); // Kiểm tra dữ liệu trả về
       const contactsData = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
-      console.log(contactsData); // Kiểm tra dữ liệu đã được chuẩn hóa thành mảng chưa
       setContacts(contactsData);  // Lưu vào state
     } catch (error) {
       console.error("Error fetching contacts:", error);
@@ -165,6 +164,7 @@ export default function CustomPainting() {
       alert("Note không được để trống");
       return;
     }
+    let senderName = "Admin";
 
     const formData = new FormData();
     if (file) {
@@ -173,6 +173,7 @@ export default function CustomPainting() {
     formData.append("note", note); // Thêm note
     formData.append("userId", takeUserId); // Lấy userId từ state
     formData.append("customPaintingId", takecustompainting); // Lấy customPaintingId từ state
+    formData.append("sender_name", senderName); // Thêm sender_name vào formData
 
     try {
       const response = await fetch("http://localhost:5000/api/admin/contact/create", {
@@ -212,12 +213,35 @@ export default function CustomPainting() {
     fetchUserInfo(newPainting.userId);
     setIsDialogOpen(true);  // Mở dialog
   };
+  const handlePriceChange = async () => {
+    if (price != null && !isNaN(price)) {
+      if (selectedPainting) {
+        try {
+          // Send PUT request to update price
+          const response = await axios.put(`http://localhost:5000/api/admin/custompainting/updateprice/${selectedPainting.id}`, {
+            price: price,  // Send the price value
+          });
 
+          if (response.status === 200) {
+            alert("Giá đã được cập nhật!");
+          } else {
+            alert("Có lỗi khi cập nhật giá.");
+          }
+        } catch (error) {
+          console.error("Lỗi khi cập nhật giá:", error);
+          alert("Có lỗi khi cập nhật giá.");
+        }
+      } else {
+        alert("Không có tranh để cập nhật giá.");
+      }
+    } else {
+      alert("Giá phải được nhập hợp lệ!");
+    }
+  };
 
   // if (loading) return <p>Đang tải dữ liệu...</p>;
   return (
     <><Admin>
-
       <Tabs defaultValue="all">
         <div className="flex items-center">
           <TabsList>
@@ -314,8 +338,11 @@ export default function CustomPainting() {
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
-
-                      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    </>
+                  ))}
+                </TableBody>
+              </Table>
+              <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <ScrollArea className="h-[70%] w-[100%] rounded-md border">
                           <AlertDialogContent className="md:max-w-[90%] xs:h-[50%] md:h-[80%]">
                             {selectedPainting && (
@@ -361,6 +388,10 @@ export default function CustomPainting() {
                                       </SelectContent>
                                     </Select>
                                   </div>
+                                  <div className="flex gap-3 mb-4">
+                                    <Input type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
+                                    <Button onClick={handlePriceChange}>Cập nhật giá</Button>
+                                  </div>
                                   <AlertDialogAction onClick={() => setIsDialogOpen(false)}>Close</AlertDialogAction>
                                 </div>
                                 {/* Form liên hệ */}
@@ -370,24 +401,18 @@ export default function CustomPainting() {
                                       {contacts.length > 0 ? (
                                         contacts.map((contact) => (
                                           <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
-                                            {userInfo ? (
-                                              <>
-                                                <p className="text-blue-500 font-bold text-[10px]">{userInfo.lastname} {userInfo.firstname}</p>
-                                              </>
-                                            ) : (
-                                              <p>Loading user info...</p>  // Đợi dữ liệu từ API
-                                            )}
+                                            <p className={`font-bold text-[10px] ${contact.sender_name === 'Admin' ? 'text-red-500' : 'text-blue-500'}`}>{contact.sender_name}</p>
                                             <p><strong>Note:</strong> {contact.note}</p>
+                                            <p><strong>Date:</strong> {new Date(contact.createAt).toLocaleString()}</p>
                                             {contact.image && (
                                               <Image
                                                 src={`/images/${contact.image}`}
                                                 alt="Contact Image"
                                                 width={100}
                                                 height={100}
-                                                className="rounded-md"
+                                                className="rounded-md mt-5"
                                               />
                                             )}
-                                            <p><strong>Date:</strong> {new Date(contact.createAt).toLocaleString()}</p>
                                           </div>
                                         ))
                                       ) : (
@@ -401,19 +426,12 @@ export default function CustomPainting() {
                                     handleNoteChange={handleNoteChange}
                                     handleSubmitContact={handleSubmitContact}
                                   />
-
                                 </div>
                               </div>
                             )}
                           </AlertDialogContent>
                         </ScrollArea>
                       </AlertDialog>
-
-                    </>
-
-                  ))}
-                </TableBody>
-              </Table>
             </CardContent>
             <CardFooter>
               <div className="text-xs text-muted-foreground">

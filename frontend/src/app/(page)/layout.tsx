@@ -24,7 +24,7 @@ export default function RootLayout({
     <ClerkProvider>
         <ToastProvider>
           <CartProvider>
-            {/* <Navbar/> */}
+            <Navbar/>
             <UserProvider> {/* Bọc toàn bộ layout với UserProvider */}
               <html lang="en">
                 <body

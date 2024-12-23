@@ -5,10 +5,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Admin from "../page"; // Layout Admin
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
-import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
+import { DialogHeader, DialogFooter, Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Interfaces for Product and Category
 interface Product {
@@ -210,120 +211,134 @@ export default function ProductManagement() {
 
   return (
     <Admin>
-      <Card>
-        <CardHeader className="px-7">
-          <CardTitle>Product Management</CardTitle>
-          <CardDescription>Manage your store products</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex justify-end">
-            <Button onClick={() => {
-              setEditingProduct(null); // Reset editingProduct về null khi bấm "Add Product"
-              setDialogOpen(true);      // Mở modal
-            }}>Add Product</Button>
+      <Tabs defaultValue="all">
+        <div className="flex items-center">
+          <TabsList>
+            <TabsTrigger value="all" className="your-tailwind-classes">All</TabsTrigger>
+            <TabsTrigger value="active" className="your-tailwind-classes">Active</TabsTrigger>
+            <TabsTrigger value="draft" className="your-tailwind-classes">Draft</TabsTrigger>
+            <TabsTrigger value="archived" className="hidden sm:flex your-tailwind-classes">
+              Archived
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="all">
+          <Card>
+            <CardHeader className="px-7">
+              <CardTitle>Product Management</CardTitle>
+              <CardDescription>Manage your store products</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4 flex justify-end">
+                <Button onClick={() => {
+                  setEditingProduct(null); // Reset editingProduct về null khi bấm "Add Product"
+                  setDialogOpen(true);      // Mở modal
+                }}>Add Product</Button>
 
-          </div>
-          <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
-              </DialogHeader>
-              <ProductForm
-                product={editingProduct}  // Nếu không có dữ liệu (null), form sẽ để trống
-                categories={categories}
-                onSave={(product) => {
-                  handleAddOrEdit(product);
-                  setDialogOpen(false);
-                }}
-                onCancel={() => {
-                  setDialogOpen(false);
-                  setEditingProduct(null); // Reset lại editingProduct sau khi cancel
-                }}
-              />
+              </div>
+              <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
+                  </DialogHeader>
+                  <ProductForm
+                    product={editingProduct}  // Nếu không có dữ liệu (null), form sẽ để trống
+                    categories={categories}
+                    onSave={(product) => {
+                      handleAddOrEdit(product);
+                      setDialogOpen(false);
+                    }}
+                    onCancel={() => {
+                      setDialogOpen(false);
+                      setEditingProduct(null); // Reset lại editingProduct sau khi cancel
+                    }}
+                  />
 
 
-            </DialogContent>
-          </Dialog>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Thumbnail</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Author</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                // Show Loading State
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center">Loading...</TableCell>
-                </TableRow>
-              ) : products.length > 0 ? (
-                // Map over Products
-                products.map((product) => (
-                  <TableRow key={product.id}>
-                    {/* Product Thumbnail */}
-                    <TableCell>
-                      {product.thumbnail ? (
-                        <Image
-                          src={`/images/${product.thumbnail}`}
-                          alt={product.title}
-                          width={50}
-                          height={50}
-                          className="object-cover rounded"
-                        />
-                      ) : (
-                        <span>No Image</span> // Fallback for Missing Thumbnail
-                      )}
-                    </TableCell>
-
-                    {/* Product Details */}
-                    <TableCell>{product.title}</TableCell>
-                    <TableCell>{product.author}</TableCell>
-                    <TableCell>{product.price}</TableCell>
-                    <TableCell>{product.description}</TableCell>
-
-                    {/* Category Name */}
-                    <TableCell>
-                      {categories.find((category) => category.id === product.categoryId)?.name || 'N/A'}
-                    </TableCell>
-
-                    {/* Actions */}
-                    <TableCell>
-                      <Button
-                        variant="default"
-                        onClick={() => {
-                          setEditingProduct(product);
-                          setDialogOpen(true);
-                        }}
-                        className="mr-2"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        onClick={() => handleDelete(product.id)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+                </DialogContent>
+              </Dialog>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Thumbnail</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Author</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))
-              ) : (
-                // No Products Available
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center">No products available.</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    // Show Loading State
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center">Loading...</TableCell>
+                    </TableRow>
+                  ) : products.length > 0 ? (
+                    // Map over Products
+                    products.map((product) => (
+                      <TableRow key={product.id}>
+                        {/* Product Thumbnail */}
+                        <TableCell>
+                          {product.thumbnail ? (
+                            <Image
+                              src={`/images/${product.thumbnail}`}
+                              alt={product.title}
+                              width={50}
+                              height={50}
+                              className="object-cover rounded"
+                            />
+                          ) : (
+                            <span>No Image</span> // Fallback for Missing Thumbnail
+                          )}
+                        </TableCell>
 
-          </Table>
-        </CardContent>
-      </Card>
+                        {/* Product Details */}
+                        <TableCell>{product.title}</TableCell>
+                        <TableCell>{product.author}</TableCell>
+                        <TableCell>{product.price}</TableCell>
+                        <TableCell>{product.description}</TableCell>
+
+                        {/* Category Name */}
+                        <TableCell>
+                          {categories.find((category) => category.id === product.categoryId)?.name || 'N/A'}
+                        </TableCell>
+
+                        {/* Actions */}
+                        <TableCell>
+                          <Button
+                            variant="default"
+                            onClick={() => {
+                              setEditingProduct(product);
+                              setDialogOpen(true);
+                            }}
+                            className="mr-2"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleDelete(product.id)}
+                          >
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    // No Products Available
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center">No products available.</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </Admin>
 
   );

@@ -1,5 +1,6 @@
 const dbConnect = require('../database/db')
 const crypto = require('crypto');
+const path = require("path");
 const queryAsync = (sql, params = []) => {
     return new Promise((resolve, reject) => {
         dbConnect.query(sql, params, (err, results) => {
@@ -72,7 +73,7 @@ const getContactByUserIdAndPaintingId = async (req, res) => {
 const fs = require('fs');
 const createContact = async (req, res) => {
     try {
-        const { userId, customPaintingId, note } = req.body;
+        const { userId, customPaintingId, note ,sender_name} = req.body;
 
         // Kiểm tra dữ liệu đầu vào
         if (!userId || !customPaintingId) {
@@ -81,9 +82,9 @@ const createContact = async (req, res) => {
                 message: 'userId và customPaintingId là bắt buộc!',
             });
         }
-        const image = null;
-        if (req.file) {
-            image = req.file.filename; // Lấy tên file
+        const senderName = sender_name || 'Admin';
+        const image = req.file ? req.file.filename : null;
+        if (image) {
             const backendPath = path.join(__dirname, '../public/images', image); // File đã lưu ở backend
             const frontendPath = path.join(__dirname, '../../frontend/public/images', image); // Đường dẫn lưu ở frontend
 
@@ -98,8 +99,8 @@ const createContact = async (req, res) => {
         // const id = crypto.randomUUID();
         // Tạo một Contact mới
         const data = await queryAsync(
-            `INSERT INTO contacts ( image,note,userId,custompaintingId,createAt) VALUES (?,?,?,?,NOW())`,
-            [image, note, userId,customPaintingId]
+            `INSERT INTO contacts ( image,note,userId,custompaintingId,sender_name,createAt) VALUES (?,?,?,?,?,NOW())`,
+            [image, note, userId,customPaintingId,senderName]
         );
         if (!data) {
             return res.status(500).send({
