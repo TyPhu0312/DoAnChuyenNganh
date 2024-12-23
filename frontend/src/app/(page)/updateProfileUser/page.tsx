@@ -27,7 +27,7 @@ export default function UpdateUserPage() {
         phone: user.phoneNumbers[0]?.phoneNumber || "",
         address:"",
         providerId: "f5e12c5c-fce4-4168-ba9e-03c19ea2b11a",
-        roleId: "785c15a6-c2ae-407c-84cc-a715e6563867",
+        roleId: "a3b4d788-68b6-4eac-a22c-9c8b286bd5bf",
       });
     }
   }, [isSignedIn, user, isLoaded]);
