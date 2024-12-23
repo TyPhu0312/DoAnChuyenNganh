@@ -47,15 +47,15 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`${isScrolled ? "" : "bg-white shadow-lg "} 
+      className={`${isScrolled ? "" : "bg-slate-100 shadow-lg "} 
     fixed top-0 left-0 w-full z-10 transition-all duration-300 ${isScrolled ? "h-16 rounded-b-[100px]" : "h-30"}`}
     >
       <div className={`flex flex-col h-full items-center justify-between max-w-screen-xl px-4 mx-auto mt-5 ${isScrolled ? "mt-1" : ""} rounded-tl-[30px] rounded-tr-[30px]`}>
         {/* Logo, Artwork */}
-        <div className={`flex items-center pl-[25px] pr-[25px] justify-center ${isScrolled ? "bg-[#140d07f8] rounded-[20px] sticky top-0 left-1/2 transform -translate-x-1/2" : "bg-transparent mb-[20px]"}`}>
+        <div className={`flex items-center pl-[25px] pr-[25px] justify-center ${isScrolled ? "bg-[#140d07f8] rounded-[20px] sticky top-0 left-1/2 transform -translate-x-1/2 mt-" : "bg-transparent mb-[20px]"}`}>
           <Link href="/" className={`flex items-center transition-all duration-300`}>
             <Image
-              src="/images/logo-main.png"
+              src={isScrolled ? "/images/logo-main.png" : "/images/BlackLogo-NoBG.png"}
               alt="logo"
               width={isScrolled ? 30 : 80}
               height={isScrolled ? 30 : 80}
@@ -70,9 +70,9 @@ export default function Navbar() {
           {/* Button to open Cart Sidebar */}
           <Button
             onClick={toggleSidebar}
-            className="ml-4 p-2 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 hover:bg-white hover:text-black"
+            className={`ml-4 p-2 rounded-lg bg-transparent hover:border-b-black focus:outline-none focus:ring-2 focus:ring-gray-200 hover:bg-white hover:text-black ${isScrolled ? "text-white hover:text-black hover:shadow-lg" : ""}`}
           >
-            <ShoppingCartIcon className="w-6 h-6 text-white cursor-pointer hover:text-black" />
+            <ShoppingCartIcon className={`w-6 h-6 font-bold  cursor-pointer text-black ${isScrolled ? "text-white hover:stroke-black" : ""}`} />
           </Button>
 
           {/* User Button / Sign In/Up */}
@@ -109,7 +109,7 @@ export default function Navbar() {
               <li>
                 <a
                   href="/"
-                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-black"
+                  className="text-[18px] font-serif block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-black"
                 >
                   Home
                 </a>

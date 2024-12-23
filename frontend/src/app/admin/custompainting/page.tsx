@@ -46,8 +46,8 @@ import Image from "next/image";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AiOutlinePaperClip } from 'react-icons/ai';
-import InputChat from "@/components/features/inputChat";
+
+
 
 export default function CustomPainting() {
   const [paintings, setPaintings] = useState<any[]>([]);
@@ -396,7 +396,7 @@ export default function CustomPainting() {
                                 </div>
                                 {/* Form liên hệ */}
                                 <div className="col-span-3 rounded-xl">
-                                  <ScrollArea className="h-[200px]  md:h-[500px] w-[100%] rounded-md border">
+                                  <ScrollArea className="h-[70%] w-[100%] rounded-md border">
                                     <div className="p-4 space-y-4">
                                       {contacts.length > 0 ? (
                                         contacts.map((contact) => (

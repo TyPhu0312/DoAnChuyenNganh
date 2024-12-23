@@ -21,7 +21,7 @@ const InputChat: React.FC<InputChatProps> = ({
     <div className="flex items-center space-x-2">
       <label
         htmlFor="file-upload"
-        className="cursor-pointer bg-black text-white py-2 px-4 rounded-md"
+        className="cursor-pointer bg-black text-white py-2 px-4 rounded-md mt-5"
       >
         <AiOutlinePaperClip size={20} />
       </label>
@@ -30,18 +30,18 @@ const InputChat: React.FC<InputChatProps> = ({
         name="image"
         accept="image/*"
         onChange={handleFileChange}
-        className="w-[20%] hidden"
+        className="w-[20%] hidden mt-5"
         id="file-upload"
       />
       <Input
         type="text"
-        className="flex-1"
+        className="flex-1 mt-5"
         name="note"
         placeholder="Nhập ghi chú"
         value={note}
         onChange={handleNoteChange}
       />
-      <Button onClick={handleSubmitContact}>Gửi</Button>
+      <Button variant="outline" className="mt-5">Gửi phản hồi</Button>
     </div>
   );
 };
