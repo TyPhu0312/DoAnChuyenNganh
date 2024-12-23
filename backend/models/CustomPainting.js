@@ -50,6 +50,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: CustomPaintingStatus.PENDING, //  mặc định là pending
           },
+          price:{
+            type: DataTypes.DECIMAL(15,0),
+            allowNull:true
+        }
     },
         {
             timestamps: true,
