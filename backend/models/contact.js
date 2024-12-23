@@ -20,10 +20,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull:false,
             defaultValue: sequelize.NOW,
         },
-        price:{
-            type: DataTypes.DECIMAL(15,0),
-            allowNull:true
+        sender_name:{
+            type: DataTypes.STRING,
+            allowNull:true,
+            validate:{
+                len:[1,50],
+            }
         }
+       
     },
     );
     Contacts.associate = (models) => {

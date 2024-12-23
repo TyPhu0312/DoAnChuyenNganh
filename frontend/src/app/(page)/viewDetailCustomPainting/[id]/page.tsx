@@ -11,19 +11,22 @@ import { DialogContent } from '@/components/ui/dialog';
 import { DialogTitle } from '@/components/ui/dialog';
 import { Alert } from '@/components/ui/alert';
 import Image from 'next/image';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import InputChat from '@/components/features/inputChat';
 
 type Contact = {
     id: string;
     content: string;
     image: string;
     createAt: string;
-    sender: string;
+    sender_name: string;
     note: string;
+
 };
 interface Painting {
     id: string;
     image: string;
-    link_image: string;
+    status: 'Đang xử lý' | 'Hoàn thành' | 'Đã huỷ' | 'Chờ xử lý';
     name: string;
     size_width: number;
     size_height: number;
@@ -76,18 +79,19 @@ export default function ViewDetailCustomPainting() {
             setContacts([]); // Set mảng rỗng nếu có lỗi
         }
     };
-    // const fetchUserInfo = async (userId: string) => {
-    //     try {
-    //       const response = await axios.get(`http://localhost:5000/api/admin/user/${userId}`);
-    //       console.log(response.data.data);
-    //       setUserInfo(response.data.data[0]); // Đảm bảo response.data.data chứa thông tin người dùng
-    //     } catch (error) {
-    //       console.error("Error fetching user info:", error);
-    //     }
-    //   };
+    const fetchUserInfo = async (userId: string) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/admin/user/${userId}`);
+            console.log(response.data.data);
+            setUserInfo(response.data.data[0]); // Đảm bảo response.data.data chứa thông tin người dùng
+        } catch (error) {
+            console.error("Error fetching user info:", error);
+        }
+    };
     useEffect(() => {
         if (!painting) return;
         fetchContacts(painting.userId, painting.id);
+        fetchUserInfo(painting.userId);
     }, [painting]);
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -109,6 +113,20 @@ export default function ViewDetailCustomPainting() {
             alert("Note không được để trống");
             return;
         }
+        let senderName = "";
+        console.log(userInfo);
+        if (userInfo) {
+            // Nếu userInfo có và là customer, lưu tên customer
+            if (userInfo.roleName === "customer") {
+                senderName = `${userInfo.firstname} ${userInfo.lastname}`;
+                console.log(senderName);
+            } else {
+                // Nếu không, mặc định là admin
+                senderName = "Admin";
+            }
+        } else {
+            senderName = "Admin"; // Nếu không có thông tin user, mặc định là admin
+        }
 
         const formData = new FormData();
         if (file) {
@@ -117,6 +135,7 @@ export default function ViewDetailCustomPainting() {
         formData.append("note", note); // Thêm note
         formData.append("userId", takeUserId); // Lấy userId từ state
         formData.append("customPaintingId", takecustompainting); // Lấy customPaintingId từ state
+        formData.append("sender_name", senderName); // Thêm sender_name vào formData
 
         try {
             const response = await fetch("http://localhost:5000/api/admin/contact/create", {
@@ -135,11 +154,39 @@ export default function ViewDetailCustomPainting() {
             alert("Đã xảy ra lỗi khi tạo contact");
         }
     };
+    const getStatusInVietnamese = (status: string) => {
+        switch (status) {
+            case 'processing':
+                return 'Đang xử lý';
+            case 'completed':
+                return 'Hoàn thành';
+            case 'cancelled':
+                return 'Đã huỷ';
+            case 'pending':
+                return 'Chờ xử lý';
+            default:
+                return status; // Nếu không có trạng thái phù hợp, giữ nguyên
+        }
+    };
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'processing':
+                return 'bg-yellow-500'; // Màu vàng
+            case 'completed':
+                return 'bg-green-500'; // Màu xanh lá
+            case 'cancelled':
+                return 'bg-red-500'; // Màu đỏ
+            case 'pending':
+                return 'bg-blue-500'; // Màu xanh dương
+            default:
+                return 'bg-gray-500'; // Màu xám
+        }
+    };
     if (loading) return <p>Đang tải...</p>;
     if (error) return <Alert className="w-full mb-4">{error}</Alert>;
 
     return (
-        <div className="p-5 bg-white shadow rounded-lg">
+        <div className="p-5 bg-white shadow rounded-lg mt-36">
 
             <h1 className="text-2xl font-bold mb-4">Chi tiết yêu cầu đặt vẽ tranh </h1>
             <Card className="mb-4 p-4 border rounded-lg">
@@ -161,64 +208,46 @@ export default function ViewDetailCustomPainting() {
                                 <p><strong>Size:</strong> {selectedPainting.size_width} x {selectedPainting.size_height} cm</p>
                                 <p><strong>Picture Frame:</strong> {selectedPainting.picture_frame || "No frame"}</p>
                                 <p><strong>Note:</strong> {selectedPainting.note || "No notes"}</p>
+                                <p><strong>Trạng thái đơn:</strong>
+                                    <span className={`text-white px-3 py-1 rounded-full ${getStatusColor(selectedPainting.status)}`}>
+                                        {getStatusInVietnamese(selectedPainting.status)}
+                                    </span>
+                                </p>
                             </div>
-
-                            {/* <div className="my-4">
-                            <Select value={painting.status || "Chờ xử lý"} onValueChange={(newStatus: any) => handleStatusChange(painting.id, newStatus)}>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Chọn trạng thái" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="processing">Đang xử lý</SelectItem>
-                                <SelectItem value="completed">Hoàn thành</SelectItem>
-                                <SelectItem value="cancelled">Hủy</SelectItem>
-                                <SelectItem value="pending">Chờ xử lý</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div> */}
                         </div>
                     </div>
                 )}
-                {contacts.length > 0 ? (
-                    contacts.map((contact) => (
-                        <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
-                            {/* <p className="text-blue-500 font-bold text-[10px]">{} {userInfo.firstname}</p> */}
-                            <p><strong>Note:</strong> {contact.note}</p>
-                            {contact.image && (
-                                <Image
-                                    src={`/images/${contact.image}`}
-                                    alt="Contact Image"
-                                    width={100}
-                                    height={100}
-                                    className="rounded-md"
-                                />
-                            )}
-                            <p><strong>Date:</strong> {new Date(contact.createAt).toLocaleString()}</p>
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500">No contacts found</p>
-                )}
+                <ScrollArea className="h-[200px]  md:h-[500px] w-[100%] rounded-md border">
+                    <div className="p-4 space-y-4">
+                        {contacts.length > 0 ? (
+                            contacts.map((contact) => (
+                                <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
+                                    <p className={`font-bold text-[10px] ${contact.sender_name === 'Admin' ? 'text-red-500' : 'text-blue-500'}`}>{contact.sender_name}</p>
+                                    <p><strong>Note:</strong> {contact.note}</p>
+                                    <p><strong>Date:</strong> {new Date(contact.createAt).toLocaleString()}</p>
+                                    {contact.image && (
+                                        <Image
+                                            src={`/images/${contact.image}`}
+                                            alt="Contact Image"
+                                            width={100}
+                                            height={100}
+                                            className="rounded-md mt-5"
+                                        />
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center text-gray-500">No contacts found</p>
+                        )}
+                    </div>
+                </ScrollArea>
             </div>
-            <Button variant="outline" className="mt-5">Gửi phản hồi</Button>
-            <div className="flex">
-                <Input
-                    type="file"
-                    name="image"
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    className="w-[20%]"
-                />
-                <Input
-                    type="text"
-                    className="flex-1"
-                    name="note"
-                    placeholder="Nhập ghi chú"
-                    value={note}
-                    onChange={handleNoteChange}
-                ></Input>
-                <Button onClick={handleSubmitContact}>Gửi</Button>
-            </div>
+            <InputChat
+                note={note}
+                handleFileChange={handleFileChange}
+                handleNoteChange={handleNoteChange}
+                handleSubmitContact={handleSubmitContact}
+            />
         </div>
     );
 }

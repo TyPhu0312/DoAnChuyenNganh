@@ -214,6 +214,48 @@ const updateCustomPainting = async (req, res) => {
         });
     }
 };
+const updatePriceCustomPainting = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { price } = req.body;
+        if (!id) {
+            return res.status(400).send({
+                success: false,
+                message: 'Không tìm thấy sản phẩm này',
+            });
+        }
+        if (!price) {
+            return res.status(400).send({
+                success: false,
+                message: 'Nhập thiếu trường dữ liệu',
+            });
+        }
+        const data = await queryAsync(
+            `UPDATE custompainting 
+             SET price = ?
+             WHERE id = ?`,
+            [price, id]
+        );
+        if (data.affectedRows === 0) {
+            return res.status(404).send({
+                success: false,
+                message: 'Không có gì xảy ra ở database cả!!!',
+            });
+        }
+        res.status(200).send({
+            success: true,
+            message: 'Cập nhật price thành công!',
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Không lấy được API update custompainting!',
+            error,
+        });
+    }
+};
 const deleteCustomPainting = async (req, res) => {
     try {
         const { id } = req.params;
@@ -277,4 +319,4 @@ const updatePaintingStatus = async (req, res) => {
     }
   };
 
-module.exports = {getCustomPaintingByUser,updatePaintingStatus, getCustomPainting, getCustomPaintingById, createCustomPainting, updateCustomPainting, deleteCustomPainting };
+module.exports = {updatePriceCustomPainting, getCustomPaintingByUser,updatePaintingStatus, getCustomPainting, getCustomPaintingById, createCustomPainting, updateCustomPainting, deleteCustomPainting };
