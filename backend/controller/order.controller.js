@@ -15,7 +15,7 @@ const queryAsync = (sql, params = []) => {
 const getOrder = async (req, res) => {
   try {
     const data = await queryAsync(`
-            SELECT o.id, o.note, o.status, o.total_amount, u.firstname AS customerName 
+            SELECT o.id, o.customerNote, o.status, o.total_amount, u.firstname AS customerName 
             FROM qlbantranh.order o
             JOIN qlbantranh.users u ON o.userId = u.id
         `);
@@ -52,7 +52,7 @@ const getOrderById = async (req, res) => {
     }
     const dataWithId = await queryAsync(
       `
-            SELECT o.id, o.note, o.status, o.total_amount, u.firstname AS customerName 
+            SELECT o.id, o.customerNote, o.status, o.total_amount, u.firstname AS customerName 
             FROM qlbantranh.order o
             JOIN qlbantranh.users u ON o.userId = u.id
             WHERE o.id = ?
@@ -95,15 +95,15 @@ const createOrder = async (req, res) => {
     const paymentId = crypto.randomUUID();
     const orderStatus = status || "Pending";
     let totalAmount = 0;
-
+    console.log("body:",req.body)
     orderDetails.forEach((detail) => {
       totalAmount += detail.quantity * detail.price;
     });
 
     // Tạo đơn hàng
     const orderData = await queryAsync(
-      `INSERT INTO \`order\` (id, customerNote, status, userId, total_amount, paymentMethod, customerName, customerPhone, customerEmail, customerAddress, createdAt) 
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, NOW())`,
+      `INSERT INTO \`order\` (id, customerNote, status, userId, total_amount, paymentMethod, customerName, customerPhone, customerEmail, customerAddress, createdAt, updatedAt) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, NOW(),NOW())`,
       [
         orderId,
         customerNote,

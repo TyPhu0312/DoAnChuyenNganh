@@ -1,6 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const OrderStatus = Object.freeze({
     PENDING: "pending",
+    PAID:"paid",
     PROCESSING: "processing",
     COMPLETED: "completed",
     CANCELLED: "cancelled",
