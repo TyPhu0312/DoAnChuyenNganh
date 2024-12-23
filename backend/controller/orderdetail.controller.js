@@ -86,7 +86,7 @@ const createOrderDetail = async (req, res) => {
         }
         const id = crypto.randomUUID(); 
         const data = await queryAsync(
-            `INSERT INTO \`orderdetail\` (id, price, num, discount, orderId, productId, createdAt) VALUES (?,?,?,?,?,?,NOW())`,
+            `INSERT INTO \`orderdetail\` (id, price, num, discount, orderId, productId, createdAt, updatedAt) VALUES (?,?,?,?,?,?,NOW(),NOW())`,
             [id, price, num, discount, orderId, productId]
         );
         if (!data) {

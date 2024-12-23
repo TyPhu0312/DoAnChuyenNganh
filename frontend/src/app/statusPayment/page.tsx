@@ -11,7 +11,7 @@ export default function StatusPayment() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
-
+    let statusFlag = "pending";
     useEffect(() => {
         // Lấy tham số từ URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -23,7 +23,8 @@ export default function StatusPayment() {
 
         // Thanh toan thanh cong 
         if (extractedParams.vnp_TransactionStatus === "00") {
-            createOrder(extractedParams);  // Truyền extractedParams ngay
+            statusFlag = "paid";
+            createOrder(extractedParams);
         }
     }, []);
 
@@ -33,13 +34,13 @@ export default function StatusPayment() {
         const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
         const totalPrice = parseInt(paymentParams.vnp_Amount) / 100; // vnp_Amount tính theo đơn vị nhỏ
         const orderData = {
-            userId: userInfo.id, 
+            userId: userInfo.id,
             note: userInfo.note,
-            status: "Paid",
-            paymentMethod: "banking", 
+            status: statusFlag,
+            paymentMethod: "banking",
             customerName: userInfo.name,
             customerPhone: userInfo.phone,
-            customerEmail: userInfo.email, 
+            customerEmail: userInfo.email,
             customerNote: userInfo.note,
             customerAddress: userInfo.address,
             paymentInfo: {
@@ -54,10 +55,13 @@ export default function StatusPayment() {
                 price: item.price,
             })),
         };
-
         try {
-            await axios.post("http://localhost:5000/api/admin/order/create", orderData);
-            localStorage.removeItem("cart");
+            const response = await axios.post("http://localhost:5000/api/admin/order/create", orderData);
+            if (response.data.success) {
+                localStorage.removeItem("cart");
+            } else {
+                throw new Error("Không thể tạo đơn hàng!");
+            }
         } catch (err) {
             console.error("Lỗi khi tạo đơn hàng:", err);
             setError("Không thể tạo đơn hàng. Vui lòng liên hệ hỗ trợ.");
