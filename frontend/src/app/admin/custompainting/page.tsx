@@ -1,3 +1,4 @@
+//page admi custom
 "use client"
 
 import { Badge } from "@/components/ui/badge"
@@ -46,8 +47,8 @@ import Image from "next/image";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-
+import { AiOutlinePaperClip } from 'react-icons/ai';
+import InputChat from "@/components/features/inputChat";
 
 export default function CustomPainting() {
   const [paintings, setPaintings] = useState<any[]>([]);
@@ -80,7 +81,7 @@ export default function CustomPainting() {
   const fetchUserInfo = async (userId: string) => {
     try {
       const response = await axios.get(`http://localhost:5000/api/admin/user/${userId}`);
-      
+      console.log(response.data.data);
       setUserInfo(response.data.data[0]); // Đảm bảo response.data.data chứa thông tin người dùng
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -140,7 +141,9 @@ export default function CustomPainting() {
   const fetchContacts = async (userId: string, custompaintingId: string) => {
     try {
       const response = await axios.get(`http://localhost:5000/api/admin/contact/${userId}/${custompaintingId}`);
+      console.log(response.data); // Kiểm tra dữ liệu trả về
       const contactsData = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
+      console.log(contactsData); // Kiểm tra dữ liệu đã được chuẩn hóa thành mảng chưa
       setContacts(contactsData);  // Lưu vào state
     } catch (error) {
       console.error("Error fetching contacts:", error);
@@ -165,7 +168,6 @@ export default function CustomPainting() {
       return;
     }
     let senderName = "Admin";
-
     const formData = new FormData();
     if (file) {
       formData.append("image", file); // Thêm file ảnh nếu có
@@ -239,9 +241,11 @@ export default function CustomPainting() {
     }
   };
 
+
   // if (loading) return <p>Đang tải dữ liệu...</p>;
   return (
     <><Admin>
+
       <Tabs defaultValue="all">
         <div className="flex items-center">
           <TabsList>
@@ -303,7 +307,7 @@ export default function CustomPainting() {
                         {painting.note || "Không có ghi chú"}
                       </TableCell>
                       <TableCell className="text-right">
-                        {painting.price ? `$${painting.price.toFixed(2)}` : "Liên hệ"}
+                        {painting.price ? `${painting.price.toFixed(2)}VND` : "Liên hệ"}
                       </TableCell>
                       <TableCell>
                         <Select value={painting.status || "Chờ xử lý"} onValueChange={(newStatus: any) => handleStatusChange(painting.id, newStatus)}>
@@ -338,11 +342,8 @@ export default function CustomPainting() {
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
-                    </>
-                  ))}
-                </TableBody>
-              </Table>
-              <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+
+                      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <ScrollArea className="h-[70%] w-[100%] rounded-md border">
                           <AlertDialogContent className="md:max-w-[90%] xs:h-[50%] md:h-[80%]">
                             {selectedPainting && (
@@ -396,12 +397,12 @@ export default function CustomPainting() {
                                 </div>
                                 {/* Form liên hệ */}
                                 <div className="col-span-3 rounded-xl">
-                                  <ScrollArea className="h-[70%] w-[100%] rounded-md border">
+                                  <ScrollArea className="h-[200px]  md:h-[500px] w-[100%] rounded-md border">
                                     <div className="p-4 space-y-4">
                                       {contacts.length > 0 ? (
                                         contacts.map((contact) => (
                                           <div key={contact.id} className="p-4 bg-gray-100 rounded-md shadow">
-                                            <p className={`font-bold text-[10px] ${contact.sender_name === 'Admin' ? 'text-red-500' : 'text-blue-500'}`}>{contact.sender_name}</p>
+                                           <p className={`font-bold text-[10px] ${contact.sender_name === 'Admin' ? 'text-red-500' : 'text-blue-500'}`}>{contact.sender_name}</p>
                                             <p><strong>Note:</strong> {contact.note}</p>
                                             <p><strong>Date:</strong> {new Date(contact.createAt).toLocaleString()}</p>
                                             {contact.image && (
@@ -426,12 +427,19 @@ export default function CustomPainting() {
                                     handleNoteChange={handleNoteChange}
                                     handleSubmitContact={handleSubmitContact}
                                   />
+
                                 </div>
                               </div>
                             )}
                           </AlertDialogContent>
                         </ScrollArea>
                       </AlertDialog>
+
+                    </>
+
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
             <CardFooter>
               <div className="text-xs text-muted-foreground">
