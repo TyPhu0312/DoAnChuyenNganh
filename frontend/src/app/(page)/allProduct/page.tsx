@@ -65,7 +65,9 @@ export default function AllProduct() {
         : products; // Hiển thị tất cả sản phẩm khi searchResults rỗng
 
     return (
+      
         <main className="flex flex-1 flex-col m-0 bg-[#e4e3e2fa]">
+            <title>All Artwork</title>
             <Hero />
             <div className="mt-5 mb-[50px] ml-3 font-robotoSerif">
                 <Breadcrumb

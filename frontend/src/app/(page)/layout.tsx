@@ -9,7 +9,11 @@ import { CartProvider } from "@/components/features/cartContext";
 import { ToastProvider } from "@/components/features/toastContext";
 import { UserProvider } from "@/components/features/userContext"; // Import UserProvider
 import 'react-toastify/dist/ReactToastify.css';
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  icons:"/images/BlackLogo-NoBG.png",
+  title: "Artauct",
+};
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",

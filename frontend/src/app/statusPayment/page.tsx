@@ -21,12 +21,12 @@ export default function StatusPayment() {
         });
         setParams(extractedParams);
 
-        // Thanh toan thanh cong 
-        if (extractedParams.vnp_TransactionStatus === "00") {
+        if (params.vnp_TransactionStatus === "00") {
             statusFlag = "paid";
-            createOrder(extractedParams);
+            createOrder(params);
         }
-    }, []);
+
+    }, [params.vnp_TransactionStatus]);
 
     const createOrder = async (paymentParams: Record<string, string>) => {
         setLoading(true);
@@ -71,6 +71,7 @@ export default function StatusPayment() {
     };
 
     const goHome = () => {
+        
         alert("Cảm ơn đã mua hàng");
         router.push("/");
     };
