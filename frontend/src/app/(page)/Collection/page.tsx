@@ -46,6 +46,7 @@ export default function Collection({
 
     return (
         <>
+            <title>Collection</title>
             <main className="flex flex-1 flex-col  m-0 bg-[#e0e0e0ee] ">
                 <Hero/>
                         <ScrollArt />

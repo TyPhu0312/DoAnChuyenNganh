@@ -102,7 +102,9 @@ export default function CustomPainting() {
   };
 
   return (
+    
     <div className="sm:max-w-[425px] mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 mt-10">
+       <title>Order Artwork</title>
       <form onSubmit={handleSubmit}>
         <div className="grid gap-4 py-4">
           <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Thông tin tranh theo yêu cầu</h1>

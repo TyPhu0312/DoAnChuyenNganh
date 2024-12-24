@@ -70,9 +70,9 @@ export default function Navbar() {
           {/* Button to open Cart Sidebar */}
           <Button
             onClick={toggleSidebar}
-            className={`ml-4 p-2 rounded-lg bg-transparent hover:border-b-black focus:outline-none focus:ring-2 focus:ring-gray-200 hover:bg-white hover:text-black ${isScrolled ? "text-white hover:text-black hover:shadow-lg" : ""}`}
+            className={`ml-4 p-2 rounded-lg bg-transparent hover:border-b-black focus:outline-none focus:ring-2 focus:ring-gray-200 hover:bg-white${isScrolled ? " hover:text-black hover:shadow-lg" : ""}`}
           >
-            <ShoppingCartIcon className={`w-6 h-6 font-bold  cursor-pointer text-black ${isScrolled ? "text-white hover:stroke-black" : ""}`} />
+            <ShoppingCartIcon className={`w-6 h-6 font-bold  cursor-pointer text-black ${isScrolled ? "text-white hover:text-black hover:stroke-black" : ""}`} />
           </Button>
 
           {/* User Button / Sign In/Up */}
@@ -139,14 +139,6 @@ export default function Navbar() {
                 </a>
               </li>
               <li>
-                <a
-                  href="/orderArtwork"
-                  className="text-[18px] font-robotoSlab block py-2 pl-3 pr-4 bg-white hover:bg-gray-200 hover:text-black hover:rounded-sm lg:bg-transparent lg:text-black"
-                >
-                  Order Artwork
-                </a>
-              </li>
-              <li>
                 {userId ? (
                   <UserButton
                     appearance={{
@@ -197,7 +189,7 @@ export default function Navbar() {
                             >
                               My Order
                             </a>
-                          </NavigationMenuLink> 
+                          </NavigationMenuLink>
                           <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                             <a
                               href={`/viewUserPaintingOrder/${userId}`}
