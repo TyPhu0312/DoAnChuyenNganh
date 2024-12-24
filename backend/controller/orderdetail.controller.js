@@ -24,7 +24,7 @@ const getOrderDetail = async(req,res)=> {
         res.status(200).send({
             success:true,
             message:'Tất cả orderdetail',
-            data: data,
+            data,
         });
     } catch (error) {
         res.status(500).send({
@@ -53,6 +53,31 @@ const getOrderDetailById = async(req,res)=> {
         res.status(200).send({
             success: true,
             ProductDetail: dataWithId
+        })
+        
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+};
+const getOrderDetailByorderId = async(req,res)=> {
+    const {id} = req.params; 
+    try {
+        if(!id){
+            return res.status(404).send({
+                success:false,
+                message: 'Không tìm thấy order ID!'
+            })
+        }
+        const data = await queryAsync(`SELECT * FROM qlbantranh.orderdetail WHERE orderId =?`,[id]);
+        if(!data) {
+            return res.status(404).send({
+                success: false,
+                message:'Không thấy data từ database',
+            });
+        }    
+        res.status(200).send({
+            success: true,
+            data
         })
         
     } catch (error) {
@@ -197,4 +222,4 @@ const deleteOrderDetail = async(req,res)=> {
         });
     }
 };
-module.exports = { getOrderDetail, getOrderDetailById, createOrderDetail, updateOrderDetail, deleteOrderDetail };
+module.exports = {getOrderDetailByorderId, getOrderDetail, getOrderDetailById, createOrderDetail, updateOrderDetail, deleteOrderDetail };

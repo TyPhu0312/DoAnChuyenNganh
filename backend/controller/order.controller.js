@@ -15,7 +15,7 @@ const queryAsync = (sql, params = []) => {
 const getOrder = async (req, res) => {
   try {
     const data = await queryAsync(`
-            SELECT o.id, o.customerNote, o.status, o.total_amount, u.firstname AS customerName 
+            SELECT o.*, u.firstname AS customerName 
             FROM qlbantranh.order o
             JOIN qlbantranh.users u ON o.userId = u.id
         `);
@@ -95,7 +95,7 @@ const createOrder = async (req, res) => {
     const paymentId = crypto.randomUUID();
     const orderStatus = status || "Pending";
     let totalAmount = 0;
-    console.log("body:",req.body)
+    console.log("body:", req.body)
     orderDetails.forEach((detail) => {
       totalAmount += detail.quantity * detail.price;
     });
@@ -240,47 +240,48 @@ const updateOrder = async (req, res) => {
 };
 
 const updateOrderStatus = async (req, res) => {
-  try {
-    const { id } = req.params; // Nhận id từ tham số URL
-    const { status } = req.body; // Nhận trạng thái mới từ body của request
+  const { id } = req.params; // Nhận id từ tham số URL
+  const { status } = req.body; // Nhận trạng thái mới từ body của request
 
-    // Kiểm tra xem có id và status không
-    if (!id || !status) {
-      return res.status(400).send({
-        success: false,
-        message: "Thiếu id hoặc trạng thái mới!",
-      });
+  if (!id || !status) {
+    return res.status(400).send({
+      success: false,
+      message: "Thiếu id hoặc trạng thái mới!",
+    });
+  }
+  // Cập nhật trạng thái đơn hàng
+  try {
+    // Kiểm tra xem trạng thái có hợp lệ không
+    const validStatuses = ["processing", "completed", "cancelled", "pending","paid"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Trạng thái không hợp lệ" });
     }
 
-    // Cập nhật trạng thái đơn hàng
+    // Câu lệnh SQL cập nhật trạng thái của bức tranh
     const data = await queryAsync(
-      `UPDATE \`order\` SET status = ? WHERE id = ?`,
+      `UPDATE \`order\` 
+         SET status = ?
+         WHERE id = ?`,
       [status, id]
     );
 
-    if (data.affectedRows === 0) {
-      return res.status(404).send({
-        success: false,
-        message: "Không tìm thấy đơn hàng này để cập nhật trạng thái!",
-      });
+    if (data === 0) {
+      // Nếu không có bức tranh nào được cập nhật
+      return res.status(404).json({ message: "Không tìm thấy bức tranh với id này" });
     }
 
-    res.status(200).send({
-      success: true,
-      message: "Cập nhật trạng thái đơn hàng thành công!",
-    });
+    // Thành công, trả về thông báo thành công
+    res.status(200).json({ message: "Cập nhật trạng thái thành công" });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).send({
-      success: false,
-      message: "Lỗi trong yêu cầu API cập nhật trạng thái đơn hàng!",
-      error,
-    });
+    console.error("Lỗi khi cập nhật trạng thái:", error);
+    // Trả về lỗi server nếu có sự cố
+    res.status(500).json({ message: "Lỗi server, vui lòng thử lại sau" });
   }
 };
 
 const deleteOrder = async (req, res) => {
-  let connection; // Declare connection variable to ensure proper release
+ 
   try {
     const { id } = req.params;
     if (!id) {
@@ -289,18 +290,29 @@ const deleteOrder = async (req, res) => {
         message: "Không tìm thấy order này",
       });
     }
-
+    console.log(id);
     // Delete the order details first (if needed)
     const deleteOrderDetails = await queryAsync(
-      `DELETE FROM \`orderdetail\` WHERE order_id = ?`,
+      `DELETE FROM \`orderdetail\` WHERE orderId = ?`,
       [id]
     );
 
     if (deleteOrderDetails.affectedRows === 0) {
-      await connection.rollback();
       return res.status(404).send({
         success: false,
         message: "Không tìm thấy order details để xoá!",
+      });
+    }
+
+    const deletePayment = await queryAsync(
+      `DELETE FROM \`payment_info\` WHERE order_Id = ?`,
+      [id]
+    );
+
+    if (deletePayment.affectedRows === 0) {
+      return res.status(404).send({
+        success: false,
+        message: "Không tìm thấy pay để xoá!",
       });
     }
 
@@ -310,16 +322,11 @@ const deleteOrder = async (req, res) => {
     ]);
 
     if (deleteOrder.affectedRows === 0) {
-      await connection.rollback();
       return res.status(404).send({
         success: false,
         message: "Không tìm thấy order để xoá!",
       });
     }
-
-    // Commit the transaction if both deletions are successful
-    await connection.commit();
-
     res.status(200).send({
       success: true,
       message: "Xoá order và order details thành công!",
@@ -501,6 +508,7 @@ const getRevenueOverYears = async (req, res) => {
   }
 };
 module.exports = {
+  updateOrderStatus,
   getRevenueOverYears,
   getCurrentYearRevenue,
   getOrder,
