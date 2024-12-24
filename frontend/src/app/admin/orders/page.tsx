@@ -1,40 +1,28 @@
-"use client"
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Admin from "../page"; // Layout Admin
-import axios from "axios";
+"use client";
+import Admin from "@/app/admin/page";
 import { Button } from "@/components/ui/button";
-import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
-import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
-import { Input } from "@/components/ui/input";
-
-// Define Order interface with essential fields
-interface Order {
-  id: string;
-  status: string;
-  customerName: string;
-  total_amount: number;
-  orderItems: string; // Or a more complex structure, depending on your order data
-}
-
-interface OrderFormProps {
-  order: Order | null;
-  onSave: (order: Order) => void;
-  onCancel: () => void;
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatCurrencyVND } from "@/lib/utils/currencyFormatter";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 export default function OrderManagement() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isDialogOpen, setDialogOpen] = useState(false); // Manage dialog state
-  const [editingOrder, setEditingOrder] = useState<Order | null>(null); // Order to edit
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false); // Delete dialog state
-  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null); // Order to delete
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setDetailDialogOpen] = useState(false);
+
+  const [orderDetails, setOrderDetails] = useState<any[]>([]); // For storing order details
+  const [productDetails, setProductDetails] = useState<any>({}); //
+
 
   useEffect(() => {
-    fetchOrders(); // Fetch orders on component mount
+    fetchOrders();  // Fetch orders on component mount
   }, []);
 
   // Fetch orders from the API
@@ -55,48 +43,97 @@ export default function OrderManagement() {
       setLoading(false);
     }
   };
-  // Handle saving order status
-  const handleSaveStatus = async (order: Order) => {
-    if (!order.status) {
-      alert("Please select a valid order status.");
-      return;
-    }
+  const fetchOrderDetails = async (orderId: string) => {
     try {
-      // Gửi yêu cầu PUT để cập nhật trạng thái đơn hàng
-      const response = await axios.put(
-        `http://localhost:5000/api/admin/order/update/${order.id}`,
-        { status: order.status }
-      );
-      // Cập nhật đơn hàng trong state
-      setOrders((prevOrders) =>
-        prevOrders.map((o) => (o.id === order.id ? { ...o, status: order.status } : o))
-      );
-      alert("Order status updated successfully!");
-      setDialogOpen(false); // Đóng dialog sau khi lưu
-      setEditingOrder(null); // Reset trạng thái chỉnh sửa
+      const response = await axios.get(`http://localhost:5000/api/admin/orderdetail/byorderid/${orderId}`);
+      const orderDetailsData = response.data.data; // Assuming orderDetailsData is the array of order details
+      setOrderDetails(orderDetailsData);
+
+      // Fetch product details for each product in the order
+      const productFetchPromises = orderDetailsData.map((detail: any) => fetchProductDetails(detail.productId));
+      await Promise.all(productFetchPromises); // Đợi tất cả API hoàn tất
+      console.log("mang la", productDetails);
     } catch (err) {
-      console.error("Error saving order:", err);
-      alert("Unable to update order. Please try again.");
+      console.error("Error fetching order details:", err);
     }
   };
+
+  // Hàm fetchProductDetails cập nhật mảng các chi tiết sản phẩm
+  const fetchProductDetails = async (productId: string) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/admin/products/${productId}`);
+      const productDetail = response.data.ProductDetail || response.data; // Kiểm tra cả hai trường hợp
+
+      setProductDetails((prevDetails: any[]) => ({
+        ...prevDetails,
+        [productId]: productDetail,
+      }));
+    } catch (err) {
+      console.error("Error fetching product details:", err);
+    }
+  };
+
+
+
+
+  // Handle saving order status
+  const handleSaveStatus = (id: string, newStatus: string) => {
+    if (!newStatus.trim()) return;
+
+    // Update status in the local state before API call
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === id ? { ...order, status: newStatus } : order
+      )
+    );
+
+    // Send the updated status to the server
+    axios
+      .put(`http://localhost:5000/api/admin/order/updatestatus/${id}`, { status: newStatus })
+      .then((response) => {
+      })
+      .catch((error) => {
+        console.error("Error updating status", error);
+        alert("There was an error updating the status.");
+      })
+      .finally(() => {
+        setDialogOpen(false);
+        setSelectedOrder(null);
+      });
+  };
+
+  // Handle deleting an order
+  // const handleDeleteOrder = async (orderId: string) => {
+  //   try {
+  //     await axios.delete(`http://localhost:5000/api/admin/order/delete/${orderId}`);
+  //     setOrders(orders.filter(order => order.id !== orderId));
+  //     setDeleteDialogOpen(false);
+  //     alert("Order deleted successfully!");
+  //   } catch (err) {
+  //     console.error("Error deleting order:", err);
+  //     alert("Unable to delete order. Please try again.");
+  //   }
+  // };
   const handleDeleteOrder = async (orderId: string) => {
     try {
       await axios.delete(`http://localhost:5000/api/admin/order/delete/${orderId}`);
-      setOrders(orders.filter(order => order.id !== orderId)); 
-      setDeleteDialogOpen(false); 
+      
+      fetchOrders(); // Refresh products
       alert("Order deleted successfully!");
-    } catch (err) {
-      console.error("Error deleting order:", err);
-      alert("Unable to delete order. Please try again.");
+      // setDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      alert("Failed to delete the order. Please try again.");
     }
   };
-  // View order details (optional - if you need a detailed modal for the order)
-  const handleViewDetails = (orderId: string) => {
-    const order = orders.find(o => o.id === orderId);
-    if (order) {
-      console.log("View details of order", order);
-    }
+
+  // Handle viewing order details
+  const handleViewDetails = (order: any) => {
+    setSelectedOrder(order)
+    fetchOrderDetails(order.id);  // Fetch order details and products
+    setDetailDialogOpen(true); // Open the details dialog
   };
+
   return (
     <Admin>
       <Card>
@@ -112,6 +149,10 @@ export default function OrderManagement() {
                 <TableHead>Customer</TableHead>
                 <TableHead>Total Amount</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Customer Email</TableHead>
+                <TableHead>Customer Phone</TableHead>
+                <TableHead>Payment Method</TableHead>
+                <TableHead>Created At</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -122,14 +163,21 @@ export default function OrderManagement() {
                   <TableCell>{order.customerName}</TableCell>
                   <TableCell>{order.total_amount}</TableCell>
                   <TableCell>{order.status}</TableCell>
+                  <TableCell>{order.customerEmail}</TableCell>
+                  <TableCell>{order.customerPhone}</TableCell>
+                  <TableCell>{order.paymentMethod}</TableCell>
+                  <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button size="sm" onClick={() => { setEditingOrder(order); setDialogOpen(true); }}>
+                    <Button size="sm" onClick={() => { setSelectedOrder(order); setDialogOpen(true); }}>
                       Edit Status
                     </Button>
-                    <Button size="sm" onClick={() => handleViewDetails(order.id)}>
+                    <Button size="sm" onClick={() => handleViewDetails(order)}>
                       View Details
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() =>handleDeleteOrder(order.id)}>
+                    <Button
+                     variant="destructive"
+                     onClick={() => handleDeleteOrder(order.id)}
+                    >
                       Delete
                     </Button>
                   </TableCell>
@@ -144,58 +192,118 @@ export default function OrderManagement() {
       <Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Order Status</DialogTitle>
+            <DialogTitle>Edit</DialogTitle>
           </DialogHeader>
-          <OrderForm
-            order={editingOrder}
-            onSave={handleSaveStatus}
-            onCancel={() => setDialogOpen(false)}
-          />
+          {selectedOrder && (
+            <OrderForm
+              orderId={selectedOrder.id}
+              currentStatus={selectedOrder.status}
+              onSave={handleSaveStatus}
+              onCancel={() => setDialogOpen(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
       {/* Dialog for Delete Order */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setDeleteDialogOpen} modal>
+      {/* <Dialog open={isDeleteDialogOpen} onOpenChange={setDeleteDialogOpen} modal>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure you want to delete this order?</DialogTitle>
+            <DialogTitle>Bạn có chắc muốn xóa đơn hàng này?</DialogTitle>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => orderToDelete && handleDeleteOrder(orderToDelete.id)}>Delete</Button>
+            <Button variant="secondary" onClick={() => setDeleteDialogOpen(false)}>Hủy</Button>
+            <Button variant="destructive" onClick={() => selectedOrder && handleDeleteOrder(selectedOrder.id)}>Xóa</Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+
+      {/* Dialog for View Order Details */}
+  
+        <Dialog open={isDetailDialogOpen} onOpenChange={setDetailDialogOpen} modal>
+          <DialogContent >
+            <DialogHeader>
+              <DialogTitle>Order Details</DialogTitle>
+            </DialogHeader>
+            {/* Check if order details exist */}
+            {selectedOrder && orderDetails.length > 0 && (
+              <div className="w-[700px]">
+                <p><strong>Customer Name:</strong> {selectedOrder.customerName || 0}</p>
+                <p><strong>Customer Address:</strong> {selectedOrder.customerAddress || 0}</p>
+                <p><strong>Customer Phone:</strong> {selectedOrder.customerPhone || 0}</p>
+                <p><strong>Total Amount:</strong> {selectedOrder.total_amount || 0}</p>
+                <p><strong>Created At:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+
+                <h4><strong>Thông tin sản phẩm:</strong></h4>
+                {orderDetails.map((orderDetail) => (
+                  <div key={orderDetail.id}>
+                    {productDetails[orderDetail.productId] ? (
+                      <div className="flex space-x-3">
+                        <h5><strong>Title:</strong>{productDetails[orderDetail.productId].title}</h5>
+                        <p><strong>Author:</strong> {productDetails[orderDetail.productId].author}</p>
+                        <p><strong>Price:</strong> {productDetails[orderDetail.productId].price}</p>
+                        <p><strong>Quantity:</strong> {orderDetail.num}</p>
+                        <strong>Total:</strong><p className="text-red-600">{formatCurrencyVND(productDetails[orderDetail.productId].price * orderDetail.num)}</p>
+                      </div>
+                    ) : (
+                      <p>Loading product details...</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <DialogFooter>
+              <Button variant="secondary" onClick={() => setDetailDialogOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+  
+
     </Admin>
   );
-};
+}
 
 // Order Form for updating order status
-function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
-  const [status, setStatus] = useState(order ? order.status : "");
+function OrderForm({
+  orderId,
+  currentStatus,
+  onSave,
+  onCancel,
+}: {
+  orderId: string;
+  currentStatus: string;
+  onSave: (id: string, status: string) => void;
+  onCancel: () => void;
+}) {
+  const [status, setStatus] = useState(currentStatus); // Set the initial status from currentStatus
+
+  const statuses = ["pending", "paid", "completed", "processing", "cancelled"];
 
   const handleSubmit = () => {
     if (!status.trim()) return;
-
-    const orderToSave: Order = {
-      id: order ? order.id : "",
-      status,
-      customerName: order ? order.customerName : "",
-      total_amount: order ? order.total_amount : 0,
-      orderItems: order ? order.orderItems : "",
-    };
-
-    onSave(orderToSave); // Pass the order to the parent (OrderManagement)
+    onSave(orderId, status);
   };
 
   return (
     <div className="space-y-4">
-      <Input
-        placeholder="Order Status"
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-        required
-      />
+      <div>
+        <label htmlFor="status" className="block text-sm font-medium text-gray-700">Order Status</label>
+        <select
+          id="status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          className="mt-2 block w-full border-gray-300 rounded-md shadow-sm"
+        >
+          {statuses.map((statusOption) => (
+            <option key={statusOption} value={statusOption}>
+              {statusOption}
+            </option>
+          ))}
+        </select>
+      </div>
       <DialogFooter>
         <Button variant="secondary" onClick={onCancel}>Cancel</Button>
         <Button onClick={handleSubmit}>Save</Button>

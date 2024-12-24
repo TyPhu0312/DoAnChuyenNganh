@@ -245,7 +245,6 @@ export default function CustomPainting() {
   // if (loading) return <p>Đang tải dữ liệu...</p>;
   return (
     <><Admin>
-
       <Tabs defaultValue="all">
         <div className="flex items-center">
           <TabsList>
