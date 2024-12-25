@@ -17,10 +17,7 @@ const getUser = async (req, res) => {
     try {
         const data = await queryAsync(`
     SELECT 
-        users.firstname, 
-        users.lastname, 
-        users.email, 
-        users.phone,
+        users.*,
         roles.name AS roleName, 
         provider.name AS providerName
     FROM 
@@ -249,5 +246,52 @@ const deleteUser = async (req, res) => {
         });
     }
 };
+const updateUserRole = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { roleId } = req.body;
 
-module.exports = { getUser, getUserById, createUser, updateUser, deleteUser, checkUserForOrder };
+        if (!id || !roleId) {
+            return res.status(400).send({
+                success: false,
+                message: 'Thiếu ID hoặc Role ID',
+            });
+        }
+
+        // Kiểm tra xem roleId có hợp lệ không (có thể thêm logic kiểm tra trong hệ thống)
+        const roleExists = await queryAsync(`SELECT * FROM roles WHERE id = ?`, [roleId]);
+        if (!roleExists || roleExists.length === 0) {
+            return res.status(404).send({
+                success: false,
+                message: 'Role không hợp lệ',
+            });
+        }
+
+        // Cập nhật role của người dùng
+        const data = await queryAsync(
+            `UPDATE users SET roleId = ? WHERE id = ?`,
+            [roleId, id]
+        );
+
+        if (data.affectedRows === 0) {
+            return res.status(404).send({
+                success: false,
+                message: 'Không có người dùng với ID này',
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: 'Cập nhật role thành công!',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Lỗi trong yêu cầu API update role',
+            error,
+        });
+    }
+};
+
+module.exports = {updateUserRole, getUser, getUserById, createUser, updateUser, deleteUser, checkUserForOrder };

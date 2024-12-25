@@ -79,8 +79,6 @@ const getCustomPaintingById = async (req, res) => {
 const getCustomPaintingByUser = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log("da chay den day"),
-        console.log(id)
         if (!id || id.trim()==="") {
             return res.status(404).send({
                 success: false,
@@ -150,7 +148,7 @@ const createCustomPainting = async (req, res) => {
         fs.unlinkSync(backendPath);
         const id = crypto.randomUUID();
         const data = await queryAsync(
-            `INSERT INTO custompainting (id, image,name,size_width,size_height,picture_frame,note,userId) VALUES (?,?,?,?,?,?,?,?)`,
+            `INSERT INTO custompainting (id, image,name,size_width,size_height,picture_frame,note,userId,createdAt) VALUES (?,?,?,?,?,?,?,?, NOW())`,
             [id,image, name, size_width, size_height, picture_frame, note, userId]
         );
         if (!data) {
@@ -190,7 +188,7 @@ const updateCustomPainting = async (req, res) => {
         }
         const data = await queryAsync(
             `UPDATE custompainting 
-             SET image = ?,  name = ?, size_width = ?, size_height = ?,  picture_frame = ?, note = ?
+             SET image = ?,  name = ?, size_width = ?, size_height = ?,  picture_frame = ?, note = ?, updatedAt = NOW()
              WHERE id = ?`,
             [image, name, size_width, size_height, picture_frame, note, id]
         );
@@ -232,7 +230,7 @@ const updatePriceCustomPainting = async (req, res) => {
         }
         const data = await queryAsync(
             `UPDATE custompainting 
-             SET price = ?
+             SET price = ?, updatedAt = NOW()
              WHERE id = ?`,
             [price, id]
         );
@@ -299,7 +297,7 @@ const updatePaintingStatus = async (req, res) => {
       // Câu lệnh SQL cập nhật trạng thái của bức tranh
       const data = await queryAsync(
         `UPDATE custompainting 
-         SET status = ?
+         SET status = ?,updatedAt = NOW()
          WHERE id = ?`,
         [status, id]
     );

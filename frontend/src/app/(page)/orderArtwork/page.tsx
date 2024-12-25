@@ -103,7 +103,7 @@ export default function CustomPainting() {
 
   return (
     
-    <div className="sm:max-w-[425px] mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 mt-10">
+    <div className="sm:max-w-[425px] mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 mt-48">
        <title>Order Artwork</title>
       <form onSubmit={handleSubmit}>
         <div className="grid gap-4 py-4">

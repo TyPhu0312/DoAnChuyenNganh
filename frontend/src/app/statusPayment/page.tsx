@@ -25,8 +25,8 @@ export default function StatusPayment() {
             statusFlag = "paid";
             createOrder(params);
         }
-
     }, [params.vnp_TransactionStatus]);
+    
 
     const createOrder = async (paymentParams: Record<string, string>) => {
         setLoading(true);
@@ -59,6 +59,8 @@ export default function StatusPayment() {
             const response = await axios.post("http://localhost:5000/api/admin/order/create", orderData);
             if (response.data.success) {
                 localStorage.removeItem("cart");
+                alert("Cảm ơn đã mua hàng");
+                router.push("/");
             } else {
                 throw new Error("Không thể tạo đơn hàng!");
             }
@@ -71,7 +73,7 @@ export default function StatusPayment() {
     };
 
     const goHome = () => {
-        
+
         alert("Cảm ơn đã mua hàng");
         router.push("/");
     };
@@ -79,7 +81,21 @@ export default function StatusPayment() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="text-center p-6 bg-white shadow-lg rounded-lg w-full max-w-md">
-                {params.vnp_TransactionStatus === "00" ? (
+                {params.vnp_TransactionStatus === "02" ? (
+                    <>
+                        <div className="flex justify-center mb-4">
+                            <ImCancelCircle className="text-9xl  text-yellow-600" />
+                        </div>
+                        <h2 className="text-xl font-bold text-yellow-600">Đang trong quá trình thanh toán!</h2>
+                        <p className="text-gray-500">Rất tiếc, đơn hàng của bạn thanh toán gặp trục trặc!</p>
+                        <Button
+                            className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                            onClick={goHome}
+                        >
+                            Về trang chủ
+                        </Button>
+                    </>
+                ) : params.vnp_TransactionStatus === "00" ? (
                     <>
                         <div className="flex justify-center mb-4">
                             <SiTicktick className="text-9xl text-green-600" />
@@ -94,6 +110,7 @@ export default function StatusPayment() {
                         >
                             {loading ? "Đang xử lý..." : "Về trang chủ"}
                         </Button>
+
                     </>
                 ) : (
                     <>

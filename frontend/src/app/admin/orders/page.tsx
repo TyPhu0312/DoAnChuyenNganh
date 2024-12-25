@@ -1,11 +1,14 @@
 "use client";
 import Admin from "@/app/admin/page";
+import OrderDetailsDialog from "@/components/features/OrderDetailsDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrencyVND } from "@/lib/utils/currencyFormatter";
 import axios from "axios";
+import { MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function OrderManagement() {
@@ -101,23 +104,10 @@ export default function OrderManagement() {
         setSelectedOrder(null);
       });
   };
-
-  // Handle deleting an order
-  // const handleDeleteOrder = async (orderId: string) => {
-  //   try {
-  //     await axios.delete(`http://localhost:5000/api/admin/order/delete/${orderId}`);
-  //     setOrders(orders.filter(order => order.id !== orderId));
-  //     setDeleteDialogOpen(false);
-  //     alert("Order deleted successfully!");
-  //   } catch (err) {
-  //     console.error("Error deleting order:", err);
-  //     alert("Unable to delete order. Please try again.");
-  //   }
-  // };
   const handleDeleteOrder = async (orderId: string) => {
     try {
       await axios.delete(`http://localhost:5000/api/admin/order/delete/${orderId}`);
-      
+
       fetchOrders(); // Refresh products
       alert("Order deleted successfully!");
       // setDeleteDialogOpen(false);
@@ -161,25 +151,36 @@ export default function OrderManagement() {
                 <TableRow key={order.id}>
                   <TableCell>{order.id}</TableCell>
                   <TableCell>{order.customerName}</TableCell>
-                  <TableCell>{order.total_amount}</TableCell>
+                  <TableCell>{formatCurrencyVND(order.total_amount)}</TableCell>
                   <TableCell>{order.status}</TableCell>
                   <TableCell>{order.customerEmail}</TableCell>
                   <TableCell>{order.customerPhone}</TableCell>
                   <TableCell>{order.paymentMethod}</TableCell>
                   <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button size="sm" onClick={() => { setSelectedOrder(order); setDialogOpen(true); }}>
-                      Edit Status
-                    </Button>
-                    <Button size="sm" onClick={() => handleViewDetails(order)}>
-                      View Details
-                    </Button>
-                    <Button
-                     variant="destructive"
-                     onClick={() => handleDeleteOrder(order.id)}
-                    >
-                      Delete
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          aria-haspopup="true"
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleViewDetails(order)}>
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setSelectedOrder(order); setDialogOpen(true); }}>
+                          Edit Status
+                        </DropdownMenuItem>
+                        {/* <DropdownMenuItem onClick={() => handleDeleteOrder(order.id)}>
+                          Delete
+                        </DropdownMenuItem> */}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
@@ -219,48 +220,15 @@ export default function OrderManagement() {
       </Dialog> */}
 
       {/* Dialog for View Order Details */}
-  
-        <Dialog open={isDetailDialogOpen} onOpenChange={setDetailDialogOpen} modal>
-          <DialogContent >
-            <DialogHeader>
-              <DialogTitle>Order Details</DialogTitle>
-            </DialogHeader>
-            {/* Check if order details exist */}
-            {selectedOrder && orderDetails.length > 0 && (
-              <div className="w-[700px]">
-                <p><strong>Customer Name:</strong> {selectedOrder.customerName || 0}</p>
-                <p><strong>Customer Address:</strong> {selectedOrder.customerAddress || 0}</p>
-                <p><strong>Customer Phone:</strong> {selectedOrder.customerPhone || 0}</p>
-                <p><strong>Total Amount:</strong> {selectedOrder.total_amount || 0}</p>
-                <p><strong>Created At:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
 
-                <h4><strong>Thông tin sản phẩm:</strong></h4>
-                {orderDetails.map((orderDetail) => (
-                  <div key={orderDetail.id}>
-                    {productDetails[orderDetail.productId] ? (
-                      <div className="flex space-x-3">
-                        <h5><strong>Title:</strong>{productDetails[orderDetail.productId].title}</h5>
-                        <p><strong>Author:</strong> {productDetails[orderDetail.productId].author}</p>
-                        <p><strong>Price:</strong> {productDetails[orderDetail.productId].price}</p>
-                        <p><strong>Quantity:</strong> {orderDetail.num}</p>
-                        <strong>Total:</strong><p className="text-red-600">{formatCurrencyVND(productDetails[orderDetail.productId].price * orderDetail.num)}</p>
-                      </div>
-                    ) : (
-                      <p>Loading product details...</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+      <OrderDetailsDialog
+        isDetailDialogOpen={isDetailDialogOpen}
+        setDetailDialogOpen={setDetailDialogOpen}
+        selectedOrder={selectedOrder}
+        orderDetails={orderDetails}
+        productDetails={productDetails}
+      />
 
-            <DialogFooter>
-              <Button variant="secondary" onClick={() => setDetailDialogOpen(false)}>
-                Close
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-  
 
     </Admin>
   );

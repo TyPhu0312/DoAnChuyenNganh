@@ -13,6 +13,8 @@ import { Alert } from '@/components/ui/alert';
 import Image from 'next/image';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import InputChat from '@/components/features/inputChat';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrencyVND } from '@/lib/utils/currencyFormatter';
 
 type Contact = {
     id: string;
@@ -29,6 +31,7 @@ interface Painting {
     status: 'Đang xử lý' | 'Hoàn thành' | 'Đã huỷ' | 'Chờ xử lý';
     name: string;
     size_width: number;
+    price:number;
     size_height: number;
     picture_frame: boolean;
     note: string | null;
@@ -186,37 +189,43 @@ export default function ViewDetailCustomPainting() {
     if (error) return <Alert className="w-full mb-4">{error}</Alert>;
 
     return (
-        <div className="p-5 bg-white shadow rounded-lg mt-36">
+        <div className="p-5 bg-white shadow rounded-lg mt-48">
 
             <h1 className="text-2xl font-bold mb-4">Chi tiết yêu cầu đặt vẽ tranh </h1>
-            <Card className="mb-4 p-4 border rounded-lg">
-
-                <p><strong>Mã đơn:</strong> {painting?.id}</p>
-                <p><strong>Tên:</strong> {painting?.name}</p>
-                <p><strong>Tên khách hàng: </strong>{painting?.userName} </p>
-            </Card>
-
-            <h2 className="text-xl font-bold mt-5 mb-3">Phản hồi</h2>
-            <div className="space-y-4">
+            <div className="space-y-4 m-auto">
                 {selectedPainting && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div className="col-span-1 rounded-xl">
-
-                            <div className="space-y-4">
-                                <p><strong>Thông tin tranh</strong></p>
-                                <p><strong>Name:</strong> {selectedPainting.name}</p>
-                                <p><strong>Size:</strong> {selectedPainting.size_width} x {selectedPainting.size_height} cm</p>
-                                <p><strong>Picture Frame:</strong> {selectedPainting.picture_frame || "No frame"}</p>
-                                <p><strong>Note:</strong> {selectedPainting.note || "No notes"}</p>
-                                <p><strong>Trạng thái đơn:</strong>
-                                    <span className={`text-white px-3 py-1 rounded-full ${getStatusColor(selectedPainting.status)}`}>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="font-bold">Tên</TableHead>
+                                <TableHead className="font-bold">Kích thước</TableHead>
+                                <TableHead className="font-bold">Khung tranh</TableHead>
+                                <TableHead className="font-bold">Ghi chú</TableHead>
+                                <TableHead className="font-bold">Giá</TableHead>
+                                <TableHead className="font-bold">Trạng thái đơn</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>{selectedPainting.name}</TableCell>
+                                <TableCell>{selectedPainting.size_width} x {selectedPainting.size_height} cm</TableCell>
+                                <TableCell>{selectedPainting.picture_frame || "Không có khung"}</TableCell>
+                                <TableCell>{selectedPainting.note || "Không có ghi chú"}</TableCell>
+                                <TableCell>
+                                    {selectedPainting.price ? formatCurrencyVND(selectedPainting.price) : "Liên hệ"}
+                                </TableCell>
+                                <TableCell>
+                                    <span
+                                        className={`text-white px-3 py-1 rounded-full ${getStatusColor(selectedPainting.status)}`}
+                                    >
                                         {getStatusInVietnamese(selectedPainting.status)}
                                     </span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
                 )}
+                <h2 className="text-xl font-bold mt-5 mb-3">Phản hồi</h2>
                 <ScrollArea className="h-[200px]  md:h-[500px] w-[100%] rounded-md border">
                     <div className="p-4 space-y-4">
                         {contacts.length > 0 ? (

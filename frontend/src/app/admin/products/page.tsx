@@ -10,6 +10,8 @@ import { DialogHeader, DialogFooter, Dialog, DialogContent, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 // Interfaces for Product and Category
 interface Product {
@@ -307,22 +309,31 @@ export default function ProductManagement() {
 
                         {/* Actions */}
                         <TableCell>
-                          <Button
-                            variant="default"
-                            onClick={() => {
-                              setEditingProduct(product);
-                              setDialogOpen(true);
-                            }}
-                            className="mr-2"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            onClick={() => handleDelete(product.id)}
-                          >
-                            Delete
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                aria-haspopup="true"
+                                size="icon"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setEditingProduct(product);
+                                  setDialogOpen(true);
+                                }}
+                                className="mr-2">
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleDelete(product.id)}>
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))

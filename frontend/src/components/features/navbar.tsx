@@ -45,6 +45,7 @@ export default function Navbar() {
 
   const { userId } = useAuth();
 
+
   return (
     <nav
       className={`${isScrolled ? "" : "bg-slate-100 shadow-lg "} 
@@ -184,7 +185,7 @@ export default function Navbar() {
                           </NavigationMenuLink>
                           <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                             <a
-                              href="/viewUserOrder"
+                              href={`/viewUserOrder/${userId}`}
                               className="text-[15px] font-robotoSlab"
                             >
                               My Order
@@ -215,7 +216,7 @@ export default function Navbar() {
                             </NavigationMenuLink>
                           </Link>
 
-                          <Link href={"/viewUserOrder"}>
+                          <Link href={`/viewUserOrder/${userId}`}>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                               My Order
                             </NavigationMenuLink>

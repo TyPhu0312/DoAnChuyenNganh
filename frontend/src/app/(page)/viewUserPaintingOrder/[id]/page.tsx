@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from '@clerk/clerk-react';
 import axios from "axios";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Định nghĩa kiểu dữ liệu
 type Request = {
@@ -16,15 +17,9 @@ export default function CustomPaintingList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { isSignedIn, user, isLoaded } = useUser();
-     
-    useEffect(() => {
-        // Kiểm tra và lấy ID từ localStorage
-        const userId = user?.id;
-        
-        // Nếu ID không có hoặc người dùng chưa đăng nhập, chuyển hướng tới trang đăng nhập
-        //console.log(userId);
 
-        // Fetch dữ liệu từ server
+    useEffect(() => {
+        const userId = user?.id;
         axios
             .get(`http://localhost:5000/api/admin/custompainting/user/${userId}`)
             .then((response) => {
@@ -47,22 +42,37 @@ export default function CustomPaintingList() {
     if (error) return <p>{error}</p>;
 
     return (
-        <div className="p-5 bg-white shadow rounded-lg">
+        <div className="p-5 bg-white shadow rounded-lg mt-48">
             <h1 className="text-2xl font-bold mb-4">Các yêu cầu đặt tranh</h1>
             {requests.length === 0 ? (
                 <p>Bạn chưa có yêu cầu nào.</p>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {requests.map((request) => (
-                        <div 
-                            key={request.id} 
+                        <div
+                            key={request.id}
                             className="p-4 border rounded-lg shadow cursor-pointer hover:shadow-lg transition-transform duration-300"
                             onClick={() => handleClickCard(request.id)}
                         >
-                            <p><strong>Mã đơn:</strong> {request.id}</p>
-                            <p><strong>Tên:</strong> {request.name}</p>
-                            <p><strong>Ngày đặt:</strong> {new Date(request.createdAt).toLocaleDateString()}</p>
-                            <p><strong>Giờ đặt:</strong> {new Date(request.createdAt).toLocaleTimeString()}</p>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="font-bold">Tên tranh</TableHead>
+                                        <TableHead className="font-bold">Ngày Đặt</TableHead>
+                                        <TableHead className="font-bold">Giờ Đặt</TableHead>
+                                        {/* Add other headers if needed */}
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {requests.map((request) => (
+                                        <TableRow key={request.id}>
+                                            <TableCell>{request.name}</TableCell>
+                                            <TableCell>{new Date(request.createdAt).toLocaleDateString()}</TableCell>
+                                            <TableCell>{new Date(request.createdAt).toLocaleTimeString()}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </div>
                     ))}
                 </div>
