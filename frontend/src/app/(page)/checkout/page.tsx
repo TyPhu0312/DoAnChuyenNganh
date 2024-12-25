@@ -184,6 +184,7 @@ export default function Checkout() {
                 />
                 <Input
                   placeholder="Số điện thoại"
+                  type="number"
                   value={userInfo.phone}
                   onChange={(e) => setUserInfo({ ...userInfo, phone: e.target.value })}
                 />
