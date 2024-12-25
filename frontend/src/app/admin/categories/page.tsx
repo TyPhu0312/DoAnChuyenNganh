@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 // Define Category interface
 interface Category {
@@ -66,11 +68,6 @@ export default function Category() {
 
     // Save category (Add/Edit)
     const handleAddOrEdit = async (category: Category) => {
-        if (!category.name.trim()) {
-            alert("Please enter a category name.");
-            return;
-        }
-
         try {
             if (category.id) {
                 // Update existing category
@@ -160,12 +157,27 @@ export default function Category() {
                                         <div className="font-medium">{category.name}</div>
                                     </TableCell>
                                     <TableCell className="text-right space-x-2">
-                                        <Button size="sm" onClick={() => { setEditingCategory(category); setDialogOpen(true); }}>
-                                            Edit
-                                        </Button>
-                                        <Button size="sm" variant="destructive" onClick={() => handleDelete(category.id)}>
-                                            Delete
-                                        </Button>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    aria-haspopup="true"
+                                                    size="icon"
+                                                    variant="ghost"
+                                                >
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <span className="sr-only">Toggle menu</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem
+                                                    onClick={() => { setEditingCategory(category); setDialogOpen(true); }}>
+                                                    Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleDelete(category.id)}>
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
                             ))}

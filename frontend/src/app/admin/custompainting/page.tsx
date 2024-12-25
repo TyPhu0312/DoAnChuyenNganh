@@ -49,6 +49,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import InputChat from "@/components/features/inputChat";
+import { formatCurrencyVND } from "@/lib/utils/currencyFormatter";
 
 export default function CustomPainting() {
   const [paintings, setPaintings] = useState<any[]>([]);
@@ -306,7 +307,7 @@ export default function CustomPainting() {
                         {painting.note || "Không có ghi chú"}
                       </TableCell>
                       <TableCell className="text-right">
-                        {painting.price ? `${painting.price.toFixed(2)}VND` : "Liên hệ"}
+                      {painting.price ? formatCurrencyVND(painting.price) : "Liên hệ"}
                       </TableCell>
                       <TableCell>
                         <Select value={painting.status || "Chờ xử lý"} onValueChange={(newStatus: any) => handleStatusChange(painting.id, newStatus)}>

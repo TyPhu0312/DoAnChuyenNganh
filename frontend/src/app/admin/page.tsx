@@ -2,16 +2,23 @@
 import AdminHeader from "@/components/features/admin-header"
 import AdminSidebar from "@/components/features/admin-sidebar"
 import { redirect } from "next/navigation";
+import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
 
-const isAuth = true;
 export default function Admin({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    if(!isAuth){
-        redirect('/admin/login');
-    }
+    const router = useRouter();
+    useEffect(() => {
+        // Kiểm tra xem token có trong localStorage hay không
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            // Redirect về trang login nếu không có token
+            router.push('/admin/login');
+        }
+    }, [router]);
     return (
         <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-muted/40 md:block">

@@ -119,7 +119,6 @@ export default function Checkout() {
           address: userInfo.address,
         };
         localStorage.setItem("userInfo", JSON.stringify(customerInfo));
-        console.log(customerInfo);
         if (paymentURL) {
           window.location.href = paymentURL;
         } else {

@@ -76,6 +76,41 @@ const getOrderById = async (req, res) => {
   }
 };
 
+const getOrderByuserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    if (!userId) {
+      return res.status(404).send({
+        success: false,
+        message: "Không tìm thấy ID!",
+      });
+    }
+    const data = await queryAsync(
+      `
+            SELECT o.*, u.firstname AS customerName 
+            FROM qlbantranh.order o
+            JOIN qlbantranh.users u ON o.userId = u.id
+            WHERE o.userId = ?
+        `,
+      [userId]
+    );
+
+    if (!data || data.length === 0) {
+      return res.status(404).send({
+        success: false,
+        message: "Không thấy data từ database",
+      });
+    }
+
+    res.status(200).send({
+      success: true,
+      data, // Return the first result, as we expect only one order
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const createOrder = async (req, res) => {
   try {
     const {
@@ -508,6 +543,7 @@ const getRevenueOverYears = async (req, res) => {
   }
 };
 module.exports = {
+  getOrderByuserId,
   updateOrderStatus,
   getRevenueOverYears,
   getCurrentYearRevenue,

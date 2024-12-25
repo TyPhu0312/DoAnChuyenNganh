@@ -50,7 +50,7 @@ export default function UpdateUserPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-10 pt-20">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-10 pt-20 mt-36">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-lg">
         <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">Cập nhật thông tin</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
