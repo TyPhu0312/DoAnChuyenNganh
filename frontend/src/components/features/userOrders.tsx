@@ -97,7 +97,7 @@ export default function CustomerOrders({ userId }: { userId: string }) {
                             <TableBody>
                                 {orders.map((order) => (
                                     <TableRow key={order.id}>
-                                        <TableCell>Đơn hàng của bạn</TableCell>
+                                        <TableCell>{order.id}</TableCell>
                                         <TableCell>{formatCurrencyVND(order.total_amount)}</TableCell>
                                         <TableCell>{order.status}</TableCell>
                                         <TableCell>{order.paymentMethod}</TableCell>
