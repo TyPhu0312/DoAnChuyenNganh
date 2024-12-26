@@ -48,7 +48,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`${isScrolled ? "" : "bg-slate-100 shadow-lg "} 
+      className={`${isScrolled ? "" : "bg-white shadow-lg "} 
     fixed top-0 left-0 w-full z-10 transition-all duration-300 ${isScrolled ? "h-16 rounded-b-[100px]" : "h-30"}`}
     >
       <div className={`flex flex-col h-full items-center justify-between max-w-screen-xl px-4 mx-auto mt-5 ${isScrolled ? "mt-1" : ""} rounded-tl-[30px] rounded-tr-[30px]`}>

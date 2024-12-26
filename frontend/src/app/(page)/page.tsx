@@ -51,8 +51,8 @@ export default function Home({
     return (
         <>
             <main className="flex flex-1 flex-col m-0 bg-[#f0f3f8] ">
-                <Hero />
-                <div className="mt-[40px]">
+                <Hero/>
+                <div className="mt-[48px]">
                     <p className="text-2xl font-robotoCondensed text-left ml-[40px] mb-[30px] font-bold">
                         All new artwork
                     </p>

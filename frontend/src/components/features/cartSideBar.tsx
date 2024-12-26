@@ -83,19 +83,33 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, closeSidebar }) => {
                 ))}
               </ul>
               <div><hr /></div>
-              <div className="mt-4 flex justify-between items-center">
-                <span className="font-semibold">Total price:</span>
-                <span className="font-semibold text-xl">
-                  {formatCurrency(cart.reduce((total, item) => total + item.price * item.quantity, 0))}
-                </span>
-              </div>
-              <Link href={'/checkout'}>
-                <button className="bg-gradient-to-r from-[#59a83e] to-[#3f9b1b] mt-6 text-white font-bold py-2 px-4 rounded hover:opacity-80 hover:scale-105 transition-all duration-200"
+
+              {/* {isHaveProduct && (
+                <Link href={'/checkout'}>
+                <button className={` bg-gradient-to-r from-[#59a83e] to-[#3f9b1b] mt-6 text-white font-bold py-2 px-4 rounded hover:opacity-80 hover:scale-105 transition-all duration-200`}
                 >
                   Check out
                 </button>
               </Link>
-
+              )} */}
+              {cart.reduce((total, item) => total + item.price * item.quantity, 0) > 0 ? (
+                <><div className="mt-4 flex justify-between items-center">
+                  <span className="font-semibold">Total price:</span>
+                  <span className="font-semibold text-xl">
+                    {formatCurrency(cart.reduce((total, item) => total + item.price * item.quantity, 0))}
+                  </span>
+                </div><Link href={'/checkout'}>
+                    <button className="bg-gradient-to-r from-[#59a83e] to-[#3f9b1b] mt-6 text-white font-bold py-2 px-4 rounded hover:opacity-80 hover:scale-105 transition-all duration-200"
+                    >
+                      Check out
+                    </button>
+                  </Link></>
+              ) : (
+                <><div className="mt-5">Bạn chưa có gì trong giỏ hàng cả.</div><button className="bg-gradient-to-r from-[#858585] to-[#a1a1a1] mt-6 text-white font-bold py-2 px-4 rounded  transition-all duration-200 disable opacity-50 cursor-not-allowed"
+                >
+                  Check out
+                </button></>
+              )}
             </div>
           </div>
         </div>
