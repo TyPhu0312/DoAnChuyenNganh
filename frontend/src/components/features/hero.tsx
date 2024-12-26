@@ -31,7 +31,7 @@ export default function Hero() {
   return (
     <>
       <div
-        className={`w-full h-[550px] bg-center bg-cover transition-opacity duration-500 bg-[url("/images/museum-lighting.png")]`}
+        className={`w-full h-[550px] bg-center mt-40 bg-cover transition-opacity duration-500 bg-[url("/images/museum-lighting.png")]`}
       >
         <div className="  pl-20 ">
           <div className=" opacity-70 max-w-2xl text-xl mt-56 text-[#EFEFEF]">
